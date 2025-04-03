@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+        .grid-item {
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover {
+            transform: scale(1.05); /* Slight zoom effect when hovering over grid items */
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover img {
+            transform: scale(1.1); /* Zoom effect on images in grid items */
+        }
+        .grid-item a {
+            display: block;
+            margin-top: 10px;
+            font-size: 18px;
+            text-decoration: none;
+            color: #003366;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .grid-item a:hover {
+            color: #ffcc00; /* Change color on hover */
+        }
+        .newspaper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .newspaper a {
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            padding: 10px;
+            background-color: #003366;
+            border: 1px solid #002244;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            background-image: linear-gradient(135deg, #003366, #002244);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .newspaper a:hover {
+            background-color: #002244;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+
+<p></p>
+
+<div class="newspaper">
+    <a href="https://services.nidw.gov.bd/nid-pub/">National ID Card</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://www.etaxnbr.gov.bd/#/landing-page">Income Tax Return</a>
+</div>
+
+<div class="newspaper">
+    <a href="http://gd.police.gov.bd">Online GD</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://bdris.gov.bd/br/application">Birth Registration Application</a>
+</div>
+
+<div class="newspaper">
+    <a href="http://www.educationboardresults.gov.bd/">Education Board Result</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://students.diu.ac/">DIU Students Portal</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://railapp.railway.gov.bd/splash/select-language">Bangladesh Railway E-Ticket</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://www.baf.mil.bd/index.php">Bangladesh Air Force</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://tecno-find.palm.tech">TECNO Find my phone</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://met.baf.mil.bd">BAF Weather Report</a>
+</div>
+
+<br></br>
+
+</body>
+</html>
