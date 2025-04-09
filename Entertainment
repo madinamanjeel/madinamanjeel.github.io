@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Page</title>
+    <style>
+        /* Responsive Video Container */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Button Styles */
+        .newspaper {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .newspaper a {
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            padding: 12px;
+            background-color: #003366;
+            border: 1px solid #002244;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            background-image: linear-gradient(135deg, #003366, #002244);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .newspaper a:hover {
+            background-color: #002244;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .newspaper a {
+                width: 90%;
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<br></br>
+  
+    <div class="newspaper">
+        <a href="https://drive.google.com/drive/folders/14NF3iNLeIfy8m8BwHf8o6OeG1zsZZM_w">Movie</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://drive.google.com/drive/folders/12acVIGeR2D1fcBRaYzfPDc1JZ5wy15WT">Turkish series</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1oBwKCByxjb_3tE5FUuz11i&feature=shared">Music</a>
+    </div>
+
+  
+
+    <div class="newspaper">
+        <a href="https://youtube.com/@familyentertainmentbd/videos">Family Entertainment BD</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/@antikmahmud/videos">Antik Mahmud</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PLGOghD4_R8mEoCdtYbysczeWAQeKSfRU7&feature=shared">Humayun Ahmed Natok</a>
+    </div>
+<br></br>
+
+ <!-- Video Sections -->
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/videoseries?list=PLaTiyh4Zzeu7KbDV4gBJVi4yBBxVbyfMp&feature=shared" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    
+    <p></p>
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/videoseries?list=PLtETw_ijdrdglxRypNgJLW-O3yTyR5rBn&feature=shared" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div> <p></p>
+
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/videoseries?list=PLtETw_ijdrdhFfxvvi_QfLzQ0_ftr8mfA&feature=shared" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div><p></p>
+
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/videoseries?list=PL1wlAgq3XR1rqTxT5urwcDulz2NifPoor&feature=shared" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div><p></p>
+
+</body>
+</html>
