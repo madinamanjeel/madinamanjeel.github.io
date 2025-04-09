@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery</title>
+   <br></br> <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            width: 90%;
+            margin: 0 auto;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .newspaper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .newspaper a {
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            padding: 10px;
+            background-color: #003366;
+            border: 1px solid #002244;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            background-image: linear-gradient(135deg, #003366, #002244);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .newspaper a:hover {
+            background-color: #002244;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    
+    
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/r6A6YrtlkSk?autoplay=1" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    
+    
+    <br></br>
+   
+
+    <div class="newspaper">
+        <a href="https://drive.google.com/drive/folders/1hMq2JjOZaOOH1i693CI-Eq97RlEcALS3">Photo Album</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1qkQmHzMiqOAh1Kz08Py6uK&amp;feature=shared">Events</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1r5xRSON8kB_nJc1JmJxqag&amp;feature=shared">Adiba</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1rdu6iXK9r9VyNVh3ue4T8a&amp;feature=shared">Muttaqeen</a>
+    </div>
+    
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1pzk4Zg5IZj_clxdSInYB0C&feature=shared">Alifa</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1rrzxLy0dA4xa1uRkmdKjbP&amp;feature=shared">Pets</a>
+    </div>
+    <br></br>
+    
+    
+    
+</body>
+</html>
