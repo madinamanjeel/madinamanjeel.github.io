@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Family Tree</title>
+    <style>
+        /* General styles */
+        body {
+            line-height: 1.8; /* Increased line spacing */
+            font-family: Arial, sans-serif; /* Optional: Set a clean font */
+        }
+
+        a { 
+            font-weight: bold; /* Make all links bold */
+        }
+
+        a + a { 
+            color: darkpink; /* Links after '&' */
+        }
+
+        /* Specific person styles */
+        a[href="Monsur_Munshi.html"] { color: #964B00; } /* Brown for Monsur Munshi */
+        a[href="Md_Abdul_Khaleque.html"] { color: darkgreen; }
+        a[href="Afia_Ahmed_Adiba.html"], 
+        a[href="Ahmad_Muttaqeen.html"], 
+        a[href="upcoming.html"] { color: #0f4c81; } /* Classic blue for Afia Ahmed Adiba and Upcoming */
+        a[href="Darul_Ahmed.html"], 
+        a[href="Mashayekh_Ahmed.html"] { color: blue; } /* Blue color for Darul Ahmed and Mashayekh Ahmed */
+        a[href="Shafia_Khatun.html"], 
+        a[href="Shariatunnesa_Madina.html"], 
+        a[href="Lima_Akter.html"], 
+        a[href="Farjana_Afrin.html"] { color: #d80073; } /* Dark pink links */
+
+        /* Style for h3 */
+        h3 {
+            text-align: center; /* Center align the text */
+            font-weight: bold; /* Make the text bold */
+            text-decoration: underline; /* Add underline */
+        }
+    </style>
+</head>
+<body>
+    <h3><a href="https://madinamanjeeltv.github.io/family/heritage.html">Our Heritage</a></h3>
+    <ul>
+        <li>
+            <a href="Monsur_Munshi.html">Monsur Munshi</a> & 
+            <a href="Shafia_Khatun.html">Shafia Khatun</a>
+            <ul>
+                <li>
+                    <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a> & 
+                    <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
+                    <ul>
+                        <li>
+                            <a href="Darul_Ahmed.html">Darul Ahmed</a> & 
+                            <a href="Farjana_Afrin.html">Farjana Afrin</a>
+                            <ul>
+                                <li>
+                                    <a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a>
+                                </li>
+                                <!-- Added the upcoming link with classic blue color -->
+                                <li>
+                                    <a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a> & 
+                            <a href="Lima_Akter.html">Lima Akter</a>
+                            <ul>
+                                <li>
+                                    <a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>
