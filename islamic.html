@@ -4,7 +4,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Islamic</title>
-   <br></br> <style>
+   <br></br> 
+
+<style>
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.compass-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.compass-needle {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 60px solid red;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: 50% 50%;
+    transform: translate(-50%, -100%);
+    z-index: 1; /* কাঁটা কাবার আইকনের উপরে দেখানোর জন্য */
+}
+
+.qibla-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px; /* আইকনের আনুমানিক প্রস্থ */
+    height: 40px; /* আইকনের আনুমানিক উচ্চতা */
+    transform: translate(-50%, -50%);
+    background-image: url('kaaba_icon.png'); /* আপনার কাবার আইকনের ফাইলের নাম */
+    background-size: contain; /* আইকন div এর মধ্যে পুরোটা দেখানোর জন্য */
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.direction-text {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.error-message {
+    margin-top: 20px;
+    color: red;
+}
+</style>
+</head>
+<body>
+
+<div class="compass-container">
+    <div class="compass-needle" id="needle"></div>
+    <div class="qibla-indicator"></div>
+</div>
+
+<div class="direction-text" id="direction">দিক নির্ণয় করা হচ্ছে...</div>
+<div class="error-message" id="error" style="display: none;"></div>
+
+<script>
+const needle = document.getElementById('needle');
+const directionText = document.getElementById('direction');
+const errorDiv = document.getElementById('error');
+
+// কাবার স্থানাঙ্ক (মক্কা)
+const qiblaLat = 21.4225;
+const qiblaLng = 39.8262;
+
+function getQiblaAngle(latitude, longitude) {
+    const phiK = toRadians(qiblaLat);
+    const lambdaK = toRadians(qiblaLng);
+    const phi = toRadians(latitude);
+    const lambda = toRadians(longitude);
+    const deltaLambda = lambdaK - lambda;
+
+    const y = Math.sin(deltaLambda) * Math.cos(phiK);
+    const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(deltaLambda);
+    let angle = Math.atan2(y, x);
+    return toDegrees(angle);
+}
+
+function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+}
+
+function updateCompass(heading) {
+    const qiblaAngle = getQiblaAngle(latitude, longitude);
+    const rotation = heading + qiblaAngle;
+    needle.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
+
+    // আপেক্ষিক দিক নির্ণয় (শুধুমাত্র উত্তরের সাপেক্ষে)
+    let relativeDirection = '';
+    if (rotation > -22.5 && rotation <= 22.5) {
+        relativeDirection = 'উত্তর';
+    } else if (rotation > 22.5 && rotation <= 67.5) {
+        relativeDirection = 'উত্তর-পূর্ব';
+    } else if (rotation > 67.5 && rotation <= 112.5) {
+        relativeDirection = 'পূর্ব';
+    } else if (rotation > 112.5 && rotation <= 157.5) {
+        relativeDirection = 'দক্ষিণ-পূর্ব';
+    } else if (rotation > 157.5 && rotation <= 180 || rotation <= -157.5) {
+        relativeDirection = 'দক্ষিণ';
+    } else if (rotation > -157.5 && rotation <= -112.5) {
+        relativeDirection = 'দক্ষিণ-পশ্চিম';
+    } else if (rotation > -112.5 && rotation <= -67.5) {
+        relativeDirection = 'পশ্চিম';
+    } else if (rotation > -67.5 && rotation <= -22.5) {
+        relativeDirection = 'উত্তর-পশ্চিম';
+    }
+    directionText.textContent = `ক্বিবলার দিক: ${relativeDirection}`;
+}
+
+let latitude;
+let longitude;
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+
+        if ('ondeviceorientationabsolute' in window) {
+            window.addEventListener('deviceorientationabsolute', event => {
+                if (event.alpha !== null) {
+                    updateCompass(360 - event.alpha); // ডিভাইসের হেডিং
+                }
+            });
+        } else if ('ondeviceorientation' in window) {
+            window.addEventListener('deviceorientation', event => {
+                if (event.webkitCompassHeading) {
+                    updateCompass(event.webkitCompassHeading); // iOS
+                } else if (event.alpha !== null) {
+                    updateCompass(360 - event.alpha); // অন্যান্য ব্রাউজার
+                }
+            });
+        } else {
+            errorDiv.textContent = 'আপনার ডিভাইস কম্পাস সেন্সর সমর্থন করে না।';
+            errorDiv.style.display = 'block';
+        }
+
+    }, error => {
+        errorDiv.textContent = 'অবস্থান নির্ণয় করতে সমস্যা হয়েছে: ' + error.message;
+        errorDiv.style.display = 'block';
+    });
+} else {
+    errorDiv.textContent = 'আপনার ব্রাউজার জিওলোকেশন সমর্থন করে না।';
+    errorDiv.style.display = 'block';
+}
+</script>
+
+
+
+<style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
