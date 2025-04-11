@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+        .grid-item {
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover {
+            transform: scale(1.05); /* Slight zoom effect when hovering over grid items */
+        }
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover img {
+            transform: scale(1.1); /* Zoom effect on images in grid items */
+        }
+        .grid-item a {
+            display: block;
+            margin-top: 10px;
+            font-size: 18px;
+            text-decoration: none;
+            color: #003366;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .grid-item a:hover {
+            color: #ffcc00; /* Change color on hover */
+        }
+        /* Google search bar styling */
+        .search-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .search-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.7); /* Reduce size by 30% */
+        }
+        .search-container form {
+            display: flex;
+            align-items: center;
+        }
+        .search-container input[type="text"] {
+            padding: 10px;
+            border: 2px solid #003366;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px; /* Set a fixed width for the search box */
+        }
+        .search-container button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #003366;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px; /* Space between input and button */
+        }
+        .search-container button:hover {
+            background-color: #ffcc00; /* Change to yellow on hover */
+        }
+        .newspaper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .newspaper a {
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            padding: 10px;
+            background-color: #003366;
+            border: 1px solid #002244;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            background-image: linear-gradient(135deg, #003366, #002244);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .newspaper a:hover {
+            background-color: #002244;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <br></br>
+    <a href="https://youtube.com/@gtvnewsupdate/videos" target="_blank">
+        <img src="gtv.jpg" alt="GTV News" style="width:100%; max-width:600px;">
+    </a>
+    <p></p>
+
+    <div class="newspaper">
+        <a href="https://www.bbc.com/bengali">BBC Bangla</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.prothomalo.com/">Daily Prothom Alo</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.kalerkantho.com/">Kaler Kantho</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.bd-pratidin.com/">Bangladesh Pratidin</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.jugantor.com/">Daily Jugantor</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.ittefaq.com.bd/">Daily Ittefaq</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.mzamin.com/">Daily Manobjamin</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://samakal.com/">Daily Shomokal</a>
+    </div>
+
+    <div class="newspaper">
+        <a href="https://www.dainikamadershomoy.com/">Amader Shomoy</a>
+    </div>
+    <div class="newspaper">
+        <a href="https://met.baf.mil.bd">BAF Weather Report</a>
+    </div>
+    <br></br>
+</body>
+</html>
