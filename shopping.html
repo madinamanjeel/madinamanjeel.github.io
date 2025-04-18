@@ -3,77 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N</title>
+    <title></title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 20px;
+            background-color: #f4f4f4;
         }
-        .newspaper {
+        .category-container {
+            margin-bottom: 30px;
+        }
+        .category-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .website-link {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-        }
-        .newspaper a {
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-            padding: 10px;
-            background-color: #003366;
-            border: 1px solid #002244;
-            border-radius: 10px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             text-decoration: none;
-            font-size: 18px;
-            color: #FFFFFF;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            background-image: linear-gradient(135deg, #003366, #002244);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .newspaper a:hover {
-            background-color: #002244;
+        .website-link:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .website-link img {
+            max-width: 80px;
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+        .website-link span {
+            text-align: center;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-<div class="newspaper">
-    <a href="https://www.daraz.com.bd/">Daraz.com.bd</a>
-</div>
-<div class="newspaper">
-    <a href="https://www.bdtronics.com/">BDTronics</a>
-</div>
-    
-<div class="newspaper">
-    <a href="https://www.pickaboo.com/">Pickaboo</a>
-</div>
+    <h1></h1>
 
-<div class="newspaper">
-    <a href="https://chaldal.com">Chaldal.com</a>
-</div>
+    <div class="category-container">
+        <h2 class="category-title">Online Shopping</h2>
+        <div class="grid-container">
+            <a href="https://www.daraz.com.bd/" class="website-link">
+                <img src="daraz.png" alt="Daraz">
+                <span>Daraz.com.bd</span>
+            </a>
+        </div>
+    </div>
 
-<div class="newspaper">
-    <a href="https://meenabazaronline.com/">MeenaBazar</a>
-</div>
+    <div class="category-container">
+        <h2 class="category-title">Electronics</h2>
+        <div class="grid-container">
+            <a href="https://www.pickaboo.com/" class="website-link">
+                <img src="pickaboo.png" alt="Pickaboo">
+                <span>Pickaboo</span>
+            </a>
+            <a href="https://www.bdtronics.com/" class="website-link">
+                <img src="bdtronics.png" alt="BDTronics">
+                <span>BDTronics</span>
+            </a>
+        </div>
+    </div>
 
-<div class="newspaper">
-    <a href="https://www.khaasfood.com/">Khaasfood</a>
-</div>
-  
-  <div class="newspaper">
-    <a href="https://onlineburmesemarket.com/">Burmese Market</a>
-</div>
+    <div class="category-container">
+        <h2 class="category-title">Groceries</h2>
+        <div class="grid-container">
+            <a href="https://chaldal.com" class="website-link">
+                <img src="chaldal.png" alt="Chaldal">
+                <span>Chaldal.com</span>
+            </a>
+            <a href="https://meenabazaronline.com/" class="website-link">
+                <img src="meenabazar.png" alt="MeenaBazar">
+                <span>MeenaBazar</span>
+            </a>
+            <a href="https://www.khaasfood.com/" class="website-link">
+                <img src="khaasfood.png" alt="Khaasfood">
+                <span>Khaasfood</span>
+            </a>
+            <a href="https://onlineburmesemarket.com/" class="website-link">
+                <img src="burmese.png" alt="Burmese Market">
+                <span>Burmese Market</span>
+            </a>
+        </div>
+    </div>
 
-<div class="newspaper">
-    <a href="https://railapp.railway.gov.bd/splash/select-language">Railway E-Ticket</a>
-</div>
-
-<div class="newspaper">
-    <a href="https://www.sakuraparibahanbd.com/">Sakura Bus Ticket</a>
-</div>
+    <div class="category-container">
+        <h2 class="category-title">Online Ticket</h2>
+        <div class="grid-container">
+            <a href="https://railapp.railway.gov.bd/splash/select-language" class="website-link">
+                <img src="rail.png" alt="Railway E-Ticket">
+                <span>Railway E-Ticket</span>
+            </a>
+            <a href="https://www.sakuraparibahanbd.com/" class="website-link">
+                <img src="sakura.png" alt="Sakura Bus Ticket">
+                <span>Sakura Bus Ticket</span>
+            </a>
+        </div>
+    </div>
 
 </body>
 </html>
