@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>গুরুত্বপূর্ণ ওয়েবসাইট (শুধুমাত্র লোগো)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,7 +23,7 @@
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* লোগোর জন্য ছোট কলাম */
             gap: 15px;
         }
         .website-link {
@@ -47,11 +47,10 @@
         .website-link img {
             max-width: 80px;
             max-height: 80px;
-            margin-bottom: 10px;
+            margin-bottom: 0; /* লোগোর নিচে মার্জিন বাদ দেওয়া হলো */
         }
         .website-link span {
-            text-align: center;
-            font-size: 14px;
+            display: none; /* টেক্সট টাইটেল লুকানো হলো */
         }
     </style>
 </head>
@@ -65,6 +64,10 @@
             <a href="https://www.daraz.com.bd/" class="website-link">
                 <img src="daraz.png" alt="Daraz">
                 <span>Daraz.com.bd</span>
+            </a>
+        <a href="https://othoba.com/" class="website-link">
+                <img src="othoba.png" alt="Daraz">
+                <span>othoba.com</span>
             </a>
         </div>
     </div>
@@ -109,7 +112,7 @@
         <h2 class="category-title">Online Ticket</h2>
         <div class="grid-container">
             <a href="https://railapp.railway.gov.bd/splash/select-language" class="website-link">
-                <img src="rail.png" alt="Railway E-Ticket">
+                <img src="bdrailway.png" alt="Railway E-Ticket">
                 <span>Railway E-Ticket</span>
             </a>
             <a href="https://www.sakuraparibahanbd.com/" class="website-link">
