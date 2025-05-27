@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery</title>
-   <br></br> <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -13,7 +13,7 @@
         }
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             width: 90%;
@@ -55,9 +55,10 @@
         }
     </style>
 </head>
+
 <body>
-    
-    
+
+
     <div class="video-container">
         <iframe 
             src="https://www.youtube.com/embed/r6A6YrtlkSk?autoplay=1" 
@@ -65,10 +66,10 @@
             allowfullscreen>
         </iframe>
     </div>
-    
-    
+
+
     <br></br>
-   
+
 
     <div class="newspaper">
         <a href="https://photos.app.goo.gl/q1uCoenjEUHtAkJG8">Photo Album</a>
@@ -85,7 +86,7 @@
     <div class="newspaper">
         <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1rdu6iXK9r9VyNVh3ue4T8a&amp;feature=shared">Muttaqeen</a>
     </div>
-    
+
     <div class="newspaper">
         <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1pzk4Zg5IZj_clxdSInYB0C&feature=shared">Alifa</a>
     </div>
@@ -94,8 +95,54 @@
         <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1rrzxLy0dA4xa1uRkmdKjbP&amp;feature=shared">Pets</a>
     </div>
     <br></br>
-    
-    
-    
+
+    <p id="user-info" style="text-align:center; font-weight:bold;"></p>
 </body>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+      authDomain: "family-429c7.firebaseapp.com",
+      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "family-429c7",
+      storageBucket: "family-429c7.firebasestorage.app",
+      messagingSenderId: "982876086618",
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+      measurementId: "G-R7NLCB1B92"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const allowedEmails = [
+      "mashayekh.ahmed.archives@gmail.com",
+      "mashayekh64@gmail.com",
+      "shariatunnesa.madina@gmail.com",
+      "abdulkhalequebaf@gmail.com",
+      "lima.akter.1323@gmail.com",
+      "ahmad.muttaqeen@gmail.com",
+      "nusaiba.jannat.alifa@gmail.com",
+      "afia.ahmed.adiba@gmail.com",
+      "darulahmed467170@gmail.com",
+      "madina.manjeel.tv@gmail.com"
+    ];
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const email = user.email;
+        if (allowedEmails.includes(email)) {
+          document.getElementById("user-info").textContent = "Logged in as: " + email;
+        } else {
+          alert("Access denied for " + email);
+          window.location.href = "https://google.com";
+        }
+      } else {
+        signInWithRedirect(auth, provider);
+      }
+    });
+</script>
 </html>
