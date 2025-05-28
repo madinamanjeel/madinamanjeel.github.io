@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health</title>
-   <br></br> <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -13,7 +14,7 @@
         }
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             width: 90%;
@@ -56,27 +57,71 @@
     </style>
 </head>
 <body>
-    
-    <br></br>
-
     <div class="newspaper">
         <a href="https://drive.google.com/drive/folders/1hMq2JjOZaOOH1i693CI-Eq97RlEcALS3">Album Photos</a>
     </div>
-
     <div class="newspaper">
         <a href="https://drive.google.com/drive/folders/1e7yxA2f9gh2LaMR6DUxqwhXj5JDeq6Pm">Old Mobile Footages</a>
     </div>
-
     <div class="newspaper">
         <a href="https://drive.google.com/drive/folders/1yt3xgA3PSa-BxUy8d1sn_KyHd9YXWeMp">Wedding: Darul & Afrin</a>
     </div>
-
     <div class="newspaper">
         <a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">Wedding: Mashayekh & Lima</a>
     </div>
-
     <div class="newspaper">
         <a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a>
     </div>
+    
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithRedirect,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+    authDomain: "family-429c7.firebaseapp.com",
+    databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "family-429c7",
+    storageBucket: "family-429c7.firebasestorage.app",
+    messagingSenderId: "982876086618",
+    appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+    measurementId: "G-R7NLCB1B92"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  const allowedEmails = [
+    "mashayekh.ahmed.archives@gmail.com",
+    "mashayekh64@gmail.com",
+    "shariatunnesa.madina@gmail.com",
+    "abdulkhalequebaf@gmail.com",
+    "lima.akter.1323@gmail.com",
+    "ahmad.muttaqeen@gmail.com",
+    "nusaiba.jannat.alifa@gmail.com",
+    "afia.ahmed.adiba@gmail.com",
+    "darulahmed467170@gmail.com",
+    "madina.manjeel.tv@gmail.com"
+  ];
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const email = user.email;
+      if (!allowedEmails.includes(email)) {
+        alert("Access denied for " + email);
+        window.location.href = "https://google.com";
+      }
+    } else {
+      signInWithRedirect(auth, provider);
+    }
+  });
+</script>
+
 </body>
 </html>
