@@ -1,142 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Family Tree (Protected)</title>
-    <style>
-        body {
-            line-height: 1.8;
-            font-family: Arial, sans-serif;
-            position: relative;
-            min-height: 100vh;
-            padding-bottom: 3rem; /* Space for bottom message */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Family Tree (Protected)</title>
+  <style>
+    body {
+      line-height: 1.8;
+      font-family: Arial, sans-serif;
+      position: relative;
+      min-height: 100vh;
+      padding-bottom: 3rem;
+    }
 
-        a {
-            font-weight: bold;
-        }
+    a {
+      font-weight: bold;
+    }
 
-        a + a {
-            color: darkpink;
-        }
+    a + a {
+      color: darkpink;
+    }
 
-        a[href="Monsur_Munshi.html"] { color: #964B00; }
-        a[href="Md_Abdul_Khaleque.html"] { color: darkgreen; }
-        a[href="Afia_Ahmed_Adiba.html"],
-        a[href="Ahmad_Muttaqeen.html"],
-        a[href="upcoming.html"] { color: #0f4c81; }
-        a[href="Darul_Ahmed.html"],
-        a[href="Mashayekh_Ahmed.html"] { color: blue; }
-        a[href="Shafia_Khatun.html"],
-        a[href="Shariatunnesa_Madina.html"],
-        a[href="Lima_Akter.html"],
-        a[href="Farjana_Afrin.html"] { color: #d80073; }
+    a[href="Monsur_Munshi.html"] { color: #964B00; }
+    a[href="Md_Abdul_Khaleque.html"] { color: darkgreen; }
+    a[href="Afia_Ahmed_Adiba.html"],
+    a[href="Ahmad_Muttaqeen.html"],
+    a[href="upcoming.html"] { color: #0f4c81; }
+    a[href="Darul_Ahmed.html"],
+    a[href="Mashayekh_Ahmed.html"] { color: blue; }
+    a[href="Shafia_Khatun.html"],
+    a[href="Shariatunnesa_Madina.html"],
+    a[href="Lima_Akter.html"],
+    a[href="Farjana_Afrin.html"] { color: #d80073; }
 
-        h3 {
-            text-align: center;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        #user-info {
-            position: fixed;
-            bottom: 10px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.9rem;
-            color: gray;
-            background-color: white;
-            padding: 5px 0;
-        }
-    </style>
+    h3 {
+      text-align: center;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <h3><a href="https://madinamanjeeltv.github.io/family/heritage.html">Our Heritage</a></h3>
-    <ul>
+  <h3><a href="https://madinamanjeeltv.github.io/family/heritage.html">Our Heritage</a></h3>
+  <ul>
+    <li>
+      <a href="Monsur_Munshi.html">Monsur Munshi</a> &
+      <a href="Shafia_Khatun.html">Shafia Khatun</a>
+      <ul>
         <li>
-            <a href="Monsur_Munshi.html">Monsur Munshi</a> &
-            <a href="Shafia_Khatun.html">Shafia Khatun</a>
-            <ul>
-                <li>
-                    <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a> &
-                    <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
-                    <ul>
-                        <li>
-                            <a href="Darul_Ahmed.html">Darul Ahmed</a> &
-                            <a href="Farjana_Afrin.html">Farjana Afrin</a>
-                            <ul>
-                                <li><a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a></li>
-                                <li><a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a> &
-                            <a href="Lima_Akter.html">Lima Akter</a>
-                            <ul>
-                                <li><a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+          <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a> &
+          <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
+          <ul>
+            <li>
+              <a href="Darul_Ahmed.html">Darul Ahmed</a> &
+              <a href="Farjana_Afrin.html">Farjana Afrin</a>
+              <ul>
+                <li><a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a></li>
+                <li><a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a> &
+              <a href="Lima_Akter.html">Lima Akter</a>
+              <ul>
+                <li><a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a></li>
+              </ul>
+            </li>
+          </ul>
         </li>
-    </ul>
+      </ul>
+    </li>
+  </ul>
 
-    <p id="user-info">Checking authentication...</p>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      signInWithRedirect
+    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-    <!-- Firebase Auth Integration -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import {
-            getAuth,
-            GoogleAuthProvider,
-            onAuthStateChanged,
-            signInWithRedirect
-        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+      authDomain: "family-429c7.firebaseapp.com",
+      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "family-429c7",
+      storageBucket: "family-429c7.firebasestorage.app",
+      messagingSenderId: "982876086618",
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+      measurementId: "G-R7NLCB1B92"
+    };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
-            authDomain: "family-429c7.firebaseapp.com",
-            databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "family-429c7",
-            storageBucket: "family-429c7.firebasestorage.app",
-            messagingSenderId: "982876086618",
-            appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-            measurementId: "G-R7NLCB1B92"
-        };
+    const allowedEmails = [
+      "mashayekh.ahmed.archives@gmail.com",
+      "mashayekh64@gmail.com",
+      "shariatunnesa.madina@gmail.com",
+      "abdulkhalequebaf@gmail.com",
+      "lima.akter.1323@gmail.com",
+      "ahmad.muttaqeen@gmail.com",
+      "nusaiba.jannat.alifa@gmail.com",
+      "afia.ahmed.adiba@gmail.com",
+      "darulahmed467170@gmail.com",
+      "madina.manjeel.tv@gmail.com"
+    ];
 
-        const allowedEmails = [
-            "mashayekh.ahmed.archives@gmail.com",
-            "mashayekh64@gmail.com",
-            "shariatunnesa.madina@gmail.com",
-            "abdulkhalequebaf@gmail.com",
-            "lima.akter.1323@gmail.com",
-            "ahmad.muttaqeen@gmail.com",
-            "nusaiba.jannat.alifa@gmail.com",
-            "afia.ahmed.adiba@gmail.com",
-            "darulahmed467170@gmail.com",
-            "madina.manjeel.tv@gmail.com"
-        ];
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        onAuthStateChanged(auth, (user) => {
-            const info = document.getElementById("user-info");
-            if (user) {
-                const email = user.email;
-                if (allowedEmails.includes(email)) {
-                    info.textContent = "Logged in as: " + email;
-                } else {
-                    alert("Access denied for: " + email);
-                    window.location.href = "https://google.com";
-                }
-            } else {
-                signInWithRedirect(auth, provider);
-            }
-        });
-    </script>
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const email = user.email;
+        if (!allowedEmails.includes(email)) {
+          alert("Access denied for: " + email);
+          window.location.href = "https://google.com";
+        }
+      } else {
+        signInWithRedirect(auth, provider);
+      }
+    });
+  </script>
 </body>
 </html>
