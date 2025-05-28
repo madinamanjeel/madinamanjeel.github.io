@@ -3,181 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        .header {
-            background-color: #003366; /* Classic blue */
-            color: white;
-            padding: 0;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .menu {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-            background-color: #003366; /* Classic blue */
-        }
-        .menu a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            position: relative;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-        .menu a:hover {
-            text-decoration: underline;
-            color: #ffcc00; /* Change to yellow on hover */
-            transform: scale(1.1); /* Slightly enlarge on hover */
-        }
-        .dropdown {
-            position: relative;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #003366; /* Set dropdown background to classic blue */
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            width: 200px; /* Increase width to 200px */
-        }
-        .dropdown-content a {
-            color: white; /* Make the dropdown links white for contrast */
-            padding: 8px 12px;
-            text-decoration: none;
-            display: block;
-            transition: background-color 0.3s ease;
-        }
-        .dropdown-content a:hover {
-            background-color: #ddd; /* Highlight dropdown links on hover */
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            padding: 20px;
-        }
-        .grid-item {
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        .grid-item:hover {
-            transform: scale(1.05); /* Slight zoom effect when hovering over grid items */
-        }
-        .grid-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-        .grid-item:hover img {
-            transform: scale(1.1); /* Zoom effect on images in grid items */
-        }
-        .grid-item a {
-            display: block;
-            margin-top: 10px;
-            font-size: 18px;
-            text-decoration: none;
-            color: #003366;
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .grid-item a:hover {
-            color: #ffcc00; /* Change color on hover */
-        }
-        /* Google search bar styling */
-        .search-container {
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .search-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: scale(0.7); /* Reduce size by 30% */
-        }
-        .search-container form {
-            display: flex;
-            align-items: center;
-        }
-        .search-container input[type="text"] {
-            padding: 10px;
-            border: 2px solid #003366;
-            border-radius: 5px;
-            font-size: 16px;
-            width: 300px; /* Set a fixed width for the search box */
-        }
-        .search-container button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #003366;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-left: 10px; /* Space between input and button */
-        }
-        .search-container button:hover {
-            background-color: #ffcc00; /* Change to yellow on hover */
-        }
-    </style>
-    <script>
-        function toggleDropdown() {
-            var dropdownContent = document.getElementById("dropdown-content");
-            var profilesLink = document.getElementById("profiles-link");
-
-            // Toggle visibility of the dropdown menu
-            if (dropdownContent.style.display === "block") {
-                dropdownContent.style.display = "none";
-                profilesLink.style.color = "white"; // Set color back to white
-                profilesLink.style.textDecoration = "none"; // Remove underline
-            } else {
-                dropdownContent.style.display = "block";
-                profilesLink.style.color = "#ffcc00"; // Change color when dropdown is open
-                profilesLink.style.textDecoration = "underline"; // Add underline when dropdown is open
-            }
-        }
-    </script>
-</head>
-<body>
-    <div class="header">
-        <div class="menu">
-            <a href="https://madinamanjeeltv.wordpress.com/gallery">Gallery</a>
-            <div class="dropdown">
-                <a href="javascript:void(0);" id="profiles-link" onclick="toggleDropdown()">Profiles</a>
-                <div id="dropdown-content" class="dropdown-content">
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles">All Profiles</a>
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles/family-tree/monsur-munshi/md-abdul-khaleque/">Md Abdul Khaleque</a>
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles/shariatunnesa-madina/">Shariatunnesa Madina</a>
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles/family-tree/monsur-munshi/md-abdul-khaleque/md-darul-ahmed/">Darul Ahmed</a>
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles/family-tree/monsur-munshi/md-abdul-khaleque/mashayekh-ahmed/">Mashayekh Ahmed</a>
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles/shafia-khatun/shariatunnesa-madina/lima-akter/">Lima Akter</a>
-                    <a href="https://madinamanjeeltv.wordpress.com/profiles/family-tree/monsur-munshi/md-abdul-khaleque/mashayekh-ahmed/ahmad-muttaqeen/">Ahmad Muttaqeen</a>
-                </div>
-            </div>
-            <a href="https://madinamanjeeltv.wordpress.com/archive">Archive</a>
-            <a href="https://mail.google.com/mail/">Email</a>
-        </div>
-    </div>
-    <p></p>
-   
     <title>Dirilis Ertugrul</title>
     <style>
         body {
@@ -281,18 +106,78 @@
             background: #ffe066;
             transform: translateY(-2px);
         }
+
+        /* Style for the season dropdown */
+        .season-select {
+            position: relative;
+            margin: 15px auto;
+            width: 200px;
+            text-align: center;
+        }
+        .season-button {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .season-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #222;
+            border: 1px solid #444;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            overflow: hidden;
+            display: none;
+            z-index: 10;
+        }
+        .season-dropdown a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .season-dropdown a:hover {
+            background-color: #444;
+        }
+        .season-button::after {
+            content: '\25BE'; /* Down arrow */
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
     <div class="playlist">
         <h2>Dirilis Ertugrul</h2>
         <div class="sticky-player">
-            <div class="video-title" id="current-video-title">Select a video to play</div>
-            <iframe id="player" src="" allowfullscreen></iframe>
+            <iframe id="player" src="" frameborder="0" allowfullscreen></iframe>
         </div>
+        <div class="video-title" id="current-video-title">Select a video to play</div>
+
+        <div class="season-select">
+            <button class="season-button" onclick="toggleSeasonDropdown()">
+                <span>Select Season</span>
+            </button>
+            <div id="seasonDropdown" class="season-dropdown">
+                <a href="https://madinamanjeeltv.github.io/family/ertugrul1.html">Season 1</a>
+                <a href="https://madinamanjeeltv.github.io/family/ertugrul2.html">Season 2</a>
+                <a href="https://madinamanjeeltv.github.io/family/ertugrul3.html">Season 3</a>
+                <a href="https://madinamanjeeltv.github.io/family/ertugrul4.html">Season 4</a>
+                <a href="https://madinamanjeeltv.github.io/family/ertugrul5.html">Season 5</a>
+            </div>
+        </div>
+
         <ul id="video-list">
-            <!-- Videos will be dynamically added here -->
-        </ul>
+            </ul>
     </div>
 
     <script>
@@ -371,7 +256,11 @@
 
         // Fetch and display videos on page load
         fetchVideos();
-    </script>
 
-  </html>
-       
+        function toggleSeasonDropdown() {
+            const dropdown = document.getElementById('seasonDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
