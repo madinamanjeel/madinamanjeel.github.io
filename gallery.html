@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Family Videos</title>
+  <title>Gallery</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,37 +58,54 @@
       transform: scale(1.05);
       box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
     }
+
+    #content-wrapper {
+      display: none;
+    }
+
+    #loading-message {
+      text-align: center;
+      padding-top: 50px;
+      font-size: 1.2em;
+      color: #555;
+    }
   </style>
 </head>
 <body>
-<p></p>
-  <div class="video-container">
-    <iframe
-      src="https://www.youtube.com/embed/r6A6YrtlkSk?autoplay=1"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
+  <div id="loading-message">
+    Verifying user... Please wait.
   </div>
 
-  <br>
+  <div id="content-wrapper">
+    <p></p>
+    <div class="video-container">
+      <iframe
+        src="https://www.youtube.com/embed/r6A6YrtlkSk?autoplay=1"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
 
-  <div class="newspaper">
-    <a href="https://photos.app.goo.gl/ESRWW2yjYjyubmeq9">Old Days</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1qkQmHzMiqOAh1Kz08Py6uK&amp;feature=shared">Events</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://photos.app.goo.gl/jYT42eN4V2GegLs29">Year 2011-2015</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://photos.app.goo.gl/4XihbWWSSZdTNC786">Year 2015-2020</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://photos.app.goo.gl/e8L7jM1CEwYXtYJU6">Year 2020-2025</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://photos.app.goo.gl/toAa2Seo5PdziGhZ9">Pets</a>
+    <br>
+
+    <div class="newspaper">
+      <a href="https://photos.app.goo.gl/ESRWW2yjYjyubmeq9">Old Days</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1qkQmHzMiqOAh1Kz08Py6uK&feature=shared">Events</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://photos.app.goo.gl/jYT42eN4V2GegLs29">Year 2011-2015</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://photos.app.goo.gl/4XihbWWSSZdTNC786">Year 2015-2020</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://photos.app.goo.gl/e8L7jM1CEwYXtYJU6">Year 2020-2025</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://photos.app.goo.gl/toAa2Seo5PdziGhZ9">Pets</a>
+    </div>
   </div>
 
   <script type="module">
@@ -128,18 +145,34 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
+    const contentWrapper = document.getElementById('content-wrapper');
+    const loadingMessage = document.getElementById('loading-message');
+
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+
+    if (hasLoggedInBefore === 'true') {
+      loadingMessage.style.display = 'none';
+      contentWrapper.style.display = 'block';
+    }
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const email = user.email;
-        if (!allowedEmails.includes(email)) {
+        if (allowedEmails.includes(email)) {
+          loadingMessage.style.display = 'none';
+          contentWrapper.style.display = 'block';
+          localStorage.setItem('hasLoggedIn', 'true');
+        } else {
           alert("Access denied for: " + email);
           window.location.href = "https://google.com";
         }
       } else {
+        if (hasLoggedInBefore !== 'true') {
+          loadingMessage.style.display = 'block';
+        }
         signInWithRedirect(auth, provider);
       }
     });
   </script>
-
 </body>
 </html>
