@@ -65,27 +65,45 @@
       font-size: 0.9rem;
       padding: 10px 0;
     }
+
+    /* নতুন CSS যোগ করা হয়েছে */
+    #content-wrapper {
+      display: none; /* প্রাথমিকভাবে কন্টেন্ট লুকানো থাকবে */
+    }
+
+    #loading-message {
+      text-align: center;
+      padding-top: 50px;
+      font-size: 1.2em;
+      color: #555;
+    }
   </style>
 </head>
 <body>
-    <p></p>
-  <div class="newspaper">
-    <a href="https://drive.google.com/drive/folders/12jC28ZunxnEXfOn6s8t_OgOLkVCWohlE">Album Photos</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://drive.google.com/drive/folders/1DVNg96Gvf3QR9v4YgfBpYrA96bqcIj-P">Old Mobile Footages</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://drive.google.com/drive/folders/1yt3xgA3PSa-BxUy8d1sn_KyHd9YXWeMp">Wedding: Darul & Afrin</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">Wedding: Mashayekh & Lima</a>
-  </div>
-  <div class="newspaper">
-    <a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a>
+  <div id="loading-message">
+    Accessing content... Please wait.
   </div>
 
-  <div id="user-info"></div>
+  <div id="content-wrapper">
+    <p></p>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/12jC28ZunxnEXfOn6s8t_OgOLkVCWohlE">Album Photos</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1DVNg96Gvf3QR9v4YgfBpYrA96bqcIj-P">Old Mobile Footages</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1yt3xgA3PSa-BxUy8d1sn_KyHd9YXWeMp">Wedding: Darul & Afrin</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">Wedding: Mashayekh & Lima</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a>
+    </div>
+
+    <div id="user-info"></div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
@@ -124,17 +142,40 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
+    const contentWrapper = document.getElementById('content-wrapper');
+    const loadingMessage = document.getElementById('loading-message');
+    const userInfo = document.getElementById('user-info'); // userInfo element টা ধরে রাখা হলো
+
+    // লোকাল স্টোরেজে লগইন স্ট্যাটাস চেক করুন
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+
+    if (hasLoggedInBefore === 'true') {
+      // যদি আগে লগইন করা থাকে, তাহলে সরাসরি কন্টেন্ট দেখান
+      loadingMessage.style.display = 'none';
+      contentWrapper.style.display = 'block';
+    }
+
     onAuthStateChanged(auth, (user) => {
-      const info = document.getElementById("user-info");
       if (user) {
         const email = user.email;
         if (allowedEmails.includes(email)) {
-          info.innerHTML = `Logged in as:<br>${email}`;
+          // ইউজার অনুমোদিত, কন্টেন্ট দেখাও
+          loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
+          contentWrapper.style.display = 'block'; // কন্টেন্ট দেখান
+          userInfo.innerHTML = `Logged in as:<br>${email}`; // user-info আপডেট করুন
+
+          // লোকাল স্টোরেজে লগইন স্ট্যাটাস সেট করুন
+          localStorage.setItem('hasLoggedIn', 'true');
         } else {
+          // ইউজার অনুমোদিত নয়
           alert("Access denied for " + email);
           window.location.href = "https://google.com";
         }
       } else {
+        // কোনো ইউজার লগইন নেই, লগইন প্রক্রিয়া শুরু করুন
+        if (hasLoggedInBefore !== 'true') {
+          loadingMessage.style.display = 'block'; // লোডিং মেসেজ দেখান, যদি আগে লগইন করা না থাকে
+        }
         signInWithRedirect(auth, provider);
       }
     });
