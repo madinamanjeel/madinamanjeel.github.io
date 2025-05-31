@@ -61,14 +61,13 @@
 
     #user-info {
       text-align: center;
-      color: #999; /* light gray */
+      color: #999;
       font-size: 0.9rem;
       padding: 10px 0;
     }
 
-    /* নতুন CSS যোগ করা হয়েছে */
     #content-wrapper {
-      display: none; /* প্রাথমিকভাবে কন্টেন্ট লুকানো থাকবে */
+      display: none;
     }
 
     #loading-message {
@@ -144,13 +143,11 @@
 
     const contentWrapper = document.getElementById('content-wrapper');
     const loadingMessage = document.getElementById('loading-message');
-    const userInfo = document.getElementById('user-info'); // userInfo element টা ধরে রাখা হলো
+    const userInfo = document.getElementById('user-info');
 
-    // লোকাল স্টোরেজে লগইন স্ট্যাটাস চেক করুন
     const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
 
     if (hasLoggedInBefore === 'true') {
-      // যদি আগে লগইন করা থাকে, তাহলে সরাসরি কন্টেন্ট দেখান
       loadingMessage.style.display = 'none';
       contentWrapper.style.display = 'block';
     }
@@ -159,22 +156,17 @@
       if (user) {
         const email = user.email;
         if (allowedEmails.includes(email)) {
-          // ইউজার অনুমোদিত, কন্টেন্ট দেখাও
-          loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
-          contentWrapper.style.display = 'block'; // কন্টেন্ট দেখান
-          userInfo.innerHTML = `Logged in as:<br>${email}`; // user-info আপডেট করুন
-
-          // লোকাল স্টোরেজে লগইন স্ট্যাটাস সেট করুন
+          loadingMessage.style.display = 'none';
+          contentWrapper.style.display = 'block';
+          userInfo.innerHTML = `Logged in as:<br>${email}`;
           localStorage.setItem('hasLoggedIn', 'true');
         } else {
-          // ইউজার অনুমোদিত নয়
-          alert("Access denied for " + email);
+          alert("Access denied for: " + email);
           window.location.href = "https://google.com";
         }
       } else {
-        // কোনো ইউজার লগইন নেই, লগইন প্রক্রিয়া শুরু করুন
         if (hasLoggedInBefore !== 'true') {
-          loadingMessage.style.display = 'block'; // লোডিং মেসেজ দেখান, যদি আগে লগইন করা না থাকে
+          loadingMessage.style.display = 'block';
         }
         signInWithRedirect(auth, provider);
       }
