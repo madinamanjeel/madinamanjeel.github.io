@@ -130,6 +130,15 @@
     const contentWrapper = document.getElementById('content-wrapper');
     const loadingMessage = document.getElementById('loading-message');
 
+    // লোকালে লগইন স্ট্যাটাস চেক করুন
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+
+    if (hasLoggedInBefore === 'true') {
+      // যদি আগে লগইন করা থাকে, তাহলে সরাসরি কন্টেন্ট দেখান
+      loadingMessage.style.display = 'none';
+      contentWrapper.style.display = 'block';
+    }
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const email = user.email;
@@ -137,6 +146,9 @@
           // ইউজার অনুমোদিত, কন্টেন্ট দেখাও
           loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
           contentWrapper.style.display = 'block'; // কন্টেন্ট দেখান
+
+          // লোকাল স্টোরেজে লগইন স্ট্যাটাস সেট করুন
+          localStorage.setItem('hasLoggedIn', 'true');
         } else {
           // ইউজার অনুমোদিত নয়
           alert("Access denied for: " + email);
@@ -144,7 +156,9 @@
         }
       } else {
         // কোনো ইউজার লগইন নেই, লগইন প্রক্রিয়া শুরু করুন
-        loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
+        if (hasLoggedInBefore !== 'true') {
+          loadingMessage.style.display = 'block'; // লোডিং মেসেজ দেখান, যদি আগে লগইন করা না থাকে
+        }
         signInWithRedirect(auth, provider);
       }
     });
