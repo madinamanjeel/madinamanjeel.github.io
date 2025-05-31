@@ -1,243 +1,240 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Madina Manjeel</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      padding: 15px;
-    }
-    .grid-item { text-align: center; position: relative; overflow: hidden; transition: transform 0.3s ease; }
-    .grid-item:hover { transform: scale(1.05); }
-    .grid-item img {
-      width: 90%;
-      height: auto;
-      border-radius: 8px;
-      transition: transform 0.3s ease;
-    }
-    .grid-item:hover img { transform: scale(1.1); }
-    .grid-item a {
-      display: block;
-      margin-top: 10px;
-      font-size: 18px;
-      text-decoration: none;
-      color: #003366;
-      transition: color 0.3s ease;
-    }
-    .grid-item a:hover { color: #ffcc00; }
-    .search-container {
-      text-align: center;
-      padding: 20px;
-      background-color: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .search-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform: scale(0.7);
-    }
-    .search-container form {
-      display: flex;
-      align-items: center;
-    }
-    .search-container input[type="text"] {
-      padding: 10px;
-      border: 2px solid #003366;
-      border-radius: 5px;
-      font-size: 16px;
-      width: 300px;
-    }
-    .search-container button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #003366;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-left: 10px;
-    }
-    .search-container button:hover { background-color: #ffcc00; }
-    .cover-photo {
-      text-align: center;
-      margin: 20px 0;
-    }
-    .cover-photo img {
-      width: 100%;
-      max-height: 400px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madina Manjeel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 items per line */
+            gap: 15px; /* Gap size between items */
+            padding: 15px; /* Padding around the grid */
+        }
+        .grid-item {
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover {
+            transform: scale(1.05); /* Slight zoom effect when hovering over grid items */
+        }
+        .grid-item img {
+            width: 90%; /* Reduced image size */
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        .grid-item:hover img {
+            transform: scale(1.1); /* Zoom effect on images in grid items */
+        }
+        .grid-item a {
+            display: block;
+            margin-top: 10px;
+            font-size: 18px;
+            text-decoration: none;
+            color: #003366;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .grid-item a:hover {
+            color: #ffcc00; /* Change color on hover */
+        }
+        .search-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .search-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.7); /* Reduce size by 30% */
+        }
+        .search-container form {
+            display: flex;
+            align-items: center;
+        }
+        .search-container input[type="text"] {
+            padding: 10px;
+            border: 2px solid #003366;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px; /* Set a fixed width for the search box */
+        }
+        .search-container button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #003366;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px; /* Space between input and button */
+        }
+        .search-container button:hover {
+            background-color: #ffcc00; /* Change to yellow on hover */
+        }
+        .cover-photo {
+            text-align: center;
+            margin: 20px 0; /* Space above and below the cover photo */
+        }
+        .cover-photo img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-  <div class="search-container">
-    <div class="search-wrapper">
-      <form action="https://www.google.com/search" method="get">
-        <input type="text" name="q" placeholder="Search Google..." required>
-        <button type="submit">Search</button>
-      </form>
+    <!-- Google search bar -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <form action="https://www.google.com/search" method="get">
+                <input type="text" name="q" placeholder="Search Google..." required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
     </div>
-  </div>
+<!--ইনএকটিভ
+    <video autoplay loop muted playsinline style="width:90%; height: 150px; display:block; margin:0 auto; background-color: white;" poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==">
+  <source src="cover.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+-->
 
-  <div class="grid-container">
-    <!-- All your existing grid-item blocks remain unchanged -->
-    <div class="grid-item">
-        <a href="https://m.facebook.com/groups/623079516760928/">
-            <img src="community.png" alt="community">
-            <span>Community</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="profile.html">
-            <img src="profileb.png" alt="Profiles">
-            <span>Profiles</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/gallery.html">
-            <img src="galleryb.png" alt="Gallery">
-            <span>Gallery</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/archive.html">
-            <img src="archiveb.png" alt="Archive">
-            <span>Archive</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/news.html">
-            <img src="news.png" alt="News">
-            <span>News</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="islamic.html">
-            <img src="islamic.png" alt="Islamic">
-            <span>Islamic</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/health.html">
-            <img src="health.png" alt="Health Care">
-            <span>Health Care</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/entertainment.html">
-            <img src="entertainment.png" alt="Entertainment">
-            <span>Entertainment</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://radio-bd.com/">
-            <img src="radio.png" alt="Radio">
-            <span>Radio</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/kids.html">
-            <img src="kids.png" alt="Kids Zone">
-            <span>Kids Zone</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/sports.html">
-            <img src="sports.png" alt="Sports">
-            <span>Sports</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/shopping.html">
-            <img src="shopping.png" alt="Shopping">
-            <span>Shopping</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="tools.html">
-            <img src="toolsb.png" alt="Tools">
-            <span>Tools</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://mail.google.com/mail">
-            <img src="email.png" alt="Email">
-            <span>Email</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="https://madinamanjeeltv.github.io/family/links.html">
-            <img src="linksb.png" alt="links">
-            <span>Links</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="management.html">
-            <img src="managementb.png" alt="Management">
-            <span>Management</span>
-        </a>
-    </div>
-    <div class="grid-item">
-        <a href="about.html">
-            <img src="aboutb.png" alt="about">
-            <span>About</span>
-        </a>
-    </div>
-  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithRedirect, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    <div class="grid-container">
+        <div class="grid-item">
+            <a href="https://m.facebook.com/groups/623079516760928/">
+                <img src="community.png" alt="community">
+                <span>Community</span>
+            </a>
+        </div>
+        
+        
+       
+        
+        
+        
+        
+        
+        <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/news.html">
+                <img src="news.png" alt="News">
+                <span>News</span>
+            </a>
+        </div>
+        <div class="grid-item">
+            <a href="islamic.html">
+                <img src="islamic.png" alt="Islamic">
+                <span>Islamic</span>
+            </a>
+        </div>
+    
+        <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/health.html">
+                <img src="health.png" alt="Health Care">
+                <span>Health Care</span>
+            </a>
+        </div>
+        
+        <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/entertainment.html">
+                <img src="entertainment.png" alt="Entertainment">
+                <span>Entertainment</span>
+            </a>
+        </div>
+        
+         <div class="grid-item">
+            <a href="https://radio-bd.com/">
+                <img src="radio.png" alt="Radio">
+                <span>Radio</span>
+            </a>
+        </div>
+        
+        
+        
+        <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/kids.html">
+                <img src="kids.png" alt="Kids Zone">
+                <span>Kids Zone</span>
+            </a>
+        </div>
+         <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/sports.html">
+                <img src="sports.png" alt="Sports">
+                <span>Sports</span>
+            </a>
+        </div>
+        
+     
+     <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/library.html">
+                <img src="library.png" alt="Sports">
+                <span>Library</span>
+            </a>
+        </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
-      authDomain: "family-429c7.firebaseapp.com",
-      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "family-429c7",
-      storageBucket: "family-429c7.firebasestorage.app",
-      messagingSenderId: "982876086618",
-      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-      measurementId: "G-R7NLCB1B92"
-    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
 
-    const allowedEmails = [
-      "mashayekh.ahmed.archives@gmail.com",
-      "mashayekh64@gmail.com",
-      "shariatunnesa.madina@gmail.com",
-      "abdulkhalequebaf@gmail.com",
-      "lima.akter.1323@gmail.com",
-      "ahmad.muttaqeen@gmail.com",
-      "nusaiba.jannat.alifa@gmail.com",
-      "afia.ahmed.adiba@gmail.com",
-      "darulahmed467170@gmail.com",
-      "madina.manjeel.tv@gmail.com"
-    ];
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const email = user.email;
-        if (!allowedEmails.includes(email)) {
-          alert("Access denied for " + email);
-          window.location.href = "https://www.google.com";
+         <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/shopping.html">
+                <img src="shopping.png" alt="Shopping">
+                <span>Shopping</span>
+            </a>
+        </div>
+        
+        
+         <div class="grid-item">
+            <a href="tools.html">
+                <img src="toolsb.png" alt="Tools">
+                <span>Tools</span>
+            </a>
+        </div>
+        
+        
+        <div class="grid-item">
+            <a href="https://mail.google.com/mail">
+                <img src="email.png" alt="Email">
+                <span>Email</span>
+            </a>
+        </div>
+        
+         <div class="grid-item">
+            <a href="https://madinamanjeeltv.github.io/family/links.html">
+                <img src="linksb.png" alt="links">
+                <span>Links</span>
+            </a>
+        </div>
+        
+              
+        
+        
+    </div>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
         }
-      } else {
-        signInWithRedirect(auth, provider);
-      }
-    });
-  </script>
+        iframe {
+            width: 100%;
+            border: none;
+            background-color: transparent;
+            overflow: hidden;
+        }
+    </style>
 </body>
 </html>
