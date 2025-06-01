@@ -1,113 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Our Heritage - Madina Manjeel</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      background-color: #2e7d32;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-      background-color: #fff;
-    }
-    h2 {
-      color: #2e7d32;
-      margin-top: 40px;
-    }
-    img, iframe {
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      margin: 20px 0;
-      display: block;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-    }
-    a {
-      color: #00796b;
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 15px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Heritage</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #555;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .story-section {
+            margin-bottom: 40px;
+        }
+        .story-section h2 {
+            color: #555;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .media-container {
+            display: block; /* Changed from flex */
+            margin-bottom: 15px;
+            /* flex-wrap: wrap; */ /* Removed */
+        }
+        .media {
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            width: 100%; /* Adjust as needed */
+            height: auto;
+            margin: 10px 0; /* Adjust top and bottom margin, remove side margin */
+        }
+        .media iframe {
+            border: none; /* Remove iframe border */
+        }
+        .media img, .media iframe {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: auto 16 / 9; /* Try to maintain aspect ratio for videos */
+        }
+        .clear {
+            clear: both;
+        }
+        .document-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .document-link a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .document-link a:hover {
+            background-color: #0056b3;
+        }
+        .video-embed-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Hide potential iframe overflow */
+        }
+        .video-embed-container iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: auto 16 / 9; /* Standard video aspect ratio */
+            border: none; /* Remove iframe border */
+        }
+        .map-embed-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Hide potential iframe overflow */
+        }
+        .map-embed-container iframe {
+            display: block;
+            width: 100%;
+            height: 450px; /* Set a fixed height for the map */
+            border: none; /* Remove iframe border */
+        }
+        .image-caption {
+            text-align: center;
+            font-size: small;
+            margin-top: 5px;
+            color: #777;
+        }
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
+            gap: 10px; /* Spacing between grid items */
+            margin-top: 20px;
+        }
+        .gallery-item {
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .gallery-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1; /* Maintain square aspect ratio for images */
+            object-fit: cover; /* Cover the container, potentially cropping */
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 100%;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;  /* ছবি আকারের উপযুক্ত সামঞ্জস্য বজায় রাখবে */
+            aspect-ratio: 4 / 3;  /* 4:3 রেশিও সুনিশ্চিত করবে */
+        }
+
+        .carousel-buttons {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .carousel-buttons button {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Our Heritage</h1>
-    <p>The Journey from Munshi Bari to Madina Manjeel</p>
-  </header>
-  <div class="container">
-    <p>In the quiet village of South Adampur stood a modest homestead known as <strong>Munshi Bari</strong>. Here lived <strong>Monsur Munshi</strong> with his wife <strong>Shafia Khatun</strong> and their three sons — <strong>Abdur Rob Munshi</strong>, <strong>Salam Munshi</strong>, and <strong>Md Abdul Khaleque</strong>.</p>
+    <div class="container">
+        <h1>Our Heritage</h1>
 
-    <iframe src="https://drive.google.com/file/d/17LIo8LIrd7IrIilQAehYtZoES_Q3HTvS/preview" allow="autoplay"></iframe>
-    <iframe src="https://drive.google.com/file/d/1q_K6kSJEWU1TPXzUz7n62qM7MYddeK0H/preview" allow="autoplay"></iframe>
+        <div class="story-section">
+            <h2>The Early Days in South Adampur</h2>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/dp20231122tripadampura1122nov11dadibarimunshibari7771267029913566448.jpg" alt="">
+                    <p class="image-caption">Munshi Bari (Original)</p>
+                </div>
+            </div>
+            <p>Our story begins in the village of South Adampur, where my grandfather, Monsur Munshi, lived with his wife, Shafia Khatun.</p>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/photoalbum2802829grandmotherdadiadampura5721755576750763318.jpg" alt="">
+                    <p class="image-caption">Shafia Khatun</p>
+                </div>
+            </div>
+            <p>They were the proud parents of three sons: Abdur Rob Munshi, Salam Munshi, and Md Abdul Khaleque. All of them were involved in agriculture.</p>
+            <div class="clear"></div>
+        </div>
 
-    <p><strong>Abdur Rob Munshi</strong> was known for his calm personality and wisdom, a respected figure in the locality.</p>
-    <iframe src="https://drive.google.com/file/d/184dhxtfHVLEyCtLxKHySZt1-B3WN-lwz/preview" allow="autoplay"></iframe>
+        <div class="story-section">
+            <h2>The Munshi Brothers</h2>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/familyalbum2816829relative28adampura29abdurrobmunshisalammunshiadampura2642174458761197898.jpg" alt="Family Album" style="max-width:100%;">
+                    <p class="image-caption">Abdur Rob Munshi & Salam Munshi</p>
+                </div>
+            </div>
+            <p>The eldest sons of Monsur Munshi and Shafia Khatun were Abdur Rob Munshi and Salam Munshi. They both dedicated their lives to agriculture, contributing to the family's livelihood through their hard work in the fields.</p>
+            <p>Tragedy struck early in the life of their younger brother, Md Abdul Khaleque, when he lost his father at a young age. Despite this hardship, he was determined to pursue education.</p>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/familyalbum2811529father7756338584651665100.jpg" alt="Family Album" style="max-width:100%;">
+                    <p class="image-caption">Abdul Khaleque Munshi</p>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
 
-    <p><strong>Salam Munshi</strong> played a key role in maintaining family bonds and the homestead.</p>
-    <iframe src="https://drive.google.com/file/d/1SnNJkT-pPM9E8ysNXoelv7hI8v-7mli-/preview" allow="autoplay"></iframe>
+        <div class="story-section">
+            <h2>Md Abdul Khaleque's Journey</h2>
+            <p>Through his own perseverance and hard work, Md Abdul Khaleque moved to Dhaka and enrolled in City College. While studying there, a significant turn occurred in his life as he joined the Bangladesh Air Force. He later married Shariatunnesa Madina, a daughter from the esteemed Talukdar Bari of Dashmina. Her parents were Fazlul Haque Mia and Umme Salma.</p>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/familyalbum2818729fathermotherdarul5273828476528808438.jpg" alt="Family Album" style="max-width:100%;">
+                    <p class="image-caption">Md Abdul Khaleque,Shariatunnesa Madina and Darul Ahmed</p>
+                </div>
+            </div>
+            <p>Together, Abdul Khaleque and Shariatunnesa were blessed with two sons, Darul Ahmed and Mashayekh Ahmed. Continuing the tradition of service, both Darul Ahmed and Mashayekh Ahmed followed in their father's footsteps and joined the Bangladesh Air Force in 2006 and 2010, respectively.</p>
+            <div class="clear"></div>
+        </div>
 
-    <p><strong>Shafia Khatun</strong> was a kind-hearted woman respected in the community.</p>
-    <iframe src="https://drive.google.com/file/d/1ZoHFcFBTR8vxlh8YopskgNuYngmAO7gj/preview" allow="autoplay"></iframe>
+        <div class="story-section">
+            <h2>The Foundation of Madina Manjeel</h2>
 
-    <p>They were a family deeply rooted in agriculture. Life changed dramatically when Md Abdul Khaleque lost his father in childhood. Defying odds, he pursued education and got admitted into City College in Dhaka. During his time there, he joined the <strong>Bangladesh Air Force</strong>.</p>
+            <p>A new landmark in our family's history was established on May 26, 2009, when Md Abdul Khaleque and Shariatunnesa Madina purchased twenty decimal of land in the Dashmina Upazila Sadar. Following Mashayekh Ahmed's joining the Air Force in 2010, they laid the foundation of what would become known as Madina Manjeel on this very land.</p>
+            <p>Initially, the family resided in an old tin house on the property.</p>
 
-    <p>He later married <strong>Shariatunnesa Madina</strong>, daughter of <strong>Fazlul Haque Mia</strong> and <strong>Umme Salma</strong> of Dashmina Talukdar Bari.</p>
-    <iframe src="https://drive.google.com/file/d/1EV4q2PLfeZnUw-hy8dVN9lSPuOJ4KUXm/preview" allow="autoplay"></iframe>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/20120511oldhousemadinamanjeelconstructiondashminadarul0511may281295027513041793760121.jpg" alt="" style="max-width:100%;">
+                    <p class="image-caption">Madina Manjeel (Old Tin House)</p>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
 
-    <p>The couple was blessed with two sons — <strong>Darul Ahmed</strong> and <strong>Mashayekh Ahmed</strong>, who followed in their father's footsteps and joined the Air Force in 2006 and 2010 respectively.</p>
+        <div class="story-section">
+            <h2>Building Madina Manjeel</h2>
+            <div class="media-container">
+                <div class="media">
+                    <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/20120511madinamanjeelconstructiondashminadarul0511may1144534552031114567.jpg" alt="" style="max-width:100%;">
+                    <p class="image-caption">Madina Manjeel (Construction Phase)</p>
+                </div>
+            </div>
+            <p>The journey to build a permanent structure was fraught with legal challenges. However, perseverance prevailed, and in 2016, they finally moved into their newly constructed building, establishing their permanent residence at Madina Manjeel.</p>
+            <p>To commemorate this significant milestone, a Dua (prayer) ceremony was organized on September 22, 2016.</p>
+            <div class="video-embed-container">
+                <iframe src="https://drive.google.com/file/d/1_2NGfZWML2DpBoa_iXqh9schn0Qjw3QJ/preview" frameborder="0" allowfullscreen></iframe>
+                <p style="text-align: center; font-size: small;">Dua Ceremony at Madina Manjeel (September 22, 2016)</p>
+            </div>
+            <p>The property initially consisted of a tin house, a ditch, and a pond. Over time, significant changes were made. The ditch was filled to make way for the new building.</p>
+            <div class="clear"></div>
+        </div>
 
-    <p>In 2009, they purchased 20 decimals of land in Dashmina from <strong>Mrs. Wajedunnesa</strong>. They initially lived in a tin-roofed house.</p>
-    <iframe src="https://drive.google.com/file/d/1zBRjzvzxuFCcSR7O-P0QaeALvOMPRdGy/preview" allow="autoplay"></iframe>
-    <iframe src="https://drive.google.com/file/d/13gygCkkh3DmdHOKDJ-yOYmQ91caXPn2U/preview" allow="autoplay"></iframe>
+        <div class="story-section">
+            <h2>Transformation and Growth</h2>
+            <p>More recently, in 2024, the pond was filled and transformed into a flourishing fruit orchard. This garden now boasts a variety of high-quality fruit trees and vegetables.</p>
+            <p>The family continued to grow. Darul Ahmed married Farjana Afrin in 2014, and they are now blessed with two daughters, Afia Ahmed Adiba and Nusaiba Jannat Alifa. Mashayekh Ahmed married Lima Akter, who hails from Bauphal, in 2022, and they have a son named Ahmad Muttaqeen.</p>
+        </div>
 
-    <p>With many legal struggles, the family laid the foundation of their new home — <strong>Madina Manjeel</strong> — in 2010. The construction went on for years.</p>
-    <iframe src="https://drive.google.com/file/d/1CB37oB5FCpt0-RtIP8d-i1Sn8rjPqaun/preview" allow="autoplay"></iframe>
-    <iframe src="https://drive.google.com/file/d/1QujDE-kfGf33LB9582ptPYTjGWBPxt35/preview" allow="autoplay"></iframe>
-    <iframe src="https://drive.google.com/file/d/18ZwJc6bsgxnVyITDFwhAWk_VhtkdC6W-/preview" allow="autoplay"></iframe>
+        <div class="story-section">
+            <h2>Present Day at Madina Manjeel</h2>
+            <p>Today, Madina Manjeel is equipped with modern security, including six CCTV cameras. The household also cherishes the company of various pets, including cockatiels, budgerigars, pigeons, ducks, and chickens, adding life and vibrancy to our family home.</p>
 
-    <p>On <strong>22nd September 2016</strong>, the family moved permanently into Madina Manjeel, celebrating the occasion with a prayer event.</p>
-    <iframe src="https://drive.google.com/file/d/1_2NGfZWML2DpBoa_iXqh9schn0Qjw3QJ/preview" allow="autoplay"></iframe>
 
-    <p>What once had a pond and a ditch now bloomed into a beautiful garden in 2024 — with mango, jackfruit, coconut, guava, rose, banana, drumstick trees and vegetables thriving together.</p>
+            <h2>Photo Gallery</h2>
 
-    <h2>Next Generation</h2>
-    <p>In 2014, <strong>Darul Ahmed</strong> married <strong>Farjana Afrin</strong>. They are proud parents of <strong>Afia Ahmed Adiba</strong> and <strong>Nusaiba Jannat Alifa</strong>.</p>
-    <p>In 2022, <strong>Mashayekh Ahmed</strong> married <strong>Lima Akter</strong> of Bauphal. Their son, <strong>Ahmad Muttaqeen</strong>, continues the family’s growing story.</p>
+<div class="carousel-container">
+    <div class="carousel-track" id="carouselTrack">
+        <div class="carousel-item">
+            <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/img202202180817051131980392564756044.jpg" alt="Adiba with cockatiel babies">
+            <p class="image-caption">Adiba with cockatiel babies</p>
+        </div>
+        <div class="carousel-item">
+            <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/20240616gardencoconutrearmadinamanjeel0616jun6793369765576408521.jpg" alt="Garden Coconut Tree">
+            <p class="image-caption">Garden Coconut Tree (Rear Side)</p>
+        </div>
+        <div class="carousel-item">
+            <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/20240615gardenmadinamanjeel0615jun1stjackfruit3kathal2589468834696878045.jpg" alt="Garden First Jackfruit">
+            <p class="image-caption">First Jackfruit from the Garden (2024)</p>
+        </div>
+        <div class="carousel-item">
+            <img src="https://madinamanjeelapp.wordpress.com/wp-content/uploads/2025/04/screenshot_2025-01-31-22-06-16-628_madina4580397634244701437.jpg" alt="Madina Manjeel Screenshot">
+            <p class="image-caption">Screenshot of Madina Manjeel App</p>
+        </div>
+    </div>
+    <div class="carousel-buttons">
+        <button onclick="moveSlide(-1)">‹</button>
+        <button onclick="moveSlide(1)">›</button>
+    </div>
+</div>
 
-    <h2>Home and Surroundings</h2>
-    <p>Today, Madina Manjeel is under full surveillance with 6 CCTV cameras and is home to birds like cockatiels, budgerigars, pigeons, ducks, and chickens.</p>
-    <iframe src="https://drive.google.com/file/d/1ojrgjSgUurGVU6T0IcNf-SRW9r18ahkK/preview" allow="autoplay"></iframe>
+<style>
+.carousel-container {
+    position: relative;
+    max-width: 100%;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-    <h2>Location</h2>
-    <p><strong>Madina Manjeel</strong><br>
-    House no: 227, Vill+PO+PS: Dashmina, Union: 4 no Dashmina, Ward no: 2</p>
-    <iframe 
-      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14774.00628097993!2d90.567563!3d22.281563!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDE2JzUzLjYiTiA5MMKwMzQnMDMuMiJF!5e0!3m2!1sen!2sbd!4v1712921840635!5m2!1sen!2sbd" 
-      width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
 
-    <h2>Documents</h2>
-    <p>Official records of the property and legacy can be accessed here:</p>
-    <p><a href="https://drive.google.com/drive/folders/1damaJczo1S1h0Sf71jJirFOKtZz8od31" target="_blank">Madina Manjeel Documents Folder</a></p>
-  </div>
+.carousel-item {
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;  /* ছবি আকারের উপযুক্ত সামঞ্জস্য বজায় রাখবে */
+    aspect-ratio: 4 / 3;  /* 4:3 রেশিও সুনিশ্চিত করবে */
+}
+
+.carousel-buttons {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.carousel-buttons button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+</style>
+
+<script>
+let currentIndex = 0;
+
+function moveSlide(direction) {
+    const track = document.getElementById('carouselTrack');
+    const totalSlides = track.children.length;
+    currentIndex += direction;
+
+    if (currentIndex < 0) currentIndex = totalSlides - 1;
+    if (currentIndex >= totalSlides) currentIndex = 0;
+
+    const slideWidth = track.clientWidth;
+    track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+}
+</script>
+
+
+
+
+
+
+        <div style="text-align: center; margin-top: 30px;">
+            <h3>Madina Manjeel Location</h3>
+            <div class="map-embed-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3679.797893888478!2d90.55358377421876!3d22.45388777963134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x37a5b4e0c8b8b8b8%3A0x9e9e9e9e9e9e9e9e!2sMadina%20Manzil!5e0!3m2!1sen!2sus!4v1712902987456!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <p style="text-align: center; font-size: small;">Map Location of Madina Manjeel</p>
+        </div>
+        
+        
+        
+        
+        
+
+        <div class="document-link">
+            <h3>Madina Manjeel Documents</h3>
+            <a href="https://drive.google.com/drive/folders/1damaJczo1S1h0Sf71jJirFOKtZz8od31" target="_blank">View Documents</a>
+        </div>
+    </div>
 </body>
 </html>
+
