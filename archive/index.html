@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archive</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      width: 90%;
+      margin: 0 auto;
+      background: #000;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .newspaper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .newspaper a {
+      display: inline-block;
+      width: 80%;
+      text-align: center;
+      padding: 10px;
+      background-color: #003366;
+      border: 1px solid #002244;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #FFFFFF;
+      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      background-image: linear-gradient(135deg, #003366, #002244);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .newspaper a:hover {
+      background-color: #002244;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+    }
+
+    #user-info {
+      text-align: center;
+      color: #999;
+      font-size: 0.9rem;
+      padding: 10px 0;
+    }
+
+    #content-wrapper {
+      display: none;
+    }
+
+    #loading-message {
+      text-align: center;
+      padding-top: 50px;
+      font-size: 1.2em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-message">
+    Verifying user... Please wait.
+  </div>
+
+  <div id="content-wrapper">
+    <p></p>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/12jC28ZunxnEXfOn6s8t_OgOLkVCWohlE">Album Photos</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1DVNg96Gvf3QR9v4YgfBpYrA96bqcIj-P">Old Mobile Footages</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1yt3xgA3PSa-BxUy8d1sn_KyHd9YXWeMp">Wedding: Darul & Afrin</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">Wedding: Mashayekh & Lima</a>
+    </div>
+    <div class="newspaper">
+      <a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a>
+    </div>
+
+    <div id="user-info"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithRedirect,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+      authDomain: "family-429c7.firebaseapp.com",
+      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "family-429c7",
+      storageBucket: "family-429c7.firebasestorage.app",
+      messagingSenderId: "982876086618",
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+      measurementId: "G-R7NLCB1B92"
+    };
+
+    const allowedEmails = [
+      "mashayekh.ahmed.archives@gmail.com",
+      "mashayekh64@gmail.com",
+      "shariatunnesa.madina@gmail.com",
+      "abdulkhalequebaf@gmail.com",
+      "lima.akter.1323@gmail.com",
+      "ahmad.muttaqeen@gmail.com",
+      "nusaiba.jannat.alifa@gmail.com",
+      "afia.ahmed.adiba@gmail.com",
+      "darulahmed467170@gmail.com",
+      "madina.manjeel.tv@gmail.com"
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const contentWrapper = document.getElementById('content-wrapper');
+    const loadingMessage = document.getElementById('loading-message');
+    const userInfo = document.getElementById('user-info');
+
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+
+    if (hasLoggedInBefore === 'true') {
+      loadingMessage.style.display = 'none';
+      contentWrapper.style.display = 'block';
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const email = user.email;
+        if (allowedEmails.includes(email)) {
+          loadingMessage.style.display = 'none';
+          contentWrapper.style.display = 'block';
+          userInfo.innerHTML = `Logged in as:<br>${email}`;
+          localStorage.setItem('hasLoggedIn', 'true');
+        } else {
+          alert("Access denied for: " + email);
+          window.location.href = "https://google.com";
+        }
+      } else {
+        if (hasLoggedInBefore !== 'true') {
+          loadingMessage.style.display = 'block';
+        }
+        signInWithRedirect(auth, provider);
+      }
+    });
+  </script>
+</body>
+</html>
