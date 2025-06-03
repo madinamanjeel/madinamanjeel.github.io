@@ -4,82 +4,313 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Tree (Protected)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    :root {
+      /* Dark Theme Variables */
+      --background-color: #1a1a2e; /* Deep dark blue */
+      --header-color: #e0b0ff; /* Light purple for headings */
+      --text-color: #ecf0f1; /* Off-white for general text */
+      --link-color-primary: #87ceeb; /* Sky blue for main links */
+      --link-color-secondary: #f08080; /* Light coral for spouse links */
+      --card-bg: #2c3e50; /* Darker blue for cards */
+      --card-border: #34495e; /* Slightly lighter dark blue for card borders */
+      --hover-bg: #34495e; /* Darker blue on hover */
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --tree-line-color: #6a89cc; /* Muted blue for tree lines */
+
+      /* Specific Link Colors (overriding general link colors) */
+      --color-monsur: #ffbb33; /* Orange-yellow */
+      --color-shafia: #ff6699; /* Pink */
+      --color-khaleque: #66cc99; /* Green */
+      --color-shariatunnesa: #9966cc; /* Purple */
+      --color-darul: #66ccff; /* Bright Blue */
+      --color-farjana: #ff9966; /* Peach */
+      --color-adiba: #c0d9fa; /* Light Blue */
+      --color-alifa: #c0d9fa; /* Light Blue */
+      --color-mashayekh: #99ffcc; /* Light Green */
+      --color-lima: #ffcc66; /* Light Orange */
+      --color-muttaqeen: #e6e6fa; /* Lavender */
+      --color-heritage: #a0f0a0; /* Soft Green for heritage link */
+    }
+
     body {
-      line-height: 1.8;
-      font-family: Arial, sans-serif;
-      position: relative;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, var(--background-color), #0f1a2a); /* Dark gradient */
       min-height: 100vh;
-      padding-bottom: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-color);
+      line-height: 1.6;
     }
 
-    a {
-      font-weight: bold;
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--header-color);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 3em;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
     }
-
-    a + a {
-      color: darkpink;
-    }
-
-    a[href="Monsur_Munshi.html"] { color: #964B00; }
-    a[href="Md_Abdul_Khaleque.html"] { color: darkgreen; }
-    a[href="Afia_Ahmed_Adiba.html"],
-    a[href="Ahmad_Muttaqeen.html"],
-    a[href="upcoming.html"] { color: #0f4c81; }
-    a[href="Darul_Ahmed.html"],
-    a[href="Mashayekh_Ahmed.html"] { color: blue; }
-    a[href="Shafia_Khatun.html"],
-    a[href="Shariatunnesa_Madina.html"],
-    a[href="Lima_Akter.html"],
-    a[href="Farjana_Afrin.html"] { color: #d80073; }
 
     h3 {
       text-align: center;
-      font-weight: bold;
-      text-decoration: underline;
+      font-weight: 700;
+      text-decoration: none; /* No underline by default */
+      margin-bottom: 25px;
+    }
+
+    h3 a {
+      color: var(--color-heritage);
+      text-decoration: none;
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+      font-size: 1.5em;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+
+    h3 a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px var(--color-heritage);
+      background-color: rgba(0, 0, 0, 0.4);
     }
 
     #content-wrapper {
-      display: none;
+      display: none; /* Hidden by default, shown by JS */
+      width: 100%;
+      max-width: 900px;
+      background-color: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 25px var(--shadow-color);
+      border: 1px solid var(--card-border);
     }
 
     #loading-message {
       text-align: center;
       padding-top: 50px;
-      font-size: 1.2em;
-      color: #555;
+      font-size: 1.5em;
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      min-height: 80vh;
+      justify-content: center;
+    }
+
+    #loading-message i {
+      font-size: 3em;
+      color: var(--header-color);
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      position: relative;
+    }
+
+    ul ul {
+      margin-left: 30px; /* Indent for nested lists */
+      position: relative;
+    }
+
+    ul ul::before {
+      content: '';
+      position: absolute;
+      left: -15px; /* Position the vertical line */
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: var(--tree-line-color);
+    }
+
+    li {
+      position: relative;
+      margin-bottom: 15px;
+      padding-left: 20px;
+    }
+
+    li::before {
+      content: '';
+      position: absolute;
+      left: -15px; /* Horizontal line from vertical line */
+      top: 1.2em; /* Align with text baseline */
+      width: 15px;
+      height: 2px;
+      background-color: var(--tree-line-color);
+    }
+
+    /* Remove horizontal line for first item of nested list */
+    ul ul > li:first-child::before {
+      top: 1.2em; /* Adjust to connect correctly */
+    }
+
+    .person-card {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 15px;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.08); /* Slightly transparent background */
+      box-shadow: 0 2px 8px var(--shadow-color);
+      transition: all 0.3s ease;
+      margin-right: 10px; /* Space between person cards */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .person-card:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 5px 15px var(--shadow-color);
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .person-card i {
+      margin-right: 8px;
+      font-size: 1.1em;
+    }
+
+    .person-card a {
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    /* Individual name colors applied via JS or inline style if needed */
+    a[href="Monsur_Munshi.html"] { color: var(--color-monsur); }
+    a[href="Shafia_Khatun.html"] { color: var(--color-shafia); }
+    a[href="Md_Abdul_Khaleque.html"] { color: var(--color-khaleque); }
+    a[href="Shariatunnesa_Madina.html"] { color: var(--color-shariatunnesa); }
+    a[href="Darul_Ahmed.html"] { color: var(--color-darul); }
+    a[href="Farjana_Afrin.html"] { color: var(--color-farjana); }
+    a[href="Afia_Ahmed_Adiba.html"] { color: var(--color-adiba); }
+    a[href="Nusaiba_Jannat_Alifa.html"] { color: var(--color-alifa); }
+    a[href="Mashayekh_Ahmed.html"] { color: var(--color-mashayekh); }
+    a[href="Lima_Akter.html"] { color: var(--color-lima); }
+    a[href="Ahmad_Muttaqeen.html"] { color: var(--color-muttaqeen); }
+    a[href="upcoming.html"] { color: var(--link-color-primary); } /* Default if not specified */
+
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 2.2em;
+        margin-bottom: 25px;
+      }
+      h3 a {
+        font-size: 1.2em;
+        padding: 4px 8px;
+      }
+      #content-wrapper {
+        padding: 20px;
+      }
+      ul ul {
+        margin-left: 20px;
+      }
+      ul ul::before {
+        left: -10px;
+      }
+      li::before {
+        left: -10px;
+        width: 10px;
+      }
+      .person-card {
+        padding: 6px 12px;
+        font-size: 0.9em;
+      }
+      .person-card i {
+        font-size: 1em;
+        margin-right: 5px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="loading-message">
-    Verifying user... Please wait.
+    <i class="fas fa-spinner"></i>
+    <p>Verifying user... Please wait.</p>
   </div>
 
   <div id="content-wrapper">
-    <h3><a href="https://madinamanjeel.github.io/profiles/heritage.html">Our Heritage</a></h3>
+    <h1><i class="fas fa-tree"></i> আমাদের পারিবারিক বৃক্ষ <i class="fas fa-heart"></i></h1>
+    <h3><a href="https://madinamanjeel.github.io/profiles/heritage.html"><i class="fas fa-book-reader"></i> আমাদের ঐতিহ্য</a></h3>
     <ul>
       <li>
-        <a href="Monsur_Munshi.html">Monsur Munshi</a> &
-        <a href="Shafia_Khatun.html">Shafia Khatun</a>
+        <div class="person-card">
+          <i class="fas fa-male"></i>
+          <a href="Monsur_Munshi.html">Monsur Munshi</a>
+        </div>
+        <div class="person-card">
+          <i class="fas fa-female"></i>
+          <a href="Shafia_Khatun.html">Shafia Khatun</a>
+        </div>
         <ul>
           <li>
-            <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a> &
-            <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
+            <div class="person-card">
+              <i class="fas fa-male"></i>
+              <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a>
+            </div>
+            <div class="person-card">
+              <i class="fas fa-female"></i>
+              <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
+            </div>
             <ul>
               <li>
-                <a href="Darul_Ahmed.html">Darul Ahmed</a> &
-                <a href="Farjana_Afrin.html">Farjana Afrin</a>
+                <div class="person-card">
+                  <i class="fas fa-male"></i>
+                  <a href="Darul_Ahmed.html">Darul Ahmed</a>
+                </div>
+                <div class="person-card">
+                  <i class="fas fa-female"></i>
+                  <a href="Farjana_Afrin.html">Farjana Afrin</a>
+                </div>
                 <ul>
-                  <li><a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a></li>
-                  <li><a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a></li>
+                  <li>
+                    <div class="person-card">
+                      <i class="fas fa-child"></i>
+                      <a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="person-card">
+                      <i class="fas fa-child"></i>
+                      <a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a>
+                    </div>
+                  </li>
                 </ul>
               </li>
               <li>
-                <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a> &
-                <a href="Lima_Akter.html">Lima Akter</a>
+                <div class="person-card">
+                  <i class="fas fa-male"></i>
+                  <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a>
+                </div>
+                <div class="person-card">
+                  <i class="fas fa-female"></i>
+                  <a href="Lima_Akter.html">Lima Akter</a>
+                </div>
                 <ul>
-                  <li><a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a></li>
+                  <li>
+                    <div class="person-card">
+                      <i class="fas fa-child"></i>
+                      <a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a>
+                    </div>
+                  </li>
                 </ul>
               </li>
             </ul>
@@ -129,11 +360,16 @@
     const contentWrapper = document.getElementById('content-wrapper');
     const loadingMessage = document.getElementById('loading-message');
 
+    // Check if user has previously logged in successfully
     const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
 
     if (hasLoggedInBefore === 'true') {
+      // If previously logged in, show content immediately
       loadingMessage.style.display = 'none';
       contentWrapper.style.display = 'block';
+    } else {
+      // Otherwise, show loading message initially
+      loadingMessage.style.display = 'flex'; // Use flex for centering content
     }
 
     onAuthStateChanged(auth, (user) => {
@@ -142,16 +378,18 @@
         if (allowedEmails.includes(email)) {
           loadingMessage.style.display = 'none';
           contentWrapper.style.display = 'block';
-          localStorage.setItem('hasLoggedIn', 'true');
+          localStorage.setItem('hasLoggedIn', 'true'); // Mark as logged in
         } else {
-          alert("Access denied for: " + email);
+          alert("Access denied for: " + email + ". Redirecting to Google.");
           window.location.href = "https://google.com";
         }
       } else {
+        // If no user is logged in and not previously logged in, initiate sign-in
         if (hasLoggedInBefore !== 'true') {
-          loadingMessage.style.display = 'block';
+          signInWithRedirect(auth, provider);
         }
-        signInWithRedirect(auth, provider);
+        // If hasLoggedInBefore is true, content is already shown, and we wait for user.
+        // This handles cases where user might clear local storage or session expires.
       }
     });
   </script>
