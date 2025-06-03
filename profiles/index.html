@@ -3,311 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Family Tree (Protected)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>Simple Family Tree (Protected)</title>
   <style>
-    :root {
-      /* Light Theme Variables (White Background) */
-      --background-color: #f8f9fa; /* Very light grey/off-white */
-      --header-color: #343a40; /* Dark grey for headings */
-      --text-color: #495057; /* Medium grey for general text */
-      --link-color-default: #007bff; /* Standard blue for links */
-      --main-content-bg: #ffffff; /* Pure white for content area */
-      --main-content-border: #dee2e6; /* Light grey border for content area */
-      --hover-color: #0056b3; /* Darker blue on link hover */
-      --shadow-color: rgba(0, 0, 0, 0.1);
-      --tree-line-color: #6c757d; /* Medium grey for tree lines */
-
-      /* Specific Link Colors for clear distinction */
-      --color-monsur: #8B4513; /* SaddleBrown */
-      --color-shafia: #C71585; /* MediumVioletRed */
-      --color-khaleque: #228B22; /* ForestGreen */
-      --color-shariatunnesa: #800080; /* Purple */
-      --color-darul: #1E90FF; /* DodgerBlue */
-      --color-farjana: #FF6347; /* Tomato */
-      --color-adiba: #4682B4; /* SteelBlue */
-      --color-alifa: #4682B4; /* SteelBlue */
-      --color-mashayekh: #3CB371; /* MediumSeaGreen */
-      --color-lima: #FF8C00; /* DarkOrange */
-      --color-muttaqeen: #6A5ACD; /* SlateBlue */
-      --color-heritage: #20c997; /* Teal for heritage link */
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-      background-color: var(--background-color);
+      line-height: 1.8;
+      font-family: Arial, sans-serif;
+      position: relative;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text-color);
-      line-height: 1.6;
+      padding-bottom: 3rem;
     }
 
-    h1 {
-      font-family: 'Playfair Display', serif;
-      color: var(--header-color);
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 3em;
-      font-weight: 700;
-      letter-spacing: 1.5px;
+    a {
+      font-weight: bold;
     }
+
+    a + a {
+      color: darkpink;
+    }
+
+    a[href="Monsur_Munshi.html"] { color: #964B00; }
+    a[href="Md_Abdul_Khaleque.html"] { color: darkgreen; }
+    a[href="Afia_Ahmed_Adiba.html"],
+    a[href="Ahmad_Muttaqeen.html"],
+    a[href="upcoming.html"] { color: #0f4c81; }
+    a[href="Darul_Ahmed.html"],
+    a[href="Mashayekh_Ahmed.html"] { color: blue; }
+    a[href="Shafia_Khatun.html"],
+    a[href="Shariatunnesa_Madina.html"],
+    a[href="Lima_Akter.html"],
+    a[href="Farjana_Afrin.html"] { color: #d80073; }
 
     h3 {
       text-align: center;
-      font-weight: 700;
-      text-decoration: none;
-      margin-bottom: 25px;
+      font-weight: bold;
+      text-decoration: underline;
     }
 
-    h3 a {
-      color: var(--color-heritage);
-      text-decoration: none;
-      transition: color 0.3s ease, background-color 0.3s ease;
-      font-size: 1.5em;
-      padding: 8px 15px;
-      border-radius: 8px;
-      background-color: #e9f5ef; /* Light background for heritage link */
-      box-shadow: 0 2px 5px var(--shadow-color);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #c3e6cb; /* Light green border */
-    }
-
-    h3 a:hover {
-      color: #1a1a1a;
-      background-color: #d4edda; /* Darker green on hover */
-    }
-
+    /* নতুন CSS */
     #content-wrapper {
-      display: none; /* Hidden by default, shown by JS */
-      width: 100%;
-      max-width: 900px;
-      background-color: var(--main-content-bg);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 25px var(--shadow-color);
-      border: 1px solid var(--main-content-border);
+      display: none; /* প্রাথমিকভাবে কন্টেন্ট লুকানো থাকবে */
     }
 
     #loading-message {
       text-align: center;
       padding-top: 50px;
-      font-size: 1.5em;
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      min-height: 80vh;
-      justify-content: center;
-    }
-
-    #loading-message i {
-      font-size: 3em;
-      color: var(--link-color-default);
-      animation: spin 2s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-      position: relative;
-    }
-
-    /* Vertical line for nested lists (generations) */
-    ul ul {
-      margin-left: 40px; /* Indent for nested lists */
-      position: relative;
-    }
-
-    ul ul::before {
-      content: '';
-      position: absolute;
-      left: -20px; /* Position the vertical line */
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background-color: var(--tree-line-color);
-    }
-
-    /* Common style for all list items */
-    li {
-      position: relative;
-      margin-bottom: 15px; /* Spacing between list items */
-      padding-left: 25px; /* Padding for content to align with line */
-      font-size: 1.15em; /* Slightly larger text for names */
-      font-weight: 600; /* Good readability */
-      display: flex; /* Use flexbox to align icon and text */
-      align-items: center; /* Center vertically */
-      gap: 10px; /* Space between icon and text */
-    }
-
-    /* Horizontal line for individual list items */
-    li::before {
-      content: '';
-      position: absolute;
-      left: -20px; /* Horizontal line from vertical line */
-      top: 1.1em; /* Align with text baseline */
-      width: 20px;
-      height: 2px;
-      background-color: var(--tree-line-color);
-    }
-
-    /* Adjust horizontal line for the first item of a nested list to connect correctly */
-    ul ul > li:first-child::before {
-      top: 1.1em;
-    }
-
-    li a {
-      text-decoration: none;
-      font-weight: 700; /* Ensure name is bold */
-      transition: color 0.3s ease;
-      display: inline-block; /* Allow padding and sizing */
-      padding: 5px 0; /* Vertical padding for clickability */
-    }
-
-    /* Specific link colors for names */
-    a[href="Monsur_Munshi.html"] { color: var(--color-monsur); }
-    a[href="Shafia_Khatun.html"] { color: var(--color-shafia); }
-    a[href="Md_Abdul_Khaleque.html"] { color: var(--color-khaleque); }
-    a[href="Shariatunnesa_Madina.html"] { color: var(--color-shariatunnesa); }
-    a[href="Darul_Ahmed.html"] { color: var(--color-darul); }
-    a[href="Farjana_Afrin.html"] { color: var(--color-farjana); }
-    a[href="Afia_Ahmed_Adiba.html"] { color: var(--color-adiba); }
-    a[href="Nusaiba_Jannat_Alifa.html"] { color: var(--color-alifa); }
-    a[href="Mashayekh_Ahmed.html"] { color: var(--color-mashayekh); }
-    a[href="Lima_Akter.html"] { color: var(--color-lima); }
-    a[href="Ahmad_Muttaqeen.html"] { color: var(--color-muttaqeen); }
-    a[href="upcoming.html"] { color: var(--link-color-default); } /* Default if not specified */
-
-    li a:hover {
-        color: var(--hover-color);
-        text-decoration: underline; /* Add underline on hover for clear feedback */
-    }
-
-    li i {
-      font-size: 1.2em; /* Icon size slightly smaller but still clear */
-      color: var(--text-color); /* General icon color */
-    }
-
-    /* Specific icon colors for male/female/child might be added here if desired */
-    li .fa-male { color: var(--color-khaleque); } /* Example: Male icons green */
-    li .fa-female { color: var(--color-shafia); } /* Example: Female icons pink */
-    li .fa-child { color: var(--color-adiba); } /* Example: Child icons blue */
-
-
-    /* Couples alignment: THIS IS WHERE THE MAIN CHANGE IS */
-    .couple {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap; /* Allow wrapping on small screens */
-        gap: 15px; /* Space between names */
-        /* Note: For the .couple div itself, no ::before is needed.
-           The li containing the couple will have the horizontal line if it's a child. */
-    }
-
-    .couple > li { /* Target direct children li of .couple */
-        margin-bottom: 0; /* Remove extra margin for individual list items inside couple */
-        padding-left: 0; /* No padding needed here for individual names */
-        gap: 8px; /* Slightly less gap for individual names in couple */
-    }
-
-    .couple > li::before { /* Remove the horizontal line for individual names within a couple */
-        display: none;
-    }
-
-
-    @media (max-width: 768px) {
-      body {
-        padding: 15px;
-      }
-      h1 {
-        font-size: 2.2em;
-        margin-bottom: 25px;
-      }
-      h3 a {
-        font-size: 1.2em;
-        padding: 6px 12px;
-      }
-      #content-wrapper {
-        padding: 20px;
-      }
-      ul ul {
-        margin-left: 25px; /* Adjusted indent for smaller screens */
-      }
-      ul ul::before {
-        left: -15px;
-      }
-      li {
-        margin-bottom: 10px;
-        padding-left: 20px;
-        font-size: 1em;
-      }
-      li::before {
-        left: -15px;
-        width: 15px;
-        top: 1.0em;
-      }
-      li i {
-        font-size: 1em;
-      }
-      .couple {
-          gap: 10px;
-      }
+      font-size: 1.2em;
+      color: #555;
     }
   </style>
 </head>
 <body>
   <div id="loading-message">
-    <i class="fas fa-spinner"></i>
-    <p>Verifying user... Please wait.</p>
+    Accessing family tree... Please wait.
   </div>
 
   <div id="content-wrapper">
-    <h1><i class="fas fa-tree"></i> আমাদের পারিবারিক বৃক্ষ <i class="fas fa-heart"></i></h1>
-    <h3><a href="https://madinamanjeel.github.io/profiles/heritage.html"><i class="fas fa-book-reader"></i> আমাদের ঐতিহ্য</a></h3>
+    <h3><a href="heritage.html">Our Heritage</a></h3>
     <ul>
       <li>
-        <div class="couple">
-          <li><i class="fas fa-male"></i><a href="Monsur_Munshi.html">Monsur Munshi</a></li>
-          <li><i class="fas fa-female"></i><a href="Shafia_Khatun.html">Shafia Khatun</a></li>
-        </div>
+        <a href="Monsur_Munshi.html">Monsur Munshi</a> &
+        <a href="Shafia_Khatun.html">Shafia Khatun</a>
         <ul>
           <li>
-            <div class="couple">
-              <li><i class="fas fa-male"></i><a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a></li>
-              <li><i class="fas fa-female"></i><a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a></li>
-            </div>
+            <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a> &
+            <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
             <ul>
               <li>
-                <div class="couple">
-                  <li><i class="fas fa-male"></i><a href="Darul_Ahmed.html">Darul Ahmed</a></li>
-                  <li><i class="fas fa-female"></i><a href="Farjana_Afrin.html">Farjana Afrin</a></li>
-                </div>
+                <a href="Darul_Ahmed.html">Darul Ahmed</a> &
+                <a href="Farjana_Afrin.html">Farjana Afrin</a>
                 <ul>
-                  <li><i class="fas fa-child"></i><a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a></li>
-                  <li><i class="fas fa-child"></i><a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a></li>
+                  <li><a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a></li>
+                  <li><a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a></li>
                 </ul>
               </li>
               <li>
-                <div class="couple">
-                  <li><i class="fas fa-male"></i><a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a></li>
-                  <li><i class="fas fa-female"></i><a href="Lima_Akter.html">Lima Akter</a></li>
-                </div>
+                <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a> &
+                <a href="Lima_Akter.html">Lima Akter</a>
                 <ul>
-                  <li><i class="fas fa-child"></i><a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a></li>
+                  <li><a href="Ahmad_Muttaqeen.html">Ahmad Muttaqeen</a></li>
                 </ul>
               </li>
             </ul>
@@ -357,30 +130,22 @@
     const contentWrapper = document.getElementById('content-wrapper');
     const loadingMessage = document.getElementById('loading-message');
 
-    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
-
-    if (hasLoggedInBefore === 'true') {
-      loadingMessage.style.display = 'none';
-      contentWrapper.style.display = 'block';
-    } else {
-      loadingMessage.style.display = 'flex';
-    }
-
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const email = user.email;
         if (allowedEmails.includes(email)) {
-          loadingMessage.style.display = 'none';
-          contentWrapper.style.display = 'block';
-          localStorage.setItem('hasLoggedIn', 'true');
+          // ইউজার অনুমোদিত, কন্টেন্ট দেখাও
+          loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
+          contentWrapper.style.display = 'block'; // কন্টেন্ট দেখান
         } else {
-          alert("Access denied for: " + email + ". Redirecting to Google.");
+          // ইউজার অনুমোদিত নয়
+          alert("Access denied for: " + email);
           window.location.href = "https://google.com";
         }
       } else {
-        if (hasLoggedInBefore !== 'true') {
-          signInWithRedirect(auth, provider);
-        }
+        // কোনো ইউজার লগইন নেই, লগইন প্রক্রিয়া শুরু করুন
+        loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
+        signInWithRedirect(auth, provider);
       }
     });
   </script>
