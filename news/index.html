@@ -3,161 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News</title>
+    <title>News & Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            /* Dark Mode default colors */
+            --primary-bg-dark: #1a1a2e; /* Very dark blue/purple */
+            --gradient-start: #16213e; /* Darker blue */
+            --gradient-end: #0f3460; /* Even darker blue */
+            --card-bg-dark: #2c3e50; /* Slightly lighter dark blue */
+            --text-color-dark: #ecf0f1; /* Light grey for text */
+            --accent-color-news: #ffcc00; /* Yellow for news icons */
+            --accent-color-weather: #87ceeb; /* Sky blue for weather */
+            --accent-color-general: #9b59b6; /* Purple for general links */
+            --shadow-dark: rgba(0, 0, 0, 0.4);
+            --shadow-hover-dark: rgba(0, 0, 0, 0.6);
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
             padding: 20px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-color-dark);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
-        .grid-item {
+
+        h1 {
+            color: var(--text-color-dark);
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease;
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .grid-item:hover {
-            transform: scale(1.05); /* Slight zoom effect when hovering over grid items */
-        }
-        .grid-item img {
+
+        .grid-container {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05); /* Slightly transparent background for the grid */
+            border-radius: 15px;
+            box-shadow: 0 10px 20px var(--shadow-dark);
         }
-        .grid-item:hover img {
-            transform: scale(1.1); /* Zoom effect on images in grid items */
-        }
-        .grid-item a {
-            display: block;
-            margin-top: 10px;
-            font-size: 18px;
+
+        .link-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--card-bg-dark);
+            color: var(--text-color-dark);
+            border-radius: 12px;
             text-decoration: none;
-            color: #003366;
-            position: relative;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px var(--shadow-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .link-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 24px var(--shadow-hover-dark);
+            background-color: #3f5771; /* Slightly lighter on hover in dark mode */
+        }
+
+        .link-card i {
+            font-size: 2.5em;
+            margin-bottom: 15px;
             transition: color 0.3s ease;
         }
-        .grid-item a:hover {
-            color: #ffcc00; /* Change color on hover */
+
+        /* Specific icon colors */
+        .link-card.news i {
+            color: var(--accent-color-news); /* Yellow for news icons */
         }
-        /* Google search bar styling */
-        .search-container {
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .link-card.weather i {
+            color: var(--accent-color-weather); /* Sky blue for weather */
         }
-        .search-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: scale(0.7); /* Reduce size by 30% */
+        .link-card.general i {
+            color: var(--accent-color-general); /* Purple for general links */
         }
-        .search-container form {
-            display: flex;
-            align-items: center;
-        }
-        .search-container input[type="text"] {
-            padding: 10px;
-            border: 2px solid #003366;
-            border-radius: 5px;
-            font-size: 16px;
-            width: 300px; /* Set a fixed width for the search box */
-        }
-        .search-container button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #003366;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-left: 10px; /* Space between input and button */
-        }
-        .search-container button:hover {
-            background-color: #ffcc00; /* Change to yellow on hover */
-        }
-        .newspaper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        .newspaper a {
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-            padding: 10px;
-            background-color: #003366;
-            border: 1px solid #002244;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #FFFFFF;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            background-image: linear-gradient(135deg, #003366, #002244);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .newspaper a:hover {
-            background-color: #002244;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2em;
+                margin-bottom: 30px;
+            }
+            .grid-container {
+                grid-template-columns: 1fr; /* Stack items on small screens */
+                padding: 15px;
+            }
+            .link-card {
+                font-size: 1em;
+                padding: 15px;
+            }
+            .link-card i {
+                font-size: 2em;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <br></br>
-    <a href="https://youtube.com/@gtvnewsupdate/videos">
-        <img src="gtv.jpg" alt="GTV News" style="width:100%; max-width:600px;">
-    </a>
-    <p></p>
+   
 
-    <div class="newspaper">
-        <a href="https://www.bbc.com/bengali">BBC Bangla</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://www.prothomalo.com/">Daily Prothom Alo</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://www.kalerkantho.com/">Kaler Kantho</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://www.bd-pratidin.com/">Bangladesh Pratidin</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://www.jugantor.com/">Daily Jugantor</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://www.ittefaq.com.bd/">Daily Ittefaq</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://www.mzamin.com/">Daily Manobjamin</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://samakal.com/">Daily Shomokal</a>
+    <div class="grid-container">
+        <a href="https://www.bbc.com/bengali" class="link-card news">
+            <i class="fas fa-globe"></i> BBC Bangla
+        </a>
+        <a href="https://www.prothomalo.com/" class="link-card news">
+            <i class="fas fa-scroll"></i> Daily Prothom Alo
+        </a>
+        <a href="https://www.kalerkantho.com/" class="link-card news">
+            <i class="fas fa-newspaper"></i> Kaler Kantho
+        </a>
+        <a href="https://www.bd-pratidin.com/" class="link-card news">
+            <i class="fas fa-book-open"></i> Bangladesh Pratidin
+        </a>
+        <a href="https://www.jugantor.com/" class="link-card news">
+            <i class="fas fa-cloud-sun"></i> Daily Jugantor
+        </a>
+        <a href="https://www.ittefaq.com.bd/" class="link-card news">
+            <i class="fas fa-clipboard"></i> Daily Ittefaq
+        </a>
+        <a href="https://www.mzamin.com/" class="link-card news">
+            <i class="fas fa-list-alt"></i> Daily Manobjamin
+        </a>
+        <a href="https://samakal.com/" class="link-card news">
+            <i class="fas fa-stream"></i> Daily Shomokal
+        </a>
+        <a href="https://www.dainikamadershomoy.com/" class="link-card news">
+            <i class="fas fa-history"></i> Amader Shomoy
+        </a>
+        <a href="https://met.baf.mil.bd" class="link-card weather">
+            <i class="fas fa-cloud-sun-rain"></i> BAF Weather Report
+        </a>
     </div>
 
-    <div class="newspaper">
-        <a href="https://www.dainikamadershomoy.com/">Amader Shomoy</a>
-    </div>
-    <div class="newspaper">
-        <a href="https://met.baf.mil.bd">BAF Weather Report</a>
-    </div>
-    <br></br>
 </body>
 </html>
