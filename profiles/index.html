@@ -4,35 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Tree (Protected)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     :root {
-      /* Dark Theme Variables */
-      --background-color: #1a1a2e; /* Deep dark blue */
-      --header-color: #e0b0ff; /* Light purple for headings */
-      --text-color: #ecf0f1; /* Off-white for general text */
-      --link-color-primary: #87ceeb; /* Sky blue for main links */
-      --link-color-secondary: #f08080; /* Light coral for spouse links */
-      --card-bg: #2c3e50; /* Darker blue for cards */
-      --card-border: #34495e; /* Slightly lighter dark blue for card borders */
-      --hover-bg: #34495e; /* Darker blue on hover */
-      --shadow-color: rgba(0, 0, 0, 0.4);
-      --tree-line-color: #6a89cc; /* Muted blue for tree lines */
+      /* Light Theme Variables (White Background) */
+      --background-color: #f8f9fa; /* Very light grey/off-white */
+      --header-color: #343a40; /* Dark grey for headings */
+      --text-color: #495057; /* Medium grey for general text */
+      --link-color-default: #007bff; /* Standard blue for links */
+      --card-bg: #ffffff; /* Pure white for cards */
+      --card-border: #dee2e6; /* Light grey border */
+      --hover-bg: #e9ecef; /* Slightly darker grey on hover */
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --tree-line-color: #6c757d; /* Medium grey for tree lines */
 
-      /* Specific Link Colors (overriding general link colors) */
-      --color-monsur: #ffbb33; /* Orange-yellow */
-      --color-shafia: #ff6699; /* Pink */
-      --color-khaleque: #66cc99; /* Green */
-      --color-shariatunnesa: #9966cc; /* Purple */
-      --color-darul: #66ccff; /* Bright Blue */
-      --color-farjana: #ff9966; /* Peach */
-      --color-adiba: #c0d9fa; /* Light Blue */
-      --color-alifa: #c0d9fa; /* Light Blue */
-      --color-mashayekh: #99ffcc; /* Light Green */
-      --color-lima: #ffcc66; /* Light Orange */
-      --color-muttaqeen: #e6e6fa; /* Lavender */
-      --color-heritage: #a0f0a0; /* Soft Green for heritage link */
+      /* Specific Link Colors for clear distinction */
+      --color-monsur: #8B4513; /* SaddleBrown */
+      --color-shafia: #C71585; /* MediumVioletRed */
+      --color-khaleque: #228B22; /* ForestGreen */
+      --color-shariatunnesa: #800080; /* Purple */
+      --color-darul: #1E90FF; /* DodgerBlue */
+      --color-farjana: #FF6347; /* Tomato */
+      --color-adiba: #4682B4; /* SteelBlue */
+      --color-alifa: #4682B4; /* SteelBlue */
+      --color-mashayekh: #3CB371; /* MediumSeaGreen */
+      --color-lima: #FF8C00; /* DarkOrange */
+      --color-muttaqeen: #6A5ACD; /* SlateBlue */
+      --color-heritage: #20c997; /* Teal for heritage link */
     }
 
     body {
@@ -40,7 +39,7 @@
       margin: 0;
       padding: 20px;
       box-sizing: border-box;
-      background: linear-gradient(135deg, var(--background-color), #0f1a2a); /* Dark gradient */
+      background-color: var(--background-color);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -57,31 +56,33 @@
       font-size: 3em;
       font-weight: 700;
       letter-spacing: 1.5px;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
     }
 
     h3 {
       text-align: center;
       font-weight: 700;
-      text-decoration: none; /* No underline by default */
+      text-decoration: none;
       margin-bottom: 25px;
     }
 
     h3 a {
       color: var(--color-heritage);
       text-decoration: none;
-      transition: color 0.3s ease, text-shadow 0.3s ease;
+      transition: color 0.3s ease, background-color 0.3s ease;
       font-size: 1.5em;
-      padding: 5px 10px;
+      padding: 8px 15px;
       border-radius: 8px;
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: #e9f5ef; /* Light background for heritage link */
       box-shadow: 0 2px 5px var(--shadow-color);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #c3e6cb; /* Light green border */
     }
 
     h3 a:hover {
-      color: #ffffff;
-      text-shadow: 0 0 10px var(--color-heritage);
-      background-color: rgba(0, 0, 0, 0.4);
+      color: #1a1a1a;
+      background-color: #d4edda; /* Darker green on hover */
     }
 
     #content-wrapper {
@@ -110,7 +111,7 @@
 
     #loading-message i {
       font-size: 3em;
-      color: var(--header-color);
+      color: var(--link-color-default);
       animation: spin 2s linear infinite;
     }
 
@@ -126,14 +127,14 @@
     }
 
     ul ul {
-      margin-left: 30px; /* Indent for nested lists */
+      margin-left: 40px; /* Increased indent for nested lists */
       position: relative;
     }
 
     ul ul::before {
       content: '';
       position: absolute;
-      left: -15px; /* Position the vertical line */
+      left: -20px; /* Position the vertical line */
       top: 0;
       bottom: 0;
       width: 2px;
@@ -142,55 +143,59 @@
 
     li {
       position: relative;
-      margin-bottom: 15px;
-      padding-left: 20px;
+      margin-bottom: 20px; /* Increased spacing between list items */
+      padding-left: 25px; /* Increased padding to align with line */
     }
 
     li::before {
       content: '';
       position: absolute;
-      left: -15px; /* Horizontal line from vertical line */
-      top: 1.2em; /* Align with text baseline */
-      width: 15px;
+      left: -20px; /* Horizontal line from vertical line */
+      top: 1.5em; /* Align with text baseline */
+      width: 20px;
       height: 2px;
       background-color: var(--tree-line-color);
     }
 
     /* Remove horizontal line for first item of nested list */
     ul ul > li:first-child::before {
-      top: 1.2em; /* Adjust to connect correctly */
+      top: 1.5em; /* Adjust to connect correctly */
     }
 
     .person-card {
       display: inline-flex;
       align-items: center;
-      padding: 8px 15px;
-      border-radius: 20px;
-      background-color: rgba(255, 255, 255, 0.08); /* Slightly transparent background */
-      box-shadow: 0 2px 8px var(--shadow-color);
+      padding: 10px 20px; /* Increased padding */
+      border-radius: 25px; /* More rounded corners */
+      background-color: var(--card-bg);
+      box-shadow: 0 4px 12px var(--shadow-color);
       transition: all 0.3s ease;
-      margin-right: 10px; /* Space between person cards */
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-right: 15px; /* Space between person cards */
+      border: 1px solid var(--card-border);
+      font-size: 1.1em; /* Slightly larger text */
+      font-weight: 700; /* Bolder names */
+      cursor: pointer; /* Indicate clickability */
     }
 
     .person-card:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 5px 15px var(--shadow-color);
-      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      background-color: var(--hover-bg);
     }
 
     .person-card i {
-      margin-right: 8px;
-      font-size: 1.1em;
+      margin-right: 10px; /* Increased space for icon */
+      font-size: 1.3em; /* Larger icon */
+      color: var(--link-color-default); /* Default icon color */
     }
 
     .person-card a {
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700; /* Ensure name is bold */
       transition: color 0.3s ease;
     }
 
-    /* Individual name colors applied via JS or inline style if needed */
+    /* Individual name colors for distinction */
     a[href="Monsur_Munshi.html"] { color: var(--color-monsur); }
     a[href="Shafia_Khatun.html"] { color: var(--color-shafia); }
     a[href="Md_Abdul_Khaleque.html"] { color: var(--color-khaleque); }
@@ -202,7 +207,7 @@
     a[href="Mashayekh_Ahmed.html"] { color: var(--color-mashayekh); }
     a[href="Lima_Akter.html"] { color: var(--color-lima); }
     a[href="Ahmad_Muttaqeen.html"] { color: var(--color-muttaqeen); }
-    a[href="upcoming.html"] { color: var(--link-color-primary); } /* Default if not specified */
+    a[href="upcoming.html"] { color: var(--link-color-default); } /* Default if not specified */
 
 
     @media (max-width: 768px) {
@@ -215,28 +220,34 @@
       }
       h3 a {
         font-size: 1.2em;
-        padding: 4px 8px;
+        padding: 6px 12px;
       }
       #content-wrapper {
         padding: 20px;
       }
       ul ul {
-        margin-left: 20px;
+        margin-left: 25px; /* Adjusted indent for smaller screens */
       }
       ul ul::before {
-        left: -10px;
+        left: -15px;
+      }
+      li {
+        margin-bottom: 15px;
+        padding-left: 20px;
       }
       li::before {
-        left: -10px;
-        width: 10px;
+        left: -15px;
+        width: 15px;
+        top: 1.4em;
       }
       .person-card {
-        padding: 6px 12px;
-        font-size: 0.9em;
+        padding: 8px 15px;
+        font-size: 1em;
+        margin-right: 8px;
       }
       .person-card i {
-        font-size: 1em;
-        margin-right: 5px;
+        font-size: 1.1em;
+        margin-right: 8px;
       }
     }
   </style>
@@ -321,6 +332,7 @@
   </div>
 
   <script type="module">
+    // Firebase SDK Version 11.8.1 (as per your original request)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
     import {
       getAuth,
@@ -360,16 +372,13 @@
     const contentWrapper = document.getElementById('content-wrapper');
     const loadingMessage = document.getElementById('loading-message');
 
-    // Check if user has previously logged in successfully
     const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
 
     if (hasLoggedInBefore === 'true') {
-      // If previously logged in, show content immediately
       loadingMessage.style.display = 'none';
       contentWrapper.style.display = 'block';
     } else {
-      // Otherwise, show loading message initially
-      loadingMessage.style.display = 'flex'; // Use flex for centering content
+      loadingMessage.style.display = 'flex';
     }
 
     onAuthStateChanged(auth, (user) => {
@@ -378,18 +387,15 @@
         if (allowedEmails.includes(email)) {
           loadingMessage.style.display = 'none';
           contentWrapper.style.display = 'block';
-          localStorage.setItem('hasLoggedIn', 'true'); // Mark as logged in
+          localStorage.setItem('hasLoggedIn', 'true');
         } else {
           alert("Access denied for: " + email + ". Redirecting to Google.");
           window.location.href = "https://google.com";
         }
       } else {
-        // If no user is logged in and not previously logged in, initiate sign-in
         if (hasLoggedInBefore !== 'true') {
           signInWithRedirect(auth, provider);
         }
-        // If hasLoggedInBefore is true, content is already shown, and we wait for user.
-        // This handles cases where user might clear local storage or session expires.
       }
     });
   </script>
