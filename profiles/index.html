@@ -126,6 +126,7 @@
       position: relative;
     }
 
+    /* Vertical line for nested lists (generations) */
     ul ul {
       margin-left: 40px; /* Indent for nested lists */
       position: relative;
@@ -141,10 +142,11 @@
       background-color: var(--tree-line-color);
     }
 
+    /* Common style for all list items */
     li {
       position: relative;
       margin-bottom: 15px; /* Spacing between list items */
-      padding-left: 25px; /* Padding to align with line */
+      padding-left: 25px; /* Padding for content to align with line */
       font-size: 1.15em; /* Slightly larger text for names */
       font-weight: 600; /* Good readability */
       display: flex; /* Use flexbox to align icon and text */
@@ -152,6 +154,7 @@
       gap: 10px; /* Space between icon and text */
     }
 
+    /* Horizontal line for individual list items */
     li::before {
       content: '';
       position: absolute;
@@ -162,9 +165,9 @@
       background-color: var(--tree-line-color);
     }
 
-    /* Remove horizontal line for first item of nested list */
+    /* Adjust horizontal line for the first item of a nested list to connect correctly */
     ul ul > li:first-child::before {
-      top: 1.1em; /* Adjust to connect correctly */
+      top: 1.1em;
     }
 
     li a {
@@ -205,23 +208,24 @@
     li .fa-child { color: var(--color-adiba); } /* Example: Child icons blue */
 
 
-    /* Couples alignment */
+    /* Couples alignment: THIS IS WHERE THE MAIN CHANGE IS */
     .couple {
         display: flex;
         align-items: center;
         flex-wrap: wrap; /* Allow wrapping on small screens */
         gap: 15px; /* Space between names */
-        margin-bottom: 10px; /* Space below couple if next is child */
+        /* Note: For the .couple div itself, no ::before is needed.
+           The li containing the couple will have the horizontal line if it's a child. */
     }
 
-    .couple li {
+    .couple > li { /* Target direct children li of .couple */
         margin-bottom: 0; /* Remove extra margin for individual list items inside couple */
-        padding-left: 0;
+        padding-left: 0; /* No padding needed here for individual names */
         gap: 8px; /* Slightly less gap for individual names in couple */
     }
 
-    .couple li::before {
-        display: none; /* Hide individual list item lines for couple */
+    .couple > li::before { /* Remove the horizontal line for individual names within a couple */
+        display: none;
     }
 
 
