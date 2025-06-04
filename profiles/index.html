@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Family Tree (Protected)</title>
+  <title>Family Tree (Protected)</title>
   <style>
     body {
       line-height: 1.8;
@@ -39,9 +39,8 @@
       text-decoration: underline;
     }
 
-    /* নতুন CSS */
     #content-wrapper {
-      display: none; /* প্রাথমিকভাবে কন্টেন্ট লুকানো থাকবে */
+      display: none;
     }
 
     #loading-message {
@@ -54,11 +53,11 @@
 </head>
 <body>
   <div id="loading-message">
-    Accessing family tree... Please wait.
+    Verifying user... Please wait.
   </div>
 
   <div id="content-wrapper">
-    <h3><a href="heritage.html">Our Heritage</a></h3>
+    <h3><a href="https://madinamanjeel.github.io/profiles/heritage.html">Our Heritage</a></h3>
     <ul>
       <li>
         <a href="Monsur_Munshi.html">Monsur Munshi</a> &
@@ -130,21 +129,28 @@
     const contentWrapper = document.getElementById('content-wrapper');
     const loadingMessage = document.getElementById('loading-message');
 
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+
+    if (hasLoggedInBefore === 'true') {
+      loadingMessage.style.display = 'none';
+      contentWrapper.style.display = 'block';
+    }
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const email = user.email;
         if (allowedEmails.includes(email)) {
-          // ইউজার অনুমোদিত, কন্টেন্ট দেখাও
-          loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
-          contentWrapper.style.display = 'block'; // কন্টেন্ট দেখান
+          loadingMessage.style.display = 'none';
+          contentWrapper.style.display = 'block';
+          localStorage.setItem('hasLoggedIn', 'true');
         } else {
-          // ইউজার অনুমোদিত নয়
           alert("Access denied for: " + email);
           window.location.href = "https://google.com";
         }
       } else {
-        // কোনো ইউজার লগইন নেই, লগইন প্রক্রিয়া শুরু করুন
-        loadingMessage.style.display = 'none'; // লোডিং মেসেজ লুকান
+        if (hasLoggedInBefore !== 'true') {
+          loadingMessage.style.display = 'block';
+        }
         signInWithRedirect(auth, provider);
       }
     });
