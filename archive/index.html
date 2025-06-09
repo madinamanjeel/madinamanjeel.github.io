@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,66 +8,63 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       box-sizing: border-box;
-    }
-
-    .video-container {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-      width: 90%;
-      margin: 0 auto;
-      background: #000;
-    }
-
-    .video-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    .newspaper {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    .newspaper a {
-      display: inline-block;
-      width: 80%;
-      text-align: center;
-      padding: 10px;
-      background-color: #003366;
-      border: 1px solid #002244;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 18px;
-      color: #FFFFFF;
-      transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      background-image: linear-gradient(135deg, #003366, #002244);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .newspaper a:hover {
-      background-color: #002244;
-      transform: scale(1.05);
-      box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
-    }
-
-    #user-info {
-      text-align: center;
-      color: #999;
-      font-size: 0.9rem;
-      padding: 10px 0;
+      background-color: #f4f4f9;
+      color: #333;
     }
 
     #content-wrapper {
       display: none;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #003366;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+
+    .archive-index {
+      display: flex;
+      flex-direction: column;
+      gap: 12px; /* Links will have space between them */
+    }
+
+    .archive-index a {
+      display: block;
+      padding: 12px 18px;
+      background-color: #f9f9f9;
+      border-left: 5px solid #005a9c;
+      text-decoration: none;
+      font-size: 16px;
+      color: #333;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .archive-index a:hover {
+      background-color: #e9f5ff;
+      border-left-color: #003366;
+      transform: translateX(5px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      color: #003366;
+    }
+    
+    #user-info {
+      text-align: center;
+      color: #888;
+      font-size: 0.9rem;
+      padding: 20px 0 0;
+      margin-top: 20px;
+      border-top: 1px solid #eee;
     }
 
     #loading-message {
@@ -84,42 +81,17 @@
   </div>
 
   <div id="content-wrapper">
-    <p></p>
-    <div class="newspaper">
+    <h1>Archive Index</h1>
+    <div class="archive-index">
       <a href="https://drive.google.com/drive/folders/12jC28ZunxnEXfOn6s8t_OgOLkVCWohlE">Album Photos</a>
-    </div>
-    <div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1DVNg96Gvf3QR9v4YgfBpYrA96bqcIj-P">Old Mobile Footages</a>
-    </div>
-    <div class="newspaper">
       <a href="https://drive.google.com/drive/folders/10-YNXwvBqW15vhHwvuXnEMuyVCrwuRAl">Wedding: Darul & Afrin</a>
-    </div>
-<div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1RzBRB5F7EfM_h2joccDm7beiL49HetG7">2015 Sylhet Visit</a>
-    </div>
-
-<div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1mdXiSbBc7CQ_WJ35Q0yc2QllQdtallab">2016 Sylhet Visit</a>
-    </div>
-
-<div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1vVYB7EoDI6753EdNvp4rWgD3yhYNMn5d">2016 Memories</a>
-    </div>
-
-<div class="newspaper">
       <a href="https://drive.google.com/drive/folders/14igyRla6ruep8CGiFDzR-snf-EDZJLiz">2017 Memories</a>
-    </div>
-
-    <div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">Wedding: Mashayekh & Lima</a>
-    </div>
-
-<div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1kYhtam-dcrkRZmLkj1Up1V0l8hs8aQMj">2022 Umrah visit</a>
-    </div>
-
-
-    <div class="newspaper">
       <a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a>
     </div>
 
