@@ -25,34 +25,37 @@
     }
 
     h1 {
-      text-align: center;
+      /* Changes as per your request */
+      text-align: left; /* Left-aligned */
+      font-size: 16px; /* Same size as links */
+      font-weight: bold; /* Making it bold to stand out a bit */
       color: #333;
       border-bottom: 1px solid #e0e0e0;
       padding-bottom: 10px;
-      margin-bottom: 25px;
-      font-size: 1.8em;
+      margin-bottom: 20px;
     }
 
-    /* This is the new index style */
+    /* Changes for the list */
     .archive-index {
-      list-style-type: decimal; /* Ensures numbers are shown */
-      padding-left: 30px; /* Space for the numbers */
+      list-style-type: none; /* Removes numbers/bullets */
+      padding-left: 0; /* Aligns list to the very left */
+      margin: 0;
     }
 
     .archive-index li {
-      margin-bottom: 12px; /* Space between each list item */
-      font-size: 16px;
+      margin-bottom: 12px;
     }
 
     .archive-index a {
-      color: #0056b3; /* A standard blue link color */
-      text-decoration: none; /* No underline by default */
+      font-size: 16px;
+      color: #0056b3;
+      text-decoration: none;
       transition: color 0.2s;
     }
 
     .archive-index a:hover {
-      color: #003d82; /* Darker blue on hover */
-      text-decoration: underline; /* Underline on hover for clarity */
+      color: #003d82;
+      text-decoration: underline;
     }
     
     #user-info {
@@ -78,8 +81,8 @@
   </div>
 
   <div id="content-wrapper">
-    <h1>Archive Index</h1>
-    <ol class="archive-index">
+    <h1>Index</h1>
+    <ul class="archive-index">
       <li><a href="https://drive.google.com/drive/folders/12jC28ZunxnEXfOn6s8t_OgOLkVCWohlE">Album Photos</a></li>
       <li><a href="https://drive.google.com/drive/folders/1DVNg96Gvf3QR9v4YgfBpYrA96bqcIj-P">Old Mobile Footages</a></li>
       <li><a href="https://drive.google.com/drive/folders/10-YNXwvBqW15vhHwvuXnEMuyVCrwuRAl">Wedding: Darul & Afrin</a></li>
@@ -90,7 +93,7 @@
       <li><a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">Wedding: Mashayekh & Lima</a></li>
       <li><a href="https://drive.google.com/drive/folders/1kYhtam-dcrkRZmLkj1Up1V0l8hs8aQMj">2022 Umrah visit</a></li>
       <li><a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a></li>
-    </ol>
+    </ul>
 
     <div id="user-info"></div>
   </div>
