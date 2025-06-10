@@ -1,84 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Page</title>
-    <style>
-        /* Responsive Video Container */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            width: 90%;
-            max-width: 800px;
-            margin: 0 auto;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>আমাদের লাইব্রেরি</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Button Styles */
-        .newspaper {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-        }
-        .newspaper a {
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-            padding: 12px;
-            background-color: #003366;
-            border: 1px solid #002244;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #FFFFFF;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            background-image: linear-gradient(135deg, #003366, #002244);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .newspaper a:hover {
-            background-color: #002244;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
-        }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 30px 10px;
+    }
 
-        /* Responsive Adjustments */
-        @media (max-width: 600px) {
-            .newspaper a {
-                width: 90%;
-                font-size: 16px;
-                padding: 10px;
-            }
-        }
-    </style>
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+
+    .library-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .book-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .book-card a {
+      text-decoration: none;
+      color: #2c3e50;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .book-card p {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<br></br>
-  
-    <div class="newspaper">
-        <a href="https://nctb.portal.gov.bd/site/page/d01e72b0-8ecd-4c81-bffd-c9e117b7fdad/-">পাঠ্যপুস্তক ২০২৫</a>
-    </div>
 
-    <div class="newspaper">
-        <a href="https://drive.google.com/drive/folders/14acaVXqqTKDmRp7HZhwNQo24Hn2SqKXg">ইসলামিক বই</a>
-    </div>
+<header>
+  <h1>📚 আমাদের লাইব্রেরি</h1>
+  <p>বাছাই করা পাঠ্যপুস্তক ও জনপ্রিয় বইসমূহ এক জায়গায়</p>
+</header>
 
-    
-<div class="newspaper">
-        <a href="https://drive.google.com/drive/folders/14S04CpAqBJvUho4IEHY-AGjlzb1SQ2fc">তিন গোয়েন্দা সিরিজ</a>
-    </div>
-    <br></br>
+<div class="library-container">
+  <div class="book-card">
+    <a href="https://nctb.portal.gov.bd/site/page/d01e72b0-8ecd-4c81-bffd-c9e117b7fdad/-">পাঠ্যপুস্তক ২০২৫</a>
+    <p>জাতীয় শিক্ষাক্রম অনুযায়ী বইসমূহ</p>
+  </div>
 
- 
+  <div class="book-card">
+    <a href="https://drive.google.com/drive/folders/14acaVXqqTKDmRp7HZhwNQo24Hn2SqKXg">ইসলামিক বই</a>
+    <p>ইসলামী জ্ঞানভিত্তিক পুস্তক সংগ্রহ</p>
+  </div>
+
+  <div class="book-card">
+    <a href="https://drive.google.com/drive/folders/14S04CpAqBJvUho4IEHY-AGjlzb1SQ2fc">তিন গোয়েন্দা সিরিজ</a>
+    <p>জনপ্রিয় কিশোর উপন্যাস সিরিজ</p>
+  </div>
+</div>
+
 </body>
 </html>
