@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎉 এন্টারটেইনমেন্ট জোন</title>
+  <title>Entertainment Zone</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      background-color: #f9f9f9;
       color: #333;
     }
 
     header {
-      background-color: #ff5e57;
-      color: white;
+      background-color: #ffffff;
+      color: #222;
       text-align: center;
       padding: 40px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
     header h1 {
@@ -28,6 +29,7 @@
     header p {
       font-size: 1.1rem;
       margin-top: 10px;
+      color: #666;
     }
 
     .link-grid {
@@ -40,25 +42,24 @@
     }
 
     .entertainment-card {
-      background-color: #ffffffcc;
-      backdrop-filter: blur(4px);
-      border-radius: 15px;
+      background-color: #fff;
+      border-radius: 12px;
       padding: 20px;
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
     }
 
     .entertainment-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
     }
 
     .entertainment-card a {
       text-decoration: none;
       font-size: 1.2rem;
-      font-weight: bold;
-      color: #e84393;
+      font-weight: 600;
+      color: #1a73e8;
     }
 
     .video-section {
@@ -71,9 +72,10 @@
       height: 0;
       overflow: hidden;
       max-width: 800px;
-      margin: 20px auto;
-      border-radius: 15px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      margin: 30px auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background-color: #000;
     }
 
     .video-container iframe {
