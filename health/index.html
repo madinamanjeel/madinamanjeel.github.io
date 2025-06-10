@@ -34,32 +34,25 @@
       background-color: #f1f8f4;
     }
 
-    .search-container form {
+    .search-link {
       display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       max-width: 500px;
+      padding: 12px 20px;
+      font-size: 16px;
+      text-decoration: none;
+      color: #2e7d32;
+      background-color: #ffffff;
       border: 1px solid #c8e6c9;
       border-radius: 30px;
-      overflow: hidden;
-      background-color: white;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: background-color 0.3s;
     }
 
-    .search-container input {
-      flex: 1;
-      border: none;
-      padding: 12px 15px;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .search-container button {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      padding: 0 20px;
-      font-size: 18px;
-      cursor: pointer;
+    .search-link:hover {
+      background-color: #e0f2f1;
     }
 
     .video-container {
@@ -121,16 +114,12 @@
 </head>
 <body>
 
-  <header>
-    <h1>Health & Wellness Resources</h1>
-  </header>
-
+  
   <!-- Arogga Search -->
   <div class="search-container">
-    <form action="https://arogga.com/search" method="GET" target="_blank">
-      <input type="text" name="q" placeholder="Search Arogga medicines..." required />
-      <button type="submit">🔍</button>
-    </form>
+    <a href="https://m.arogga.com/search" target="_blank" class="search-link">
+      🔍 Search medicines
+    </a>
   </div>
 
   <!-- YouTube Playlist -->
