@@ -8,17 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            /* Dark Mode default colors */
-            --primary-bg-dark: #1a1a2e; /* Very dark blue/purple */
-            --gradient-start: #16213e; /* Darker blue */
-            --gradient-end: #0f3460; /* Even darker blue */
-            --card-bg-dark: #2c3e50; /* Slightly lighter dark blue */
-            --text-color-dark: #ecf0f1; /* Light grey for text */
-            --accent-color-news: #ffcc00; /* Yellow for news icons */
-            --accent-color-weather: #87ceeb; /* Sky blue for weather */
-            --accent-color-general: #9b59b6; /* Purple for general links */
-            --shadow-dark: rgba(0, 0, 0, 0.4);
-            --shadow-hover-dark: rgba(0, 0, 0, 0.6);
+            /* Light Mode colors */
+            --primary-bg-light: #f0f2f5; /* Very light grey/blue */
+            --gradient-start-light: #e0e5ec; /* Lighter grey */
+            --gradient-end-light: #f9f9f9; /* Near white */
+            --card-bg-light: #ffffff; /* Pure white for cards */
+            --text-color-light: #333333; /* Dark grey for text */
+            --accent-color-news-light: #e67e22; /* Orange for news icons */
+            --accent-color-weather-light: #3498db; /* Blue for weather */
+            --accent-color-general-light: #8e44ad; /* Darker purple for general links */
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-hover-light: rgba(0, 0, 0, 0.2);
+            --border-light: #dcdcdc; /* Light grey border */
+            --hover-bg-light: #f8f8f8; /* Slightly off-white on hover */
         }
 
         body {
@@ -26,23 +28,24 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            /* Using light mode gradient for background */
+            background: linear-gradient(135deg, var(--gradient-start-light), var(--gradient-end-light));
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: var(--text-color-dark);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            color: var(--text-color-light); /* Light mode text color */
+            text-shadow: none; /* No text shadow for light mode */
         }
 
         h1 {
-            color: var(--text-color-dark);
+            color: var(--text-color-light); /* Light mode text color */
             text-align: center;
             margin-bottom: 40px;
             font-size: 2.8em;
             font-weight: 700;
             letter-spacing: 1.5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Subtle shadow for heading */
         }
 
         .grid-container {
@@ -52,9 +55,10 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.05); /* Slightly transparent background for the grid */
+            background-color: var(--primary-bg-light); /* Lighter background for the grid container */
             border-radius: 15px;
-            box-shadow: 0 10px 20px var(--shadow-dark);
+            box-shadow: 0 10px 20px var(--shadow-light); /* Lighter shadow */
+            border: 1px solid var(--border-light); /* Added border for definition */
         }
 
         .link-card {
@@ -64,21 +68,21 @@
             justify-content: center;
             text-align: center;
             padding: 20px;
-            background-color: var(--card-bg-dark);
-            color: var(--text-color-dark);
+            background-color: var(--card-bg-light); /* White for cards */
+            color: var(--text-color-light); /* Dark text on cards */
             border-radius: 12px;
             text-decoration: none;
             font-size: 1.1em;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 8px var(--shadow-dark);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 8px var(--shadow-light); /* Lighter shadow */
+            border: 1px solid var(--border-light); /* Light border for cards */
         }
 
         .link-card:hover {
             transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 24px var(--shadow-hover-dark);
-            background-color: #3f5771; /* Slightly lighter on hover in dark mode */
+            box-shadow: 0 12px 24px var(--shadow-hover-light); /* Lighter hover shadow */
+            background-color: var(--hover-bg-light); /* Slight background change on hover */
         }
 
         .link-card i {
@@ -87,15 +91,15 @@
             transition: color 0.3s ease;
         }
 
-        /* Specific icon colors */
+        /* Specific icon colors for light theme */
         .link-card.news i {
-            color: var(--accent-color-news); /* Yellow for news icons */
+            color: var(--accent-color-news-light); /* Orange for news icons */
         }
         .link-card.weather i {
-            color: var(--accent-color-weather); /* Sky blue for weather */
+            color: var(--accent-color-weather-light); /* Blue for weather */
         }
         .link-card.general i {
-            color: var(--accent-color-general); /* Purple for general links */
+            color: var(--accent-color-general-light); /* Darker purple for general links */
         }
 
         /* Responsive adjustments */
@@ -123,7 +127,7 @@
     </style>
 </head>
 <body>
-   
+    
 
     <div class="grid-container">
         <a href="https://www.bbc.com/bengali" class="link-card news">
