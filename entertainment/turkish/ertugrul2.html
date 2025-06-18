@@ -189,7 +189,8 @@
         let currentIndex = 0;
 
         async function fetchVideos() {
-            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)&orderBy=name`;
+            // এখানে pageSize=200 যোগ করা হয়েছে
+            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)&orderBy=name&pageSize=200`;
             try {
                 const response = await fetch(url);
                 const data = await response.json();
