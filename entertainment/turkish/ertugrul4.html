@@ -4,175 +4,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dirilis Ertugrul</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* CSS Variables for easy theme management */
+        :root {
+            --background-tex: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            --primary-bg: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --accent-gold: #c5a47e;
+            --accent-gold-hover: #e0bb95;
+            --text-light: #f5f5f5;
+            --text-dark: #333;
+            --border-color: #444;
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Lora', serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: var(--font-body);
             margin: 0;
             padding: 0;
-            background-color: #000; /* Dark black background */
-            color: white;
+            background-color: var(--primary-bg);
+            background-image: var(--background-tex);
+            color: var(--text-light);
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #222;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gold-hover);
+        }
+
         .playlist {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 10px;
-            background: #111; /* Dark background for the playlist container */
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        .playlist h2 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 0;
-            color: #ffcc00;
-            text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00;
-            background: #111; /* Dark background */
-            padding: 10px 0;
+        
+        .sticky-top-section {
             position: sticky;
             top: 0;
-            z-index: 300;
-            border-bottom: 1px solid #444;
+            z-index: 1000;
+            background: var(--container-bg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
-        .sticky-player {
-            position: sticky;
-            top: 50px; /* Below the title */
-            z-index: 200;
-            background: #111; /* Dark background */
-            padding: 10px 0;
-            border-bottom: 1px solid #333;
+        
+        .series-banner img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--accent-gold);
         }
-        .video-title {
+
+        .playlist h2 {
+            font-family: var(--font-title);
             text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 5px;
-            padding: 10px;
-            color: white;
-            background: #111; /* Dark background */
-            border-bottom: 1px solid #444;
+            font-size: 1.7em;
+            margin: 0;
+            padding: 20px 0;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px rgba(197, 164, 126, 0.5);
+            letter-spacing: 2px;
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
         }
+        
+        .sticky-player {
+            padding: 10px;
+        }
+
         iframe {
             display: block;
             width: 100%;
             aspect-ratio: 16 / 9;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            background: #000; /* Dark black background for iframe */
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: #000;
         }
+
+        .video-title {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            padding: 15px;
+            color: var(--text-light);
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--border-color);
+        }
+
         #video-list {
             list-style: none;
-            padding: 0;
+            padding: 15px 20px;
             margin: 0;
         }
+
         .video-item {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            margin: 10px 0;
-            background: #222; /* Dark background for video items */
-            border-radius: 10px;
-            cursor: pointer;
-            transition: box-shadow 0.3s ease, transform 0.2s ease;
-            border: 2px solid transparent;
-        }
-        .video-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 8px #ffcc00, 0 0 12px #ffcc00;
-            border: 1px solid #ffcc00;
-        }
-        .video-name {
-            font-size: 16px;
-            font-weight: bold;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            color: #fff;
-            text-shadow: 0 0 3px #fff;
-        }
-        .play-button {
-            padding: 5px 15px;
-            background: #ffcc00;
-            color: #000;
-            border: none;
+            padding: 15px;
+            margin-bottom: 8px;
+            background: transparent;
             border-radius: 5px;
-            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 0 5px #ffcc00;
-            transition: background 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            border: 1px solid var(--border-color);
         }
-        .play-button:hover {
-            background: #ffe066;
-            transform: translateY(-2px);
+        
+        .video-item:hover {
+            background-color: rgba(197, 164, 126, 0.1);
+            transform: translateX(5px);
+            box-shadow: 0 0 15px var(--accent-gold), 0 0 25px var(--accent-gold-hover);
+            border-color: var(--accent-gold);
         }
-
-        /* Style for the season dropdown */
+        
+        .video-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        /* Season Dropdown Styling */
         .season-select {
             position: relative;
-            margin: 15px auto;
-            width: 200px;
+            margin: 20px auto;
+            width: 220px;
             text-align: center;
         }
+
         .season-button {
-            background-color: #333;
-            color: white;
-            padding: 10px 15px;
-            border: none;
+            font-family: var(--font-body);
+            font-weight: 600;
+            background-color: transparent;
+            color: var(--accent-gold);
+            padding: 12px 20px;
+            border: 2px solid var(--accent-gold);
             border-radius: 5px;
             cursor: pointer;
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
         }
+        
+        .season-button:hover {
+            background-color: var(--accent-gold);
+            color: var(--text-dark);
+        }
+        
         .season-dropdown {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
-            background-color: #222;
-            border: 1px solid #444;
+            background-color: #3a3a3a;
+            border: 1px solid var(--border-color);
             border-top: none;
             border-radius: 0 0 5px 5px;
             overflow: hidden;
             display: none;
             z-index: 10;
         }
+
         .season-dropdown a {
             display: block;
-            padding: 10px 15px;
+            padding: 12px 15px;
             text-decoration: none;
-            color: white;
+            color: var(--text-light);
             transition: background-color 0.3s ease;
         }
+
         .season-dropdown a:hover {
-            background-color: #444;
+            background-color: var(--accent-gold);
+            color: var(--text-dark);
         }
+        
         .season-button::after {
-            content: '\25BE'; /* Down arrow */
+            content: '\25BE';
             font-size: 1em;
+            margin-left: 10px;
         }
+        
+        /* For mobile devices */
+        @media (max-width: 768px) {
+            .playlist {
+                max-width: 100%; 
+            }
+            .series-banner img {
+                height: 120px;
+            }
+            .playlist h2 {
+                font-size: 1.5em; 
+                white-space: normal; 
+            }
+            .sticky-player {
+                padding: 5px; 
+            }
+            .video-item {
+                padding: 12px;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="playlist">
-        <h2>Dirilis Ertugrul</h2>
-        <div class="sticky-player">
-            <iframe id="player" src="" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="video-title" id="current-video-title">Select a video to play</div>
+        <div class="sticky-top-section">
+            
+            <h2>Dirilis Ertugrul</h2>
+            
+            <div class="sticky-player">
+                <iframe id="player" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="video-title" id="current-video-title">Select a video to play</div>
 
-        <div class="season-select">
-            <button class="season-button" onclick="toggleSeasonDropdown()">
-                <span>Select Season</span>
-            </button>
-            <div id="seasonDropdown" class="season-dropdown">
-                <a href="ertugrul1.html">Season 1</a>
-                <a href="ertugrul2.html">Season 2</a>
-                <a href="ertugrul3.html">Season 3</a>
-                <a href="ertugrul4.html">Season 4</a>
-                <a href="ertugrul5.html">Season 5</a>
+            <div class="season-select">
+                <button class="season-button" onclick="toggleSeasonDropdown()">
+                    <span>Select Season</span>
+                </button>
+                <div id="seasonDropdown" class="season-dropdown">
+                    <a href="ertugrul1.html">Season 1</a>
+                    <a href="ertugrul2.html">Season 2</a>
+                    <a href="ertugrul3.html">Season 3</a>
+                    <a href="ertugrul4.html">Season 4</a>
+                    <a href="ertugrul5.html">Season 5</a>
+                </div>
             </div>
         </div>
 
@@ -181,15 +252,15 @@
     </div>
 
     <script>
-        // Replace with your new Google Drive folder ID
-        const folderId = "1BtEy69c9CQxwIsf0e2gBICiMpjDUYCWG";
+        // Replace with your Google Drive folder ID and API Key
+        const folderId = "1BtEy69c9CQxwIsf0e2gBICiMpjDUYCWG"; 
         const apiKey = "AIzaSyBK2E3irCautj-id8ke1tmVBElXYf0aHdU";
 
         let videos = [];
         let currentIndex = 0;
 
         async function fetchVideos() {
-            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)&orderBy=name`;
+            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)&orderBy=name&pageSize=200`;
             try {
                 const response = await fetch(url);
                 const data = await response.json();
@@ -197,42 +268,40 @@
                 if (data.files && data.files.length > 0) {
                     videos = data.files;
                     const videoList = document.getElementById('video-list');
+                    videoList.innerHTML = ''; 
 
                     data.files.forEach((file, index) => {
                         const videoItem = document.createElement('li');
                         videoItem.className = 'video-item';
-                        videoItem.innerHTML = `
-                            <span class="video-name">${file.name}</span>
-                            <button class="play-button" onclick="playVideo(${index})">Play</button>
-                        `;
+                        videoItem.innerHTML = `<span class="video-name">${file.name.replace('.mp4', '')}</span>`;
+                        videoItem.onclick = () => playVideo(index);
                         videoList.appendChild(videoItem);
                     });
-
-                    // Autoplay the first video
-                    playVideo(0);
+                    
+                    if (videos.length > 0) {
+                        playVideo(0);
+                    }
                 } else {
                     console.error("No videos found in the folder.");
-                    document.getElementById('video-list').innerHTML = "<p>No videos found in this folder.</p>";
+                    document.getElementById('video-list').innerHTML = "<p style='text-align: center; padding: 20px;'>No videos found in this folder.</p>";
                 }
             } catch (error) {
                 console.error("Error fetching videos:", error);
-                document.getElementById('video-list').innerHTML = "<p>Failed to load videos. Check console for details.</p>";
+                document.getElementById('video-list').innerHTML = "<p style='text-align: center; padding: 20px;'>Failed to load videos. Check console for details.</p>";
             }
         }
 
         function playVideo(index) {
-            const videoPlayer = document.getElementById('player');
-            const videoTitle = document.getElementById('current-video-title');
-            currentIndex = index;
-
             if (videos[index]) {
+                const videoPlayer = document.getElementById('player');
+                const videoTitle = document.getElementById('current-video-title');
+                currentIndex = index;
+
                 const videoUrl = `https://drive.google.com/file/d/${videos[index].id}/preview`;
                 videoPlayer.src = videoUrl;
 
-                // Update the title
-                videoTitle.textContent = videos[index].name;
+                videoTitle.textContent = videos[index].name.replace('.mp4', '');
 
-                // Autoplay next video
                 videoPlayer.onload = () => {
                     setTimeout(() => {
                         const checkNext = setInterval(() => {
@@ -254,7 +323,6 @@
             }
         }
 
-        // Fetch and display videos on page load
         fetchVideos();
 
         function toggleSeasonDropdown() {
