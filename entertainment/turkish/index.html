@@ -3,74 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Page</title>
+    <title>Series Selector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Responsive Video Container */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            width: 90%;
-            max-width: 800px;
-            margin: 0 auto;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
+        /* CSS Variables - Reusing from previous design for consistency */
+        :root {
+            --background-tex: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            --primary-bg: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --accent-gold: #c5a47e;
+            --accent-gold-hover: #e0bb95;
+            --text-light: #f5f5f5;
+            --text-dark: #333;
+            --border-color: #444;
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Lora', serif;
         }
 
-        /* Button Styles */
-        .newspaper {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
+        body {
+            font-family: var(--font-body);
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-bg);
+            background-image: var(--background-tex);
+            color: var(--text-light);
+            box-sizing: border-box;
+            overflow-x: hidden; /* নিশ্চিত ডানে-বামে স্ক্রল বন্ধ করতে */
+            min-width: 320px; /* সর্বনিম্ন প্রস্থ সেট করা যাতে খুব ছোট স্ক্রিনেও না ভাঙ্গে */
         }
-        .newspaper a {
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-            padding: 12px;
-            background-color: #003366;
-            border: 1px solid #002244;
+
+        /* Main Container for the page content */
+        .main-container {
+            max-width: 600px;
+            width: calc(100% - 40px); /* 100% প্রস্থ থেকে উভয় পাশে 20px করে প্যাডিং বাদ */
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #FFFFFF;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            background-image: linear-gradient(135deg, #003366, #002244);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .newspaper a:hover {
-            background-color: #002244;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px; /* কন্টেইনারের ভেতরের প্যাডিং */
+            text-align: center;
+            margin: 30px auto; /* উপরের মার্জিন এবং মাঝখানে আনার জন্য */
+            box-sizing: border-box; /* নিশ্চিত box-sizing */
         }
 
-        /* Responsive Adjustments */
-        @media (max-width: 600px) {
-            .newspaper a {
-                width: 90%;
-                font-size: 16px;
-                padding: 10px;
+        /* Page Title */
+        .page-title {
+            font-family: var(--font-title);
+            font-size: 2.2em;
+            color: var(--accent-gold);
+            text-shadow: 0 0 15px rgba(197, 164, 126, 0.7);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            animation: fadeIn 2s ease-out;
+            word-wrap: break-word; /* লম্বা শব্দ ভাঙতে সাহায্য করে */
+            overflow-wrap: break-word; /* অতিরিক্ত লম্বা শব্দের জন্য */
+            box-sizing: border-box;
+        }
+
+        /* Button Styles - Enhanced for a more premium look */
+        .series-link {
+            display: block;
+            width: calc(100% - 20px); /* কন্টেইনারের প্যাডিং অ্যাডজাস্ট করে প্রস্থ সেট করা হয়েছে */
+            margin: 15px auto;
+            padding: 15px 25px;
+            background-color: var(--accent-gold);
+            border: 2px solid var(--accent-gold);
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: var(--font-body);
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-sizing: border-box; /* নিশ্চিত box-sizing */
+            white-space: normal; /* বাটনের টেক্সট প্রয়োজনে নতুন লাইনে ভাঙবে */
+        }
+
+        .series-link:hover {
+            background-color: var(--accent-gold-hover);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 25px rgba(197, 164, 126, 0.7);
+            border-color: var(--accent-gold-hover);
+            color: var(--text-dark);
+        }
+
+        /* Responsive Adjustments - সবচেয়ে গুরুত্বপূর্ণ পরিবর্তন এই অংশে */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px; /* প্যাডিং কমানো */
+                width: calc(100% - 30px); /* 100% থেকে উভয় পাশে 15px করে প্যাডিং বাদ */
+                margin: 20px auto;
             }
+            .page-title {
+                font-size: 2em;
+                margin-bottom: 25px;
+            }
+            .series-link {
+                width: calc(100% - 20px); /* 100% থেকে উভয় পাশে 10px করে প্যাডিং বাদ */
+                font-size: 1em;
+                padding: 12px 15px;
+                margin: 10px auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 15px; /* আরও প্যাডিং কমানো */
+                width: calc(100% - 20px); /* 100% থেকে উভয় পাশে 10px করে প্যাডিং বাদ */
+                margin: 15px auto;
+            }
+            .page-title {
+                font-size: 1.5em; /* খুব ছোট স্ক্রিনের জন্য ফন্ট সাইজ আরও কমানো */
+                margin-bottom: 15px;
+            }
+            .series-link {
+                width: calc(100% - 10px); /* 100% থেকে উভয় পাশে 5px করে প্যাডিং বাদ */
+                font-size: 0.9em;
+                padding: 10px;
+                margin: 8px auto;
+            }
+        }
+
+        /* Basic Fade-in Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-<br></br>
-  
-    <div class="newspaper">
-        <a href="ertugrul1.html">Dirilis Ertugrul</a>
-    </div>
+    <div class="main-container">
+        <h1 class="page-title">Welcome to the Series Collection</h1>
 
-    <br></br>
+        <a href="ertugrul1.html" class="series-link">Dirilis Ertugrul</a>
 
- 
+        </div>
 </body>
 </html>
