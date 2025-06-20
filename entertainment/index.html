@@ -4,78 +4,120 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Entertainment Zone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --background-tex: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+      --primary-bg: #1a1a1a;
+      --container-bg: #2d2d2d;
+      --accent-gold: #c5a47e;
+      --accent-gold-hover: #e0bb95;
+      --text-light: #f5f5f5;
+      --text-dark: #333;
+      --border-color: #444;
+      --font-title: 'Cinzel', serif;
+      --font-body: 'Lora', serif;
+    }
+
     body {
+      font-family: var(--font-body);
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
+      background-color: var(--primary-bg);
+      background-image: var(--background-tex);
+      color: var(--text-light);
+      box-sizing: border-box;
+      overflow-x: hidden;
+      min-width: 320px;
     }
 
-    header {
-      background-color: #ffffff;
-      color: #222;
+    .main-container {
+      max-width: 900px; /* Keep this max-width for the link grid part */
+      width: calc(100% - 40px);
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      padding: 30px;
       text-align: center;
-      padding: 40px 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      margin: 30px auto;
+      box-sizing: border-box;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-
-    header p {
-      font-size: 1.1rem;
-      margin-top: 10px;
-      color: #666;
+    .page-title {
+      font-family: var(--font-title);
+      font-size: 2.2em;
+      color: var(--accent-gold);
+      text-shadow: 0 0 15px rgba(197, 164, 126, 0.7);
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+      animation: fadeIn 2s ease-out;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      box-sizing: border-box;
     }
 
     .link-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
-      padding: 30px;
-      max-width: 1200px;
+      padding: 20px 0;
+      max-width: 100%; /* Ensure it respects parent width */
       margin: auto;
     }
 
     .entertainment-card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 20px;
+      background-color: var(--accent-gold);
+      border: 2px solid var(--accent-gold);
+      border-radius: 8px;
       text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      padding: 15px;
     }
 
     .entertainment-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+      background-color: var(--accent-gold-hover);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 25px rgba(197, 164, 126, 0.7);
+      border-color: var(--accent-gold-hover);
     }
 
     .entertainment-card a {
       text-decoration: none;
-      font-size: 1.2rem;
+      font-size: 1.1em;
       font-weight: 600;
-      color: #1a73e8;
+      color: var(--text-dark);
+      font-family: var(--font-body);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      padding: 10px;
     }
 
+    /* Video Section Specific Styles */
     .video-section {
-      padding: 20px;
+      padding: 0; /* Remove padding here, spacing will be handled by video containers */
+      margin-top: 30px;
+      width: 100%; /* Allow video section to span full viewport width */
+      box-sizing: border-box;
     }
 
     .video-container {
       position: relative;
-      padding-bottom: 56.25%;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
       height: 0;
       overflow: hidden;
-      max-width: 800px;
-      margin: 30px auto;
+      /* Adjusted width for videos */
+      width: calc(100vw - 40px); /* 100% of viewport width minus 20px padding on each side */
+      max-width: 100%; /* Ensure it doesn't exceed parent's (body's) width */
+      margin: 20px auto; /* Centering with top/bottom margin */
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       background-color: #000;
+      border: 2px solid var(--border-color);
     }
 
     .video-container iframe {
@@ -87,34 +129,82 @@
       border: 0;
     }
 
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 2rem;
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 20px;
+        width: calc(100% - 30px);
+        margin: 20px auto;
       }
+      .page-title {
+        font-size: 2em;
+        margin-bottom: 25px;
+      }
+      .entertainment-card {
+        padding: 12px;
+      }
+      .entertainment-card a {
+        font-size: 1em;
+      }
+      .video-container {
+        width: calc(100vw - 30px); /* Adjust for smaller screens */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main-container {
+        padding: 15px;
+        width: calc(100% - 20px);
+        margin: 15px auto;
+      }
+      .page-title {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+      }
+      .entertainment-card {
+        padding: 10px;
+      }
+      .entertainment-card a {
+        font-size: 0.9em;
+      }
+      .link-grid {
+        gap: 15px;
+      }
+      .video-container {
+        width: calc(100vw - 20px); /* Nearly full width on very small screens */
+        margin: 15px auto;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
+<div class="main-container">
+  <h1 class="page-title">Entertainment Zone</h1>
 
-<div class="link-grid">
-  <div class="entertainment-card">
-    <a href="https://madinamanjeel.github.io/entertainment/movies/index.html">🎥 Movie</a>
-  </div>
-  <div class="entertainment-card">
-    <a href="https://madinamanjeel.github.io/entertainment/turkish/index.html">🇹🇷 Turkish Series</a>
-  </div>
-  <div class="entertainment-card">
-    <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1oBwKCByxjb_3tE5FUuz11i&feature=shared">🎵 Music</a>
-  </div>
-  <div class="entertainment-card">
-    <a href="https://youtube.com/@familyentertainmentbd/videos">👪 Family Entertainment BD</a>
-  </div>
-  <div class="entertainment-card">
-    <a href="https://youtube.com/@antikmahmud/videos">🎨 Antik Mahmud</a>
-  </div>
-  <div class="entertainment-card">
-    <a href="https://youtube.com/playlist?list=PLGOghD4_R8mEoCdtYbysczeWAQeKSfRU7&feature=shared">📺 Humayun Ahmed নাটক</a>
+  <div class="link-grid">
+    <div class="entertainment-card">
+      <a href="https://madinamanjeel.github.io/entertainment/movies/index.html">🎥 Movie</a>
+    </div>
+    <div class="entertainment-card">
+      <a href="https://madinamanjeel.github.io/entertainment/turkish/index.html">🇹🇷 Turkish Series</a>
+    </div>
+    <div class="entertainment-card">
+      <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1oBwKCByxjb_3tE5FUuz11i&feature=shared">🎵 Music</a>
+    </div>
+    <div class="entertainment-card">
+      <a href="https://youtube.com/@familyentertainmentbd/videos">👪 Family Entertainment BD</a>
+    </div>
+    <div class="entertainment-card">
+      <a href="https://youtube.com/@antikmahmud/videos">🎨 Antik Mahmud</a>
+    </div>
+    <div class="entertainment-card">
+      <a href="https://youtube.com/playlist?list=PLGOghD4_R8mEoCdtYbysczeWAQeKSfRU7&feature=shared">📺 Humayun Ahmed নাটক</a>
+    </div>
   </div>
 </div>
 
