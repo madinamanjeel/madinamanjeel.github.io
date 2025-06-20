@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dirilis Ertugrul</title>
+    <title>Dirilis Ertugrul - API Version with Subtitles</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
@@ -88,7 +88,7 @@
             padding: 10px;
         }
 
-        iframe {
+        video { /* Changed from iframe to video */
             display: block;
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -138,66 +138,9 @@
             color: var(--text-light);
         }
         
-        /* Season Dropdown Styling */
+        /* Season Dropdown Styling (hidden as per previous request) */
         .season-select {
-            position: relative;
-            margin: 20px auto;
-            width: 220px;
-            text-align: center;
-        }
-
-        .season-button {
-            font-family: var(--font-body);
-            font-weight: 600;
-            background-color: transparent;
-            color: var(--accent-gold);
-            padding: 12px 20px;
-            border: 2px solid var(--accent-gold);
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-        
-        .season-button:hover {
-            background-color: var(--accent-gold);
-            color: var(--text-dark);
-        }
-        
-        .season-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: #3a3a3a;
-            border: 1px solid var(--border-color);
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-            overflow: hidden;
-            display: none;
-            z-index: 10;
-        }
-
-        .season-dropdown a {
-            display: block;
-            padding: 12px 15px;
-            text-decoration: none;
-            color: var(--text-light);
-            transition: background-color 0.3s ease;
-        }
-
-        .season-dropdown a:hover {
-            background-color: var(--accent-gold);
-            color: var(--text-dark);
-        }
-        
-        .season-button::after {
-            content: '\25BE';
-            font-size: 1em;
-            margin-left: 10px;
+            display: none; 
         }
         
         /* For mobile devices */
@@ -229,14 +172,15 @@
             <h2>Dirilis Ertugrul</h2>
             
             <div class="sticky-player">
-                <iframe id="player" src="" frameborder="0" allowfullscreen></iframe>
+                <video id="player" controls crossorigin="anonymous"></video> 
             </div>
-            <div class="video-title" id="current-video-title">Select a video to play</div>
+            <div class="video-title" id="current-video-title">Loading videos...</div>
 
             <div class="season-select">
                 <button class="season-button" onclick="toggleSeasonDropdown()">
                     <span>Select Season</span>
                 </button>
+               
                 <div id="seasonDropdown" class="season-dropdown">
                     <a href="ertugrul1.html">Season 1</a>
                     <a href="ertugrul2.html">Season 2</a>
@@ -244,6 +188,7 @@
                     <a href="ertugrul4.html">Season 4</a>
                     <a href="ertugrul5.html">Season 5</a>
                 </div>
+
             </div>
         </div>
 
@@ -252,83 +197,157 @@
     </div>
 
     <script>
-        // Replace with your Google Drive folder ID and API Key
-        const folderId = "10Q-XhUtX1Oj7FsCHJXuB1hZ118VIDD36"; 
-        const apiKey = "AIzaSyBK2E3irCautj-id8ke1tmVBElXYf0aHdU";
+        // YOUR PROVIDED GOOGLE DRIVE FOLDER ID AND API KEY
+        const FOLDER_ID = "10Q-XhUtX1Oj7FsCHJXuB1hZ118VIDD36"; // Your Google Drive Folder ID
+        const API_KEY = "AIzaSyBK2E3irCautj-id8ke1tmVBElXYf0aHdU"; // Your Google Drive API Key
 
-        let videos = [];
+        let videos = []; // Stores video file metadata { id, name }
+        let subtitlesMap = {}; // Stores subtitle file IDs mapped by video name (e.g., {'VideoName': 'subtitleId'})
         let currentIndex = 0;
 
-        async function fetchVideos() {
-            const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='video/mp4'&key=${apiKey}&fields=files(id,name)&orderBy=name&pageSize=200`;
+        /**
+         * Fetches video and subtitle files from the specified Google Drive folder.
+         * Files must be publicly accessible ("Anyone with the link").
+         */
+        async function fetchFilesFromDrive() {
+            // Query for both MP4 videos and SRT subtitle files
+            const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+(mimeType='video/mp4' or mimeType='application/x-subrip')&key=${API_KEY}&fields=files(id,name,mimeType)&orderBy=name&pageSize=1000`; // Increased pageSize for more files
+
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
+                }
                 const data = await response.json();
 
                 if (data.files && data.files.length > 0) {
-                    videos = data.files;
-                    const videoList = document.getElementById('video-list');
-                    videoList.innerHTML = ''; 
+                    videos = []; // Clear previous videos
+                    subtitlesMap = {}; // Clear previous subtitles
 
-                    data.files.forEach((file, index) => {
-                        const videoItem = document.createElement('li');
-                        videoItem.className = 'video-item';
-                        videoItem.innerHTML = `<span class="video-name">${file.name.replace('.mp4', '')}</span>`;
-                        videoItem.onclick = () => playVideo(index);
-                        videoList.appendChild(videoItem);
+                    data.files.forEach(file => {
+                        if (file.mimeType === 'video/mp4') {
+                            videos.push(file);
+                        } else if (file.mimeType === 'application/x-subrip' && file.name.endsWith('.srt')) {
+                            // Map subtitle to video by stripping .srt extension
+                            // Example: 'MyVideo.srt' maps to 'MyVideo'
+                            const videoNameWithoutExt = file.name.replace(/\.srt$/, '');
+                            subtitlesMap[videoNameWithoutExt] = file.id;
+                        }
                     });
+
+                    // Sort videos by name to ensure consistent order
+                    videos.sort((a, b) => a.name.localeCompare(b.name));
+
+                    displayVideoList(); // Update the UI with the fetched videos
                     
                     if (videos.length > 0) {
-                        playVideo(0);
+                        playVideo(0); // Play the first video by default
+                    } else {
+                        document.getElementById('current-video-title').textContent = "No videos found.";
+                        document.getElementById('video-list').innerHTML = "<p style='text-align: center; padding: 20px;'>No videos found in this folder. Make sure files are publicly accessible.</p>";
                     }
                 } else {
-                    console.error("No videos found in the folder.");
-                    document.getElementById('video-list').innerHTML = "<p style='text-align: center; padding: 20px;'>No videos found in this folder.</p>";
+                    console.warn("No files found in the specified folder or API returned empty.");
+                    document.getElementById('current-video-title').textContent = "No videos found.";
+                    document.getElementById('video-list').innerHTML = "<p style='text-align: center; padding: 20px;'>No videos found in this folder. Double-check Folder ID and API Key, and ensure files are publicly accessible ('Anyone with the link').</p>";
                 }
             } catch (error) {
-                console.error("Error fetching videos:", error);
-                document.getElementById('video-list').innerHTML = "<p style='text-align: center; padding: 20px;'>Failed to load videos. Check console for details.</p>";
+                console.error("Error fetching files from Google Drive API:", error);
+                document.getElementById('current-video-title').textContent = "Error loading videos.";
+                document.getElementById('video-list').innerHTML = `<p style='text-align: center; padding: 20px; color: red;'>Failed to load videos: ${error.message}. Check console for details.</p>`;
             }
         }
 
+        /**
+         * Populates the video list UI elements.
+         */
+        function displayVideoList() {
+            const videoList = document.getElementById('video-list');
+            videoList.innerHTML = ''; 
+
+            videos.forEach((file, index) => {
+                const videoItem = document.createElement('li');
+                videoItem.className = 'video-item';
+                videoItem.innerHTML = `<span class="video-name">${file.name.replace('.mp4', '')}</span>`;
+                videoItem.onclick = () => playVideo(index);
+                videoList.appendChild(videoItem);
+            });
+        }
+
+        /**
+         * Plays a selected video and attempts to load its corresponding subtitle.
+         * @param {number} index - The index of the video in the `videos` array.
+         */
         function playVideo(index) {
             if (videos[index]) {
                 const videoPlayer = document.getElementById('player');
                 const videoTitle = document.getElementById('current-video-title');
                 currentIndex = index;
 
-                const videoUrl = `https://drive.google.com/file/d/${videos[index].id}/preview`;
-                videoPlayer.src = videoUrl;
+                const videoFile = videos[index];
+                // Get video name without .mp4 extension for subtitle mapping
+                const videoNameWithoutExt = videoFile.name.replace(/\.mp4$/, '');
+                
+                // Construct the direct media URL for the video using alt=media
+                // WARNING: This URL is prone to CORS issues from Google Drive
+                const videoSrc = `https://www.googleapis.com/drive/v3/files/${videoFile.id}?alt=media&key=${API_KEY}`;
+                
+                videoPlayer.src = videoSrc;
+                videoTitle.textContent = videoNameWithoutExt;
 
-                videoTitle.textContent = videos[index].name.replace('.mp4', '');
+                // Remove existing track elements to avoid duplicates
+                // This ensures only the current video's subtitle is loaded
+                Array.from(videoPlayer.querySelectorAll('track')).forEach(track => track.remove());
 
-                videoPlayer.onload = () => {
-                    setTimeout(() => {
-                        const checkNext = setInterval(() => {
-                            if (videoPlayer.contentWindow) {
-                                videoPlayer.contentWindow.postMessage('{"event":"listening"}', '*');
-                            }
-                        }, 1000);
+                // Attempt to add subtitle track if found
+                const subtitleId = subtitlesMap[videoNameWithoutExt];
+                if (subtitleId) {
+                    // Construct the direct media URL for the subtitle
+                    // WARNING: This URL is also prone to CORS issues
+                    const subtitleSrc = `https://www.googleapis.com/drive/v3/files/${subtitleId}?alt=media&key=${API_KEY}`;
+                    
+                    const track = document.createElement('track');
+                    track.kind = 'subtitles';
+                    track.label = 'Bangla'; // You can change this label (e.g., 'English', 'Español')
+                    track.srclang = 'bn';   // Change language code if needed (e.g., 'en', 'es')
+                    track.src = subtitleSrc;
+                    track.default = true; // Set this subtitle as the default one to be shown
+                    videoPlayer.appendChild(track);
+                    console.log(`Subtitle track added for: ${videoNameWithoutExt}, SRC: ${subtitleSrc}`);
+                } else {
+                    console.log(`No subtitle (.srt) found for: ${videoNameWithoutExt}`);
+                }
 
-                        window.addEventListener("message", (event) => {
-                            if (event.data && event.data.indexOf("ended") > -1) {
-                                clearInterval(checkNext);
-                                if (currentIndex + 1 < videos.length) {
-                                    playVideo(currentIndex + 1);
-                                }
-                            }
-                        });
-                    }, 1000);
+                videoPlayer.load(); // Reload the video element to apply new src and tracks
+                videoPlayer.play().catch(error => {
+                    console.error("Autoplay failed:", error);
+                    videoTitle.textContent = `Playing: ${videoNameWithoutExt} (Autoplay blocked, click play)`;
+                    // If autoplay fails (common in browsers), prompt the user to click play
+                });
+
+                // Set up event listener for when the current video ends
+                videoPlayer.onended = () => {
+                    if (currentIndex + 1 < videos.length) {
+                        playVideo(currentIndex + 1); // Play the next video in the list
+                    } else {
+                        console.log("Playlist ended.");
+                        videoTitle.textContent = `Playlist ended. Last played: ${videoNameWithoutExt}`;
+                    }
                 };
+            } else {
+                console.error("Attempted to play a video at an invalid index:", index);
             }
         }
 
-        fetchVideos();
+        // Initialize the application by fetching files from Google Drive
+        fetchFilesFromDrive();
 
-        function toggleSeasonDropdown() {
-            const dropdown = document.getElementById('seasonDropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        }
+        // This function is no longer needed as the season-select div is hidden via CSS
+        // function toggleSeasonDropdown() {
+        //     const dropdown = document.getElementById('seasonDropdown');
+        //     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        // }
     </script>
 </body>
 </html>
