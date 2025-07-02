@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV</title>
+    <title>IPTV Player</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
         :root {
@@ -16,18 +16,26 @@
             --input-bg: #2a2a2a;
             --input-border: #555;
         }
-        html {
+        html, body {
             height: 100%;
-        }
-        body {
+            margin: 0;
+            overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--primary-bg);
             color: var(--text-color);
-            margin: 0;
+        }
+        #loading-message-auth {
             display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 1.2em;
+            color: #aaa;
+        }
+        #content-wrapper {
+            display: none;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
         }
         .main-container {
             display: flex;
@@ -69,17 +77,13 @@
             flex-shrink: 0;
         }
         #channel-search {
-            width: calc(100% - 20px);
+            width: calc(100% - 22px);
             padding: 10px;
             border: 1px solid var(--input-border);
             border-radius: 4px;
             background-color: var(--input-bg);
             color: var(--text-color);
             font-size: 1em;
-            box-sizing: border-box;
-        }
-        #channel-search::placeholder {
-            color: #aaa;
         }
         #channel-list {
             list-style: none;
@@ -98,9 +102,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        #channel-list li:last-child {
-            border-bottom: none;
-        }
         #channel-list li:hover {
             background-color: var(--hover-color);
         }
@@ -109,47 +110,10 @@
             color: white;
             font-weight: bold;
         }
-        #loading-message-auth { /* Renamed to avoid conflict */
-            text-align: center;
-            padding-top: 50px;
-            font-size: 1.2em;
-            color: #aaa;
-        }
-        #content-wrapper {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-        }
-        #loading-message-playlist { /* Renamed to avoid conflict */
+        #loading-message-playlist {
             font-size: 1em;
             text-align: center;
             padding: 20px;
-            flex-shrink: 0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                height: 100%;
-                overflow: hidden;
-            }
-            .main-container {
-                flex-direction: column;
-                height: 100%;
-            }
-            .channel-list-wrapper {
-                flex-grow: 1;
-                border-top: 2px solid var(--border-color);
-                padding: 5px;
-                box-sizing: border-box;
-                overflow: hidden;
-            }
-            #channel-list {
-                flex-grow: 1;
-                overflow-y: auto;
-            }
-            #channel-search {
-                width: 100%;
-            }
         }
     </style>
 </head>
@@ -162,18 +126,10 @@
     <div id="content-wrapper">
         <div class="main-container">
             <div class="player-container">
-                <video
-                    id="tv-player"
-                    class="video-js vjs-default-skin vjs-big-play-centered"
-                    controls
-                    preload="auto"
-                    data-setup='{}'>
-                    <p class="vjs-no-js">
-                        To view this video please enable JavaScript.
-                    </p>
+                <video id="tv-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'>
+                    <p class="vjs-no-js">To view this video please enable JavaScript.</p>
                 </video>
             </div>
-
             <div class="channel-list-wrapper">
                 <h3>Channel List</h3>
                 <div id="search-container">
@@ -186,182 +142,145 @@
     </div>
 
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function initializePlayerAndPlaylist() {
             const host = 'http://14.128.15.136:8080';
             const username = '8801601469037';
             const password = '8801601469037';
-
             const playlistUrl = `${host}/get.php?username=${username}&password=${password}&type=m3u_plus&output=m3u8`;
 
             const channelListElement = document.getElementById('channel-list');
             const loadingMessage = document.getElementById('loading-message-playlist');
             const searchInput = document.getElementById('channel-search');
-            let player; // Initialize later
-
+            const player = videojs('tv-player');
             let allChannels = [];
 
             async function fetchAndDisplayPlaylist() {
-                // Initialize player only after authentication
-                player = videojs('tv-player');
                 try {
                     const response = await fetch(playlistUrl);
-                    if (!response.ok) {
-                        throw new Error(`Server error! Status: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`Server error! Status: ${response.status}`);
                     const m3uText = await response.text();
                     parseM3U(m3uText);
                     loadingMessage.style.display = 'none';
-
                     if (allChannels.length > 0) {
                         playChannel(allChannels[0]);
                         const firstListItem = channelListElement.querySelector('li');
-                        if (firstListItem) {
-                            firstListItem.classList.add('active');
-                        }
+                        if (firstListItem) firstListItem.classList.add('active');
                     }
-
                 } catch (error) {
                     console.error('Failed to load playlist:', error);
-                    loadingMessage.textContent = 'Failed to load playlist. Please check connection or server.';
+                    loadingMessage.textContent = 'Failed to load playlist.';
                 }
             }
 
             function parseM3U(text) {
                 const lines = text.split('\n');
-                let tempChannels = [];
-
+                allChannels = [];
                 for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (line.startsWith('#EXTINF:')) {
-                        const nameMatch = line.match(/tvg-name="([^"]+)"/);
-                        const channelName = nameMatch ? nameMatch[1] : line.substring(line.lastIndexOf(',') + 1);
-                        
+                    if (lines[i].startsWith('#EXTINF:')) {
+                        const nameMatch = lines[i].match(/tvg-name="([^"]+)"/);
+                        const channelName = nameMatch ? nameMatch[1] : lines[i].substring(lines[i].lastIndexOf(',') + 1);
                         const streamUrl = lines[i + 1] ? lines[i + 1].trim() : null;
-                        
-                        if (channelName && streamUrl && streamUrl.startsWith('http')) {
-                            tempChannels.push({ name: channelName, url: streamUrl });
+                        if (channelName && streamUrl) {
+                            allChannels.push({ name: channelName, url: streamUrl });
                         }
                     }
                 }
-                allChannels = tempChannels;
                 displayChannels(allChannels);
             }
 
             function playChannel(channel) {
-                if(player) {
-                    player.src({
-                        src: channel.url,
-                        type: 'application/x-mpegURL'
-                    });
-                    player.play();
-                }
+                player.src({ src: channel.url, type: 'application/x-mpegURL' });
+                player.play();
             }
 
-            function displayChannels(channelsToDisplay) {
+
+
+            function displayChannels(channels) {
                 channelListElement.innerHTML = '';
-                if (channelsToDisplay.length === 0) {
+                if (channels.length === 0) {
                     channelListElement.innerHTML = '<li>No channels found.</li>';
                     return;
                 }
-
-                channelsToDisplay.forEach(channel => {
+                channels.forEach(channel => {
                     const listItem = document.createElement('li');
                     listItem.textContent = channel.name;
-                    listItem.dataset.streamUrl = channel.url;
-                    
-                    listItem.addEventListener('click', function() {
-                        const currentActive = document.querySelector('#channel-list li.active');
-                        if(currentActive) {
-                            currentActive.classList.remove('active');
-                        }
-                        this.classList.add('active');
+                    listItem.onclick = () => {
+                        document.querySelector('#channel-list li.active')?.classList.remove('active');
+                        listItem.classList.add('active');
                         playChannel(channel);
-                    });
-                    
+                    };
                     channelListElement.appendChild(listItem);
                 });
             }
 
-            searchInput.addEventListener('keyup', function() {
+            searchInput.addEventListener('input', () => {
                 const searchTerm = searchInput.value.toLowerCase();
-                const filteredChannels = allChannels.filter(channel => {
-                    return channel.name.toLowerCase().includes(searchTerm);
-                });
-                displayChannels(filteredChannels);
+                const filtered = allChannels.filter(c => c.name.toLowerCase().includes(searchTerm));
+                displayChannels(filtered);
             });
-            
-            // This function will be called by the auth script upon success
-            window.startApp = fetchAndDisplayPlaylist;
-        });
+
+            fetchAndDisplayPlaylist();
+        }
     </script>
-    
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import {
-          getAuth,
-          GoogleAuthProvider,
-          onAuthStateChanged,
-          signInWithRedirect
-        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
         const firebaseConfig = {
-          apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
-          authDomain: "family-429c7.firebaseapp.com",
-          databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
-          projectId: "family-429c7",
-          storageBucket: "family-429c7.firebasestorage.app",
-          messagingSenderId: "982876086618",
-          appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-          measurementId: "G-R7NLCB1B92"
+            apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+            authDomain: "family-429c7.firebaseapp.com",
+            databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "family-429c7",
+            storageBucket: "family-429c7.appspot.com",
+            messagingSenderId: "982876086618",
+            appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+            measurementId: "G-R7NLCB1B92"
         };
 
         const allowedEmails = [
-          "mashayekh.ahmed.archives@gmail.com",
-          "mashayekh64@gmail.com",
-          "shariatunnesa.madina@gmail.com",
-          "abdulkhalequebaf@gmail.com",
-          "lima.akter.1323@gmail.com",
-          "ahmad.muttaqeen@gmail.com",
-          "nusaiba.jannat.alifa@gmail.com",
-          "afia.ahmed.adiba@gmail.com",
-          "darulahmed467170@gmail.com",
-          "madina.manjeel.tv@gmail.com"
+            "mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com",
+            "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "ahmad.muttaqeen@gmail.com",
+            "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com",
+            "madina.manjeel.tv@gmail.com"
         ];
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-
         const contentWrapper = document.getElementById('content-wrapper');
         const loadingMessage = document.getElementById('loading-message-auth');
+        let appInitialized = false;
 
-        const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
-
-        if (hasLoggedInBefore === 'true') {
+        function showContent() {
             loadingMessage.style.display = 'none';
-            contentWrapper.style.display = 'flex'; // Use flex to match layout
-            if(window.startApp) window.startApp();
+            contentWrapper.style.display = 'flex';
+            if (!appInitialized) {
+                initializePlayerAndPlaylist();
+                appInitialized = true;
+            }
         }
 
         onAuthStateChanged(auth, (user) => {
-          if (user) {
-            const email = user.email;
-            if (allowedEmails.includes(email)) {
-              loadingMessage.style.display = 'none';
-              contentWrapper.style.display = 'flex'; // Use flex to match layout
-              localStorage.setItem('hasLoggedIn', 'true');
-              if(window.startApp && !player) window.startApp(); // Ensure app starts
+            if (user) {
+                if (allowedEmails.includes(user.email)) {
+                    localStorage.setItem('hasLoggedIn', 'true');
+                    showContent();
+                } else {
+                    alert("Access denied for: " + user.email);
+                    window.location.href = "https://google.com";
+                }
             } else {
-              alert("Access denied for: " + email);
-              window.location.href = "https://google.com";
+                if (localStorage.getItem('hasLoggedIn') === 'true') {
+                    // This case is for when a user was previously logged in but the session expired.
+                    // We can attempt a silent sign-in, but redirecting is safer.
+                    signInWithRedirect(auth, provider);
+                } else {
+                    signInWithRedirect(auth, provider);
+                }
             }
-          } else {
-            if (hasLoggedInBefore !== 'true') {
-              loadingMessage.style.display = 'block';
-            }
-            signInWithRedirect(auth, provider);
-          }
         });
     </script>
 
