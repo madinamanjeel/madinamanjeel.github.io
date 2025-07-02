@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Player</title>
+    <title>IPTV</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
         :root {
@@ -109,7 +109,18 @@
             color: white;
             font-weight: bold;
         }
-        #loading-message {
+        #loading-message-auth { /* Renamed to avoid conflict */
+            text-align: center;
+            padding-top: 50px;
+            font-size: 1.2em;
+            color: #aaa;
+        }
+        #content-wrapper {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #loading-message-playlist { /* Renamed to avoid conflict */
             font-size: 1em;
             text-align: center;
             padding: 20px;
@@ -144,27 +155,33 @@
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="player-container">
-            <video
-                id="tv-player"
-                class="video-js vjs-default-skin vjs-big-play-centered"
-                controls
-                preload="auto"
-                data-setup='{}'>
-                <p class="vjs-no-js">
-                    To view this video please enable JavaScript.
-                </p>
-            </video>
-        </div>
+    <div id="loading-message-auth">
+        Verifying user... Please wait.
+    </div>
 
-        <div class="channel-list-wrapper">
-            <h3>Channel List</h3>
-            <div id="search-container">
-                <input type="text" id="channel-search" placeholder="Search channels...">
+    <div id="content-wrapper">
+        <div class="main-container">
+            <div class="player-container">
+                <video
+                    id="tv-player"
+                    class="video-js vjs-default-skin vjs-big-play-centered"
+                    controls
+                    preload="auto"
+                    data-setup='{}'>
+                    <p class="vjs-no-js">
+                        To view this video please enable JavaScript.
+                    </p>
+                </video>
             </div>
-            <div id="loading-message">Loading channel list...</div>
-            <ul id="channel-list"></ul>
+
+            <div class="channel-list-wrapper">
+                <h3>Channel List</h3>
+                <div id="search-container">
+                    <input type="text" id="channel-search" placeholder="Search channels...">
+                </div>
+                <div id="loading-message-playlist">Loading channel list...</div>
+                <ul id="channel-list"></ul>
+            </div>
         </div>
     </div>
 
@@ -178,13 +195,15 @@
             const playlistUrl = `${host}/get.php?username=${username}&password=${password}&type=m3u_plus&output=m3u8`;
 
             const channelListElement = document.getElementById('channel-list');
-            const loadingMessage = document.getElementById('loading-message');
+            const loadingMessage = document.getElementById('loading-message-playlist');
             const searchInput = document.getElementById('channel-search');
-            const player = videojs('tv-player');
+            let player; // Initialize later
 
             let allChannels = [];
 
             async function fetchAndDisplayPlaylist() {
+                // Initialize player only after authentication
+                player = videojs('tv-player');
                 try {
                     const response = await fetch(playlistUrl);
                     if (!response.ok) {
@@ -194,7 +213,6 @@
                     parseM3U(m3uText);
                     loadingMessage.style.display = 'none';
 
-                    // Auto-play the first channel after the playlist is loaded
                     if (allChannels.length > 0) {
                         playChannel(allChannels[0]);
                         const firstListItem = channelListElement.querySelector('li');
@@ -231,11 +249,13 @@
             }
 
             function playChannel(channel) {
-                player.src({
-                    src: channel.url,
-                    type: 'application/x-mpegURL'
-                });
-                player.play();
+                if(player) {
+                    player.src({
+                        src: channel.url,
+                        type: 'application/x-mpegURL'
+                    });
+                    player.play();
+                }
             }
 
             function displayChannels(channelsToDisplay) {
@@ -271,7 +291,77 @@
                 displayChannels(filteredChannels);
             });
             
-            fetchAndDisplayPlaylist();
+            // This function will be called by the auth script upon success
+            window.startApp = fetchAndDisplayPlaylist;
+        });
+    </script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import {
+          getAuth,
+          GoogleAuthProvider,
+          onAuthStateChanged,
+          signInWithRedirect
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+          authDomain: "family-429c7.firebaseapp.com",
+          databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "family-429c7",
+          storageBucket: "family-429c7.firebasestorage.app",
+          messagingSenderId: "982876086618",
+          appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+          measurementId: "G-R7NLCB1B92"
+        };
+
+        const allowedEmails = [
+          "mashayekh.ahmed.archives@gmail.com",
+          "mashayekh64@gmail.com",
+          "shariatunnesa.madina@gmail.com",
+          "abdulkhalequebaf@gmail.com",
+          "lima.akter.1323@gmail.com",
+          "ahmad.muttaqeen@gmail.com",
+          "nusaiba.jannat.alifa@gmail.com",
+          "afia.ahmed.adiba@gmail.com",
+          "darulahmed467170@gmail.com",
+          "madina.manjeel.tv@gmail.com"
+        ];
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const contentWrapper = document.getElementById('content-wrapper');
+        const loadingMessage = document.getElementById('loading-message-auth');
+
+        const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+
+        if (hasLoggedInBefore === 'true') {
+            loadingMessage.style.display = 'none';
+            contentWrapper.style.display = 'flex'; // Use flex to match layout
+            if(window.startApp) window.startApp();
+        }
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const email = user.email;
+            if (allowedEmails.includes(email)) {
+              loadingMessage.style.display = 'none';
+              contentWrapper.style.display = 'flex'; // Use flex to match layout
+              localStorage.setItem('hasLoggedIn', 'true');
+              if(window.startApp && !player) window.startApp(); // Ensure app starts
+            } else {
+              alert("Access denied for: " + email);
+              window.location.href = "https://google.com";
+            }
+          } else {
+            if (hasLoggedInBefore !== 'true') {
+              loadingMessage.style.display = 'block';
+            }
+            signInWithRedirect(auth, provider);
+          }
         });
     </script>
 
