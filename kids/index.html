@@ -3,93 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids</title>
+    <title>Kids Entertainment Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* General Body Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Open Sans', sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-        .newspaper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        .newspaper a {
-            display: inline-block;
-            width: 80%;
+            background: linear-gradient(to bottom right, #B3E0FF, #D9F2FF, #FFFACD); /* Softer sky blue to light blue to light yellow gradient */
+            color: #333;
             text-align: center;
-            padding: 10px;
-            background-color: #003366;
-            border: 1px solid #002244;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 18px;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Header Section */
+        .header {
+            background-color: #FFB6C1; /* Light Pink */
+            padding: 20px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-family: 'Chewy', cursive;
             color: #FFFFFF;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            background-image: linear-gradient(135deg, #003366, #002244);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 3.5em;
+            text-shadow: 4px 4px 0 #FFD700, 6px 6px 0 #FF7F50; /* Gold and Coral shadow */
+            margin: 0;
+            padding: 0;
+            letter-spacing: 2px;
         }
-        .newspaper a:hover {
-            background-color: #002244;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+
+        /* Main Content Wrapper */
+        .main-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent white background */
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 5;
         }
+
+        /* Video Container */
+        .video-wrapper {
+            background-color: #FFF;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            border: 5px solid #8FBC8F; /* Dark Sea Green border */
+        }
+
         .video-container {
             position: relative;
             padding-bottom: 56.25%; /* 16:9 aspect ratio */
             height: 0;
             overflow: hidden;
-            width: 100%; /* Make it full-width to be responsive */
+            width: 100%;
             margin: 0 auto;
             background: #000;
+            border-radius: 10px;
         }
         .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%; /* Make iframe fill the container */
+            width: 100%;
             height: 100%;
             border: 0;
+            border-radius: 10px;
+        }
+
+        /* Navigation Links (Newspaper style renamed for clarity) */
+        .navigation-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            padding: 0 20px; /* Add some padding on the sides */
+        }
+
+        .navigation-links a {
+            display: flex; /* Use flexbox for centering content */
+            justify-content: center;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #AEC6CF; /* Cadet Blue - softer blue */
+            border: 3px solid #6A8A8A; /* Darker Cadet Blue border */
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0 0.3s ease;
+            background-image: linear-gradient(135deg, #AEC6CF, #87CEEB); /* Cadet Blue to Sky Blue */
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            min-height: 60px; /* Ensure consistent height */
+        }
+
+        .navigation-links a:hover {
+            background-color: #87CEEB; /* Sky Blue */
+            transform: translateY(-5px) scale(1.02); /* Lift and slightly scale */
+            box-shadow: 0 10px 20px rgba(0, 150, 255, 0.6);
+            border-color: #FFD700; /* Gold border on hover */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            .navigation-links {
+                grid-template-columns: 1fr; /* Stack links on small screens */
+            }
+            .navigation-links a {
+                font-size: 1.2em;
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .main-content {
+                padding: 10px;
+            }
+            .video-wrapper {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-<br></br>
-    <div class="video-container">
-        <iframe 
-            src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=1" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
+    <div class="header">
+        <h1>Kids Fun Zone!</h1>
     </div>
-    <br></br>
-    <div class="newspaper">
-        <a href="https://m.youtube.com/shorts/Q22NqZwEk9k">Gomgom</a>
+
+    <div class="main-content">
+        <div class="video-wrapper">
+            <div class="video-container">
+                <iframe
+                    src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=1?autoplay=1?autoplay=1&mute=1"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
         </div>
 
-    <div class="newspaper">
-        <a href="https://youtube.com/@sisimpur/videos">Sisimpur</a>
+        <div class="navigation-links">
+            <a href="https://m.youtube.com/shorts/Q22NqZwEk9k">Gomgom</a>
+            <a href="https://youtube.com/@sisimpur/videos">Sisimpur</a>
+            <a href="https://youtube.com/playlist?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu&feature=shared">Bangla Rhymes</a>
+            <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1o_rTz7f9TwG9Kk0PrE6K4m&feature=shared">Dance Music</a>
+            <a href="https://m.youtube.com/@MotuPatluTVShow2024Benga-xv7pl/videos">Motu Patlu</a>
+            <a href="https://m.youtube.com/@MaasrangaKids/playlists">Maasranga Kids</a>
+        </div>
     </div>
-
-    <div class="newspaper">
-        <a href="https://youtube.com/playlist?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu&feature=shared">Bangla Rhymes</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1o_rTz7f9TwG9Kk0PrE6K4m&feature=shared">Dance Music</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://m.youtube.com/@MotuPatluTVShow2024Benga-xv7pl/videos">Motu Patlu</a>
-    </div>
-
-    <div class="newspaper">
-        <a href="https://m.youtube.com/@MaasrangaKids/playlists">Maasranga Kids</a>
-    </div>
-
-  
 </body>
 </html>
-
