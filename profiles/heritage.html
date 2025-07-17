@@ -13,48 +13,48 @@
             background-color: #FDF5E6; /* Warm off-white background (Linen/Cream) */
             color: #3A3A3A; /* Dark grey for text for readability */
         }
-        .main-container { /* Renamed from .container to avoid conflict if any script targets it by that name */
-            max-width: 100%; /* Full width for mobile webview */
+        .main-container {
+            max-width: 100%;
             margin: 0 auto;
-            background-color: #FFFFFF; /* White background for content area */
-            padding: 0; /* Remove padding from main container if header/footer span full width */
+            background-color: #FFFFFF;
+            padding: 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        header.page-header { /* Specific class for the page header */
-            background-color: #5D4037; /* Deep Brown - Heritage Feel */
+        header.page-header {
+            background-color: #5D4037;
             color: #FFFFFF;
             padding: 25px 20px;
             text-align: center;
-            margin-bottom: 0; /* Removed margin as sections will have their own */
+            margin-bottom: 0;
         }
         header.page-header h1 {
             font-family: 'Merriweather', serif;
-            font-size: 2em; /* Adjusted for mobile */
+            font-size: 2em;
             margin: 0;
         }
-        .content-wrapper { /* Wrapper for sections inside main-container */
-            padding: 15px 5px 70px 5px; /* স্টিকি লিঙ্কের জন্য নিচে অতিরিক্ত প্যাডিং যোগ করা হয়েছে */
+        .content-wrapper {
+            padding: 15px 5px 70px 5px;
         }
         .story-section {
             margin-bottom: 30px;
             padding: 20px;
-            background-color: #FFF8F0; /* Lighter cream for sections */
+            background-color: #FFF8F0;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .story-section h2 {
             font-family: 'Merriweather', serif;
-            color: #8B4513; /* SaddleBrown - classic heritage color */
-            border-bottom: 2px solid #D2B48C; /* Tan - complements brown */
+            color: #8B4513;
+            border-bottom: 2px solid #D2B48C;
             padding-bottom: 12px;
             margin-top: 0;
             margin-bottom: 20px;
-            font-size: 1.6em; /* Adjusted for mobile */
+            font-size: 1.6em;
         }
         .story-section p {
             font-size: 1em;
-            color: #555555; /* Slightly lighter dark grey for paragraphs */
-            text-align: left; /* Justify can be harder to read on small screens */
+            color: #555555;
+            text-align: left;
             margin-bottom: 15px;
         }
         .media-container {
@@ -68,7 +68,7 @@
             width: 100%;
             height: auto;
             margin: 20px 0;
-            border: 1px solid #EAEAEA; /* Light border for definition */
+            border: 1px solid #EAEAEA;
         }
         .media iframe {
             border: none;
@@ -81,57 +81,53 @@
         .image-caption {
             text-align: center;
             font-size: 0.85em;
-            margin-top: 0; /* Remove top margin as it's part of .media */
+            margin-top: 0;
             padding: 10px;
             color: #777;
-            background-color: #F8F8F8; /* Light grey background for caption */
+            background-color: #F8F8F8;
             border-top: 1px solid #EAEAEA;
         }
         .clear {
             clear: both;
         }
-        .location-section { /* Location section styling */
+        .location-section {
             margin-top: 30px;
             padding: 25px 20px;
-            background-color: #FFF8F0; /* Consistent with story-section */
+            background-color: #FFF8F0;
             border-radius: 8px;
             text-align: center;
             border-top: 2px solid #D2B48C;
         }
-        .location-section h2 { /* Targeting h2 specifically for location */
+        .location-section h2 {
             font-family: 'Merriweather', serif;
             color: #8B4513;
             margin-bottom: 20px;
             margin-top: 0;
             font-size: 1.4em;
         }
-        /* -- পরিবর্তিত অংশ শুরু -- */
         .document-link-section {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             background-color: #5D4037;
-            padding: 10px 0; /* হাইট কমানো হয়েছে */
+            padding: 10px 0;
             text-align: center;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
             z-index: 1000;
             box-sizing: border-box;
         }
-
         .document-link-section a.simple-link {
-            color: #FFFFFF; /* সাদা রঙের লিঙ্ক */
-            text-decoration: none; /* আন্ডারলাইন সরানো হয়েছে */
+            color: #FFFFFF;
+            text-decoration: none;
             font-weight: 500;
             font-size: 1.1em;
             padding: 5px 10px;
             transition: color 0.3s ease;
         }
-
         .document-link-section a.simple-link:hover {
-            color: #D2B48C; /* হোভার করলে হালকা রঙ পরিবর্তন */
+            color: #D2B48C;
         }
-        /* -- পরিবর্তিত অংশ শেষ -- */
         .video-embed-container, .map-embed-container {
             width: 100%;
             max-width: 100%;
@@ -147,12 +143,12 @@
             border: none;
         }
         .video-embed-container iframe {
-             aspect-ratio: 16 / 9; /* Standard video aspect ratio */
+             aspect-ratio: 16 / 9;
         }
         .map-embed-container iframe {
-            height: 300px; /* Adjusted height for mobile maps */
+            height: 300px;
         }
-        .video-caption { /* Specific class for video caption */
+        .video-caption {
             text-align: center;
             font-size: 0.85em;
             padding: 10px;
@@ -160,12 +156,10 @@
             background-color: #F8F8F8;
             border-top: 1px solid #EAEAEA;
         }
-
-        /* Carousel Styles */
         .carousel-container {
             position: relative;
             max-width: 100%;
-            margin: 25px auto; /* Consistent margin */
+            margin: 25px auto;
             overflow: hidden;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -178,27 +172,27 @@
         .carousel-item {
             min-width: 100%;
             box-sizing: border-box;
-            position: relative; /* For absolute positioning of caption */
+            position: relative;
         }
         .carousel-item img {
             width: 100%;
             height: auto;
             display: block;
             object-fit: cover;
-            aspect-ratio: 4 / 3; /* Maintained user's preferred aspect ratio */
+            aspect-ratio: 4 / 3;
         }
-        .carousel-item .image-caption { /* Styling for captions inside carousel items */
+        .carousel-item .image-caption {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.65); /* Slightly darker for better contrast */
+            background-color: rgba(0, 0, 0, 0.65);
             color: white;
-            padding: 10px; /* More padding */
+            padding: 10px;
             font-size: 0.9em;
             text-align: center;
             box-sizing: border-box;
-            border-top: none; /* Remove border from general .image-caption */
+            border-top: none;
         }
         .carousel-buttons {
             position: absolute;
@@ -208,19 +202,19 @@
             justify-content: space-between;
             transform: translateY(-50%);
             z-index: 10;
-            padding: 0 5px; /* Add some padding so buttons are not edge-to-edge */
+            padding: 0 5px;
             box-sizing: border-box;
         }
         .carousel-buttons button {
-            background-color: rgba(93, 64, 55, 0.7); /* Semi-transparent Deep Brown from header */
+            background-color: rgba(93, 64, 55, 0.7);
             color: white;
             border: none;
-            padding: 0; /* Remove padding, use width/height */
+            padding: 0;
             cursor: pointer;
-            font-size: 18px; /* Adjust icon size if needed */
+            font-size: 18px;
             border-radius: 50%;
-            width: 40px; /* Fixed size */
-            height: 40px; /* Fixed size */
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -228,14 +222,13 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         .carousel-buttons button:hover {
-            background-color: rgba(93, 64, 55, 1); /* Solid Deep Brown */
+            background-color: rgba(93, 64, 55, 1);
         }
-
-        footer.page-footer { /* Specific class for the page footer */
+        footer.page-footer {
             text-align: center;
             padding: 25px 20px;
-            background-color: #4A3B32; /* Darker Brown - for contrast */
-            color: #E0E0E0; /* Light grey text */
+            background-color: #4A3B32;
+            color: #E0E0E0;
             margin-top: 30px;
             font-size: 0.9em;
         }
@@ -371,22 +364,21 @@
                   width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
             </div>
-
         </div>
 
         <div class="document-link-section">
-            <a href="https://drive.google.com/drive/folders/1damaJczo1S1h0Sf71jJirFOKtZz8od31" target="_blank" class="simple-link">View Documents</a>
+            <a href="https://drive.google.com/drive/folders/1damaJczo1S1h0Sf71jJirFOKtZz8od31?view=2" target="_blank" class="simple-link">View Documents</a>
         </div>
         </div>
 
     <script>
         let currentIndex = 0;
         const track = document.getElementById('carouselTrack');
-        const items = track.children; // Get the carousel items
+        const items = track.children;
         const totalSlides = items.length;
 
         function updateCarousel() {
-            const slideWidth = track.clientWidth; // Get current width of the track
+            const slideWidth = track.clientWidth;
             track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
         }
 
@@ -400,7 +392,6 @@
             updateCarousel();
         }
 
-        // Ensure carousel is correctly sized on load and resize
         window.addEventListener('load', updateCarousel);
         window.addEventListener('resize', updateCarousel);
     </script>
