@@ -3,286 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Player</title>
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <title>Madina Manjeel TV</title>
     <style>
         :root {
             --primary-bg: #121212;
-            --secondary-bg: #1a1a1a;
-            --text-color: #e0e0e0;
+            --secondary-bg: #1e1e1e;
+            --tertiary-bg: #2a2a2a;
+            --font-color: #ffffff;
             --border-color: #333;
-            --highlight-color: #007bff;
-            --hover-color: #333;
-            --input-bg: #2a2a2a;
-            --input-border: #555;
+            --accent-color: #007bff;
         }
         html, body {
             height: 100%;
             margin: 0;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-color);
         }
-        #loading-message-auth {
+        body {
+            background-color: var(--primary-bg);
+            color: var(--font-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            font-size: 1.2em;
-            color: #aaa;
-        }
-        #content-wrapper {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
         }
         .main-container {
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            flex: 1;
-            overflow: hidden;
+            background-color: var(--primary-bg);
         }
-        .player-container {
-            flex-shrink: 0;
-            position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            background-color: #000;
+        .player-section {
             width: 100%;
+            height: 40vh;
+            background-color: #000;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .video-js {
-            position: absolute;
-            top: 0;
-            left: 0;
+        video {
             width: 100%;
             height: 100%;
         }
-        .channel-list-wrapper {
+        .player-placeholder {
+            text-align: center;
+            color: #888;
+        }
+        .player-placeholder.loading {
+            font-size: 1.2em;
+        }
+        .channel-section {
             flex-grow: 1;
-            background-color: var(--secondary-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 10px;
             display: flex;
             flex-direction: column;
+            padding: 15px;
             overflow: hidden;
         }
-        .channel-list-wrapper h3 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            font-size: 1.1em;
-            flex-shrink: 0;
-        }
-        #search-container {
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-        #channel-search {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid var(--input-border);
-            border-radius: 4px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            font-size: 1em;
-        }
-        #channel-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-        #channel-list li {
-            padding: 12px 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #2c2c2c;
-            transition: background-color 0.2s;
-            font-size: 0.95em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #channel-list li:hover {
-            background-color: var(--hover-color);
-        }
-        #channel-list li.active {
-            background-color: var(--highlight-color);
-            color: white;
-            font-weight: bold;
-        }
-        #loading-message-playlist {
-            font-size: 1em;
-            text-align: center;
-            padding: 20px;
-        }
+        .channel-section h2 { margin: 0 0 10px 0; font-size: 1.2em; }
+        #search-box { width: 100%; background-color: var(--tertiary-bg); border: 1px solid var(--border-color); border-radius: 5px; padding: 12px; color: var(--font-color); font-size: 16px; box-sizing: border-box; margin-bottom: 15px; }
+        #channel-list { flex-grow: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+        .channel-item { padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .channel-item:hover { background-color: var(--tertiary-bg); }
+        .channel-item.active { background-color: var(--accent-color); color: var(--font-color); font-weight: bold; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-    <div id="loading-message-auth">
-        Verifying user... Please wait.
-    </div>
-
-    <div id="content-wrapper">
-        <div class="main-container">
-            <div class="player-container">
-                <video id="tv-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'>
-                    <p class="vjs-no-js">To view this video please enable JavaScript.</p>
-                </video>
+    <div class="main-container">
+        <div class="player-section">
+            <video id="videoPlayer" controls autoplay muted></video>
+            <div id="player-placeholder" class="player-placeholder loading">
+                <div>Loading Channel...</div>
             </div>
-            <div class="channel-list-wrapper">
-                <h3>Channel List</h3>
-                <div id="search-container">
-                    <input type="text" id="channel-search" placeholder="Search channels...">
-                </div>
-                <div id="loading-message-playlist">Loading channel list...</div>
-                <ul id="channel-list"></ul>
-            </div>
+        </div>
+        <div class="channel-section">
+            <h2>Channel List</h2>
+            <input type="text" id="search-box" placeholder="Search channels...">
+            <div id="channel-list"></div>
         </div>
     </div>
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    
     <script>
-        function initializePlayerAndPlaylist() {
-            const host = 'https://hd.dgtv.xyz';
-            const username = 'ahmed037';
-            const password = '01601469037';
-            const playlistUrl = `${host}/get.php?username=${username}&password=${password}&type=m3u_plus&output=m3u8`;
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- START: Autoplay Configuration ---
 
-            const channelListElement = document.getElementById('channel-list');
-            const loadingMessage = document.getElementById('loading-message-playlist');
-            const searchInput = document.getElementById('channel-search');
-            const player = videojs('tv-player');
+            // 1. Hardcoded user info for auto-login
+            const userInfo = {
+                server: "https://hd.dgtv.xyz",
+                username: "ahmed037",
+                password: "01601469037"
+            };
+
+            // 2. Name of the channel to autoplay (must be an EXACT match)
+            const AUTOPLAY_CHANNEL_NAME = "BTV HD D2H";
+
+            // --- END: Autoplay Configuration ---
+
+            const videoPlayer = document.getElementById('videoPlayer');
+            const placeholder = document.getElementById('player-placeholder');
+            const channelListDiv = document.getElementById('channel-list');
+            const searchBox = document.getElementById('search-box');
+
+            let hls = new Hls();
             let allChannels = [];
 
-            async function fetchAndDisplayPlaylist() {
+            const loginAndLoadChannels = async () => {
+                const apiUrl = `${userInfo.server}/player_api.php?username=${userInfo.username}&password=${userInfo.password}&action=get_live_streams`;
+
                 try {
-                    const response = await fetch(playlistUrl);
-                    if (!response.ok) throw new Error(`Server error! Status: ${response.status}`);
-                    const m3uText = await response.text();
-                    parseM3U(m3uText);
-                    loadingMessage.style.display = 'none';
-                    if (allChannels.length > 0) {
-                        playChannel(allChannels[0]);
-                        const firstListItem = channelListElement.querySelector('li');
-                        if (firstListItem) firstListItem.classList.add('active');
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+                    const data = await response.json();
+                    
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        allChannels = data;
+                        displayChannels(allChannels);
+
+                        // Find the specific channel to autoplay
+                        const targetChannel = allChannels.find(
+                            channel => channel.name.trim().toLowerCase() === AUTOPLAY_CHANNEL_NAME.trim().toLowerCase()
+                        );
+
+                        if (targetChannel) {
+                            playChannel(targetChannel.stream_id);
+                            // Highlight the channel in the list
+                            const channelElement = document.querySelector(`[data-stream-id='${targetChannel.stream_id}']`);
+                            if(channelElement) channelElement.classList.add('active');
+                        } else {
+                            placeholder.innerHTML = `<div>Channel "${AUTOPLAY_CHANNEL_NAME}" not found. Please select a channel from the list.</div>`;
+                            videoPlayer.style.display = 'none';
+                            placeholder.style.display = 'block';
+                        }
+                    } else {
+                        throw new Error('No channels found or bad credentials.');
                     }
                 } catch (error) {
-                    console.error('Failed to load playlist:', error);
-                    loadingMessage.textContent = 'Failed to load playlist.';
+                    placeholder.innerHTML = `<div>Error: ${error.message}.<br>Ensure CORS extension is ON.</div>`;
+                    console.error('Fetch error:', error);
                 }
-            }
-
-            function parseM3U(text) {
-                const lines = text.split('\n');
-                allChannels = [];
-                for (let i = 0; i < lines.length; i++) {
-                    if (lines[i].startsWith('#EXTINF:')) {
-                        const nameMatch = lines[i].match(/tvg-name="([^"]+)"/);
-                        const channelName = nameMatch ? nameMatch[1] : lines[i].substring(lines[i].lastIndexOf(',') + 1);
-                        const streamUrl = lines[i + 1] ? lines[i + 1].trim() : null;
-                        if (channelName && streamUrl) {
-                            allChannels.push({ name: channelName, url: streamUrl });
-                        }
-                    }
-                }
-                displayChannels(allChannels);
-            }
-
-            function playChannel(channel) {
-                player.src({ src: channel.url, type: 'application/x-mpegURL' });
-                player.play();
-            }
-
-
+            };
 
             function displayChannels(channels) {
-                channelListElement.innerHTML = '';
-                if (channels.length === 0) {
-                    channelListElement.innerHTML = '<li>No channels found.</li>';
-                    return;
-                }
+                channelListDiv.innerHTML = '';
                 channels.forEach(channel => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = channel.name;
-                    listItem.onclick = () => {
-                        document.querySelector('#channel-list li.active')?.classList.remove('active');
-                        listItem.classList.add('active');
-                        playChannel(channel);
-                    };
-                    channelListElement.appendChild(listItem);
+                    const channelItem = document.createElement('div');
+                    channelItem.className = 'channel-item';
+                    channelItem.textContent = channel.name;
+                    channelItem.dataset.streamId = channel.stream_id;
+                    
+                    channelItem.addEventListener('click', () => {
+                        playChannel(channel.stream_id);
+                        document.querySelectorAll('.channel-item').forEach(item => item.classList.remove('active'));
+                        channelItem.classList.add('active');
+                    });
+                    
+                    channelListDiv.appendChild(channelItem);
                 });
             }
 
-            searchInput.addEventListener('input', () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const filtered = allChannels.filter(c => c.name.toLowerCase().includes(searchTerm));
-                displayChannels(filtered);
+            function playChannel(streamId) {
+                placeholder.style.display = 'none';
+                videoPlayer.style.display = 'block';
+                
+                const streamUrl = `${userInfo.server}/live/${userInfo.username}/${userInfo.password}/${streamId}.m3u8`;
+
+                if (Hls.isSupported()) {
+                    if(hls) hls.destroy();
+                    hls = new Hls();
+                    hls.loadSource(streamUrl);
+                    hls.attachMedia(videoPlayer);
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => videoPlayer.play());
+                } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    videoPlayer.src = streamUrl;
+                    videoPlayer.play();
+                }
+            }
+
+            searchBox.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredChannels = allChannels.filter(channel => 
+                    channel.name.toLowerCase().includes(searchTerm)
+                );
+                displayChannels(filteredChannels);
             });
 
-            fetchAndDisplayPlaylist();
-        }
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
-            authDomain: "family-429c7.firebaseapp.com",
-            databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "family-429c7",
-            storageBucket: "family-429c7.appspot.com",
-            messagingSenderId: "982876086618",
-            appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-            measurementId: "G-R7NLCB1B92"
-        };
-
-        const allowedEmails = [
-            "mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com",
-            "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "ahmad.muttaqeen@gmail.com",
-            "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com",
-            "madina.manjeel.tv@gmail.com"
-        ];
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        const contentWrapper = document.getElementById('content-wrapper');
-        const loadingMessage = document.getElementById('loading-message-auth');
-        let appInitialized = false;
-
-        function showContent() {
-            loadingMessage.style.display = 'none';
-            contentWrapper.style.display = 'flex';
-            if (!appInitialized) {
-                initializePlayerAndPlaylist();
-                appInitialized = true;
-            }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                if (allowedEmails.includes(user.email)) {
-                    localStorage.setItem('hasLoggedIn', 'true');
-                    showContent();
-                } else {
-                    alert("Access denied for: " + user.email);
-                    window.location.href = "https://google.com";
-                }
-            } else {
-                if (localStorage.getItem('hasLoggedIn') === 'true') {
-                    // This case is for when a user was previously logged in but the session expired.
-                    // We can attempt a silent sign-in, but redirecting is safer.
-                    signInWithRedirect(auth, provider);
-                } else {
-                    signInWithRedirect(auth, provider);
-                }
-            }
+            // --- Automatically start the process on page load ---
+            loginAndLoadChannels();
         });
     </script>
-
 </body>
 </html>
