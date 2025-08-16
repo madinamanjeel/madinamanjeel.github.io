@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Madina Manjeel TV</title>
+    <title>Xtream IPTV Player</title>
     <style>
         :root {
             --primary-bg: #121212;
@@ -47,12 +47,12 @@
         video {
             width: 100%;
             height: 100%;
-            display: none; /* Hide video player initially */
+            display: none;
         }
         .player-placeholder {
             text-align: center;
             color: #888;
-            display: none; /* Hide this element initially */
+            display: none;
         }
         .play-icon {
             font-size: 60px;
@@ -135,7 +135,7 @@
 <body class="show-login">
 
     <div id="login-form">
-        <h2>Madina Manjeel TV</h2>
+        <h2>IPTV Player Login</h2>
         <form id="credentials-form">
             <div class="input-group">
                 <label for="server-url">Server URL</label>
@@ -286,6 +286,41 @@
                     channel.name.toLowerCase().includes(searchTerm)
                 );
                 displayChannels(filteredChannels);
+            });
+
+            // Handle fullscreen and orientation change
+            videoPlayer.addEventListener('fullscreenchange', (event) => {
+                if (document.fullscreenElement) {
+                    // Lock screen to landscape mode when entering fullscreen
+                    try {
+                        screen.orientation.lock('landscape').catch(e => console.log(e));
+                    } catch (e) {
+                        console.error("Screen Orientation API not supported or permission denied.", e);
+                    }
+                } else {
+                    // Unlock screen orientation when exiting fullscreen
+                    try {
+                        screen.orientation.unlock();
+                    } catch (e) {
+                        console.log("Orientation unlock failed.", e);
+                    }
+                }
+            });
+
+            // PiP functionality (optional)
+            // You can also add a separate button for PiP if you want
+            videoPlayer.addEventListener('click', async () => {
+                if ('pictureInPictureEnabled' in document) {
+                    if (document.pictureInPictureElement) {
+                        await document.exitPictureInPicture();
+                    } else if (!videoPlayer.paused && !videoPlayer.ended) {
+                        try {
+                            await videoPlayer.requestPictureInPicture();
+                        } catch (error) {
+                            console.error('PiP mode failed:', error);
+                        }
+                    }
+                }
             });
         });
     </script>
