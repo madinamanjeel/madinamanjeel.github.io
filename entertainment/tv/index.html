@@ -33,6 +33,8 @@
             flex-direction: column;
             background-color: var(--primary-bg);
         }
+
+        /* Player Section */
         .player-section {
             width: 100%;
             height: 40vh;
@@ -45,14 +47,18 @@
         video {
             width: 100%;
             height: 100%;
+            display: none; /* Hide video player initially */
         }
         .player-placeholder {
             text-align: center;
             color: #888;
+            display: none; /* Hide this element initially */
         }
-        .player-placeholder.loading {
-            font-size: 1.2em;
+        .play-icon {
+            font-size: 60px;
         }
+
+        /* Channel Section */
         .channel-section {
             flex-grow: 1;
             display: flex;
@@ -60,22 +66,100 @@
             padding: 15px;
             overflow: hidden;
         }
-        .channel-section h2 { margin: 0 0 10px 0; font-size: 1.2em; }
-        #search-box { width: 100%; background-color: var(--tertiary-bg); border: 1px solid var(--border-color); border-radius: 5px; padding: 12px; color: var(--font-color); font-size: 16px; box-sizing: border-box; margin-bottom: 15px; }
-        #channel-list { flex-grow: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
-        .channel-item { padding: 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .channel-item:hover { background-color: var(--tertiary-bg); }
-        .channel-item.active { background-color: var(--accent-color); color: var(--font-color); font-weight: bold; }
+        .channel-section h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        #search-box {
+            width: 100%;
+            background-color: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 12px;
+            color: var(--font-color);
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        #channel-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .channel-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .channel-item:hover {
+            background-color: var(--tertiary-bg);
+        }
+        .channel-item.active {
+            background-color: var(--accent-color);
+            color: var(--font-color);
+            font-weight: bold;
+        }
+        .main-container, #login-form {
+            display: none;
+        }
+        body.show-login #login-form,
+        body.show-player .main-container {
+            display: flex;
+        }
+
+        /* Login Form Styles */
+        #login-form {
+            background-color: var(--secondary-bg);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            flex-direction: column;
+        }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #aaa; }
+        .input-group input { width: 100%; padding: 10px; box-sizing: border-box; border-radius: 4px; border: 1px solid var(--border-color); background-color: var(--tertiary-bg); color: var(--font-color); font-size: 16px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 4px; background-color: var(--accent-color); color: var(--font-color); font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        #loader { text-align: center; display: none; margin-top: 15px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
-<body>
+<body class="show-login">
+
+    <div id="login-form">
+        <h2>Madina Manjeel TV</h2>
+        <form id="credentials-form">
+            <div class="input-group">
+                <label for="server-url">Server URL</label>
+                <input type="text" id="server-url" value="https://hd.dgtv.xyz" required>
+            </div>
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" value="ahmed037" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Load Channels</button>
+            <div id="loader">Loading...</div>
+        </form>
+    </div>
 
     <div class="main-container">
         <div class="player-section">
-            <video id="videoPlayer" controls autoplay muted></video>
-            <div id="player-placeholder" class="player-placeholder loading">
-                <div>Loading Channel...</div>
+            <video id="videoPlayer" controls></video>
+            <div id="player-placeholder" class="player-placeholder">
+                <div class="play-icon">▶</div>
+                <div>Select a channel to play</div>
             </div>
         </div>
         <div class="channel-section">
@@ -87,29 +171,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- START: Autoplay Configuration ---
-
-            // 1. Hardcoded user info for auto-login
-            const userInfo = {
-                server: "https://hd.dgtv.xyz",
-                username: "ahmed037",
-                password: "01601469037"
-            };
-
-            // 2. Name of the channel to autoplay (must be an EXACT match)
-            const AUTOPLAY_CHANNEL_NAME = "BTV HD D2H";
-
-            // --- END: Autoplay Configuration ---
-
+            const credentialsForm = document.getElementById('credentials-form');
+            const loader = document.getElementById('loader');
             const videoPlayer = document.getElementById('videoPlayer');
             const placeholder = document.getElementById('player-placeholder');
             const channelListDiv = document.getElementById('channel-list');
             const searchBox = document.getElementById('search-box');
+            const body = document.body;
+            const passwordInput = document.getElementById('password');
 
             let hls = new Hls();
             let allChannels = [];
+            let userInfo = {};
 
-            const loginAndLoadChannels = async () => {
+            // Load saved password from localStorage
+            const savedPassword = localStorage.getItem('iptvPassword');
+            if (savedPassword) {
+                passwordInput.value = savedPassword;
+            }
+
+            credentialsForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                loader.style.display = 'block';
+
+                userInfo = {
+                    server: document.getElementById('server-url').value,
+                    username: document.getElementById('username').value,
+                    password: passwordInput.value
+                };
+                
+                // Save the password to localStorage for next time
+                localStorage.setItem('iptvPassword', userInfo.password);
+
                 const apiUrl = `${userInfo.server}/player_api.php?username=${userInfo.username}&password=${userInfo.password}&action=get_live_streams`;
 
                 try {
@@ -120,30 +213,31 @@
                     if (data && Array.isArray(data) && data.length > 0) {
                         allChannels = data;
                         displayChannels(allChannels);
+                        body.classList.remove('show-login');
+                        body.classList.add('show-player');
 
-                        // Find the specific channel to autoplay
-                        const targetChannel = allChannels.find(
-                            channel => channel.name.trim().toLowerCase() === AUTOPLAY_CHANNEL_NAME.trim().toLowerCase()
-                        );
-
-                        if (targetChannel) {
-                            playChannel(targetChannel.stream_id);
-                            // Highlight the channel in the list
-                            const channelElement = document.querySelector(`[data-stream-id='${targetChannel.stream_id}']`);
-                            if(channelElement) channelElement.classList.add('active');
-                        } else {
-                            placeholder.innerHTML = `<div>Channel "${AUTOPLAY_CHANNEL_NAME}" not found. Please select a channel from the list.</div>`;
-                            videoPlayer.style.display = 'none';
-                            placeholder.style.display = 'block';
+                        // Automatically play "BTV HD D2H"
+                        const btvChannel = allChannels.find(channel => channel.name.toLowerCase() === 'btv hd d2h');
+                        if (btvChannel) {
+                            playChannel(btvChannel.stream_id);
+                            // Highlight the active channel in the list
+                            const btvItem = channelListDiv.querySelector(`[data-stream-id="${btvChannel.stream_id}"]`);
+                            if (btvItem) {
+                                btvItem.classList.add('active');
+                            }
                         }
                     } else {
                         throw new Error('No channels found or bad credentials.');
                     }
                 } catch (error) {
-                    placeholder.innerHTML = `<div>Error: ${error.message}.<br>Ensure CORS extension is ON.</div>`;
+                    alert(`Failed to load channels.\nError: ${error.message}\n\nPlease ensure the server URL is correct and your CORS extension is enabled.`);
                     console.error('Fetch error:', error);
+                    // Clear the saved password if login fails
+                    localStorage.removeItem('iptvPassword');
+                } finally {
+                    loader.style.display = 'none';
                 }
-            };
+            });
 
             function displayChannels(channels) {
                 channelListDiv.innerHTML = '';
@@ -175,6 +269,11 @@
                     hls.loadSource(streamUrl);
                     hls.attachMedia(videoPlayer);
                     hls.on(Hls.Events.MANIFEST_PARSED, () => videoPlayer.play());
+                    hls.on(Hls.Events.ERROR, (event, data) => {
+                        if (data.fatal) {
+                            console.error('Fatal HLS error:', data);
+                        }
+                    });
                 } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
                     videoPlayer.src = streamUrl;
                     videoPlayer.play();
@@ -188,9 +287,6 @@
                 );
                 displayChannels(filteredChannels);
             });
-
-            // --- Automatically start the process on page load ---
-            loginAndLoadChannels();
         });
     </script>
 </body>
