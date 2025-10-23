@@ -139,15 +139,15 @@
         <form id="credentials-form">
             <div class="input-group">
                 <label for="server-url">Server URL</label>
-                <input type="text" id="server-url" value="https://hd.dgtv.xyz" required>
+                <input type="text" id="server-url" value="http://tv.dgtv.xyz:8080" required>
             </div>
             <div class="input-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" value="ahmed037" required>
+                <input type="text" id="username" value="ahmed9037" required>
             </div>
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" value="01601469037" required>
             </div>
             <button type="submit">Load Channels</button>
             <div id="loader">Loading...</div>
@@ -184,11 +184,11 @@
             let allChannels = [];
             let userInfo = {};
 
-            // Load saved password from localStorage
-            const savedPassword = localStorage.getItem('iptvPassword');
-            if (savedPassword) {
-                passwordInput.value = savedPassword;
-            }
+            // Load saved password from localStorage (Removed old logic to prioritize input value)
+            // const savedPassword = localStorage.getItem('iptvPassword');
+            // if (savedPassword) {
+            //     passwordInput.value = savedPassword;
+            // }
 
             credentialsForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -197,10 +197,11 @@
                 userInfo = {
                     server: document.getElementById('server-url').value,
                     username: document.getElementById('username').value,
-                    password: passwordInput.value
+                    // **Password এখন ইনপুট ভ্যালু থেকেই নেবে, যা উপরে পরিবর্তন করা হয়েছে**
+                    password: passwordInput.value 
                 };
                 
-                // Save the password to localStorage for next time
+                // Save the password to localStorage for next time (Optional - can be removed if you don't want it saved)
                 localStorage.setItem('iptvPassword', userInfo.password);
 
                 const apiUrl = `${userInfo.server}/player_api.php?username=${userInfo.username}&password=${userInfo.password}&action=get_live_streams`;
@@ -233,7 +234,7 @@
                     alert(`Failed to load channels.\nError: ${error.message}\n\nPlease ensure the server URL is correct and your CORS extension is enabled.`);
                     console.error('Fetch error:', error);
                     // Clear the saved password if login fails
-                    localStorage.removeItem('iptvPassword');
+                    // localStorage.removeItem('iptvPassword');
                 } finally {
                     loader.style.display = 'none';
                 }
