@@ -143,11 +143,11 @@
             </div>
             <div class="input-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" value="ahmed9037" required>
+                <input type="text" id="username" value="" required>
             </div>
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" value="01601469037" required>
+                <input type="password" id="password" value="" required>
             </div>
             <button type="submit">Load Channels</button>
             <div id="loader">Loading...</div>
@@ -178,31 +178,35 @@
             const channelListDiv = document.getElementById('channel-list');
             const searchBox = document.getElementById('search-box');
             const body = document.body;
+            
+            const serverUrlInput = document.getElementById('server-url');
+            const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
 
             let hls = new Hls();
             let allChannels = [];
             let userInfo = {};
-
-            // Load saved password from localStorage (Removed old logic to prioritize input value)
-            // const savedPassword = localStorage.getItem('iptvPassword');
-            // if (savedPassword) {
-            //     passwordInput.value = savedPassword;
-            // }
+            
+            const savedUsername = localStorage.getItem('iptvUsername');
+            const savedPassword = localStorage.getItem('iptvPassword');
+            
+            if (savedUsername && savedPassword) {
+                usernameInput.value = savedUsername;
+                passwordInput.value = savedPassword;
+            } else {
+                usernameInput.value = '';
+                passwordInput.value = '';
+            }
 
             credentialsForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 loader.style.display = 'block';
 
                 userInfo = {
-                    server: document.getElementById('server-url').value,
-                    username: document.getElementById('username').value,
-                    // **Password এখন ইনপুট ভ্যালু থেকেই নেবে, যা উপরে পরিবর্তন করা হয়েছে**
-                    password: passwordInput.value 
+                    server: serverUrlInput.value,
+                    username: usernameInput.value,
+                    password: passwordInput.value
                 };
-                
-                // Save the password to localStorage for next time (Optional - can be removed if you don't want it saved)
-                localStorage.setItem('iptvPassword', userInfo.password);
 
                 const apiUrl = `${userInfo.server}/player_api.php?username=${userInfo.username}&password=${userInfo.password}&action=get_live_streams`;
 
@@ -217,24 +221,32 @@
                         body.classList.remove('show-login');
                         body.classList.add('show-player');
 
-                        // Automatically play "BTV HD D2H"
-                        const btvChannel = allChannels.find(channel => channel.name.toLowerCase() === 'btv hd d2h');
+                        localStorage.setItem('iptvUsername', userInfo.username);
+                        localStorage.setItem('iptvPassword', userInfo.password);
+
+                        const autoPlayChannelName = 'BD | BTV National'; 
+                        const btvChannel = allChannels.find(channel => channel.name.toLowerCase() === autoPlayChannelName.toLowerCase());
+                        
                         if (btvChannel) {
                             playChannel(btvChannel.stream_id);
-                            // Highlight the active channel in the list
-                            const btvItem = channelListDiv.querySelector(`[data-stream-id="${btvChannel.stream_id}"]`);
-                            if (btvItem) {
-                                btvItem.classList.add('active');
-                            }
+                            
+                            setTimeout(() => {
+                                const btvItem = channelListDiv.querySelector(`[data-stream-id="${btvChannel.stream_id}"]`);
+                                if (btvItem) {
+                                    document.querySelectorAll('.channel-item').forEach(item => item.classList.remove('active'));
+                                    btvItem.classList.add('active');
+                                    btvItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            }, 50);
                         }
                     } else {
-                        throw new Error('No channels found or bad credentials.');
+                        localStorage.removeItem('iptvUsername');
+                        localStorage.removeItem('iptvPassword');
+                        throw new Error('No channels found or bad credentials. Please try again.');
                     }
                 } catch (error) {
-                    alert(`Failed to load channels.\nError: ${error.message}\n\nPlease ensure the server URL is correct and your CORS extension is enabled.`);
+                    alert(`Failed to load channels.\nError: ${error.message}\n\nPlease ensure the server URL is correct.`);
                     console.error('Fetch error:', error);
-                    // Clear the saved password if login fails
-                    // localStorage.removeItem('iptvPassword');
                 } finally {
                     loader.style.display = 'none';
                 }
@@ -269,15 +281,18 @@
                     hls = new Hls();
                     hls.loadSource(streamUrl);
                     hls.attachMedia(videoPlayer);
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => videoPlayer.play());
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => videoPlayer.play().catch(e => console.log("Autoplay prevented:", e)));
                     hls.on(Hls.Events.ERROR, (event, data) => {
                         if (data.fatal) {
                             console.error('Fatal HLS error:', data);
+                            videoPlayer.style.display = 'none';
+                            placeholder.style.display = 'block';
+                            alert('Stream playback failed (Fatal Error). Please try another channel.');
                         }
                     });
                 } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
                     videoPlayer.src = streamUrl;
-                    videoPlayer.play();
+                    videoPlayer.play().catch(e => console.log("Autoplay prevented:", e));
                 }
             }
 
@@ -289,17 +304,14 @@
                 displayChannels(filteredChannels);
             });
 
-            // Handle fullscreen and orientation change
             videoPlayer.addEventListener('fullscreenchange', (event) => {
                 if (document.fullscreenElement) {
-                    // Lock screen to landscape mode when entering fullscreen
                     try {
                         screen.orientation.lock('landscape').catch(e => console.log(e));
                     } catch (e) {
                         console.error("Screen Orientation API not supported or permission denied.", e);
                     }
                 } else {
-                    // Unlock screen orientation when exiting fullscreen
                     try {
                         screen.orientation.unlock();
                     } catch (e) {
@@ -308,8 +320,6 @@
                 }
             });
 
-            // PiP functionality (optional)
-            // You can also add a separate button for PiP if you want
             videoPlayer.addEventListener('click', async () => {
                 if ('pictureInPictureEnabled' in document) {
                     if (document.pictureInPictureElement) {
