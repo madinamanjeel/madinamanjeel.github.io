@@ -143,11 +143,11 @@
             </div>
             <div class="input-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" value="ahmed9037" required>
+                <input type="text" id="username" value="" required>
             </div>
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" value="01601469037" required>
+                 <input type="password" id="password" value="" required>
             </div>
             <button type="submit">Load Channels</button>
             <div id="loader">Loading...</div>
@@ -179,16 +179,25 @@
             const searchBox = document.getElementById('search-box');
             const body = document.body;
             const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
 
             let hls = new Hls();
             let allChannels = [];
             let userInfo = {};
 
-            // Load saved password from localStorage (Removed old logic to prioritize input value)
-            // const savedPassword = localStorage.getItem('iptvPassword');
-            // if (savedPassword) {
-            //     passwordInput.value = savedPassword;
-            // }
+            // নতুন কোড: localStorage থেকে ইউজারনেম এবং পাসওয়ার্ড লোড করো
+            // সার্ভার URL যেহেতু HTML-এই সেট করা আছে, তাই সেটি লোড করার দরকার নেই।
+            const savedUsername = localStorage.getItem('iptvUsername');
+            const savedPassword = localStorage.getItem('iptvPassword');
+            
+            // যদি localStorage-এ ইউজারনেম বা পাসওয়ার্ড থাকে, তাহলে তা ইনপুট ফিল্ডে পূরণ করো
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+            }
+            if (savedPassword) {
+                passwordInput.value = savedPassword;
+            }
+            // শেষ নতুন কোড
 
             credentialsForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -196,14 +205,13 @@
 
                 userInfo = {
                     server: document.getElementById('server-url').value,
-                    username: document.getElementById('username').value,
-                    // **Password এখন ইনপুট ভ্যালু থেকেই নেবে, যা উপরে পরিবর্তন করা হয়েছে**
-                    password: passwordInput.value 
+                    username: usernameInput.value, // usernameInput.value
+                    password: passwordInput.value // passwordInput.value
                 };
                 
-                // Save the password to localStorage for next time (Optional - can be removed if you don't want it saved)
-                localStorage.setItem('iptvPassword', userInfo.password);
-
+                // পরিবর্তন: যদি লগইন সফল হয়, তাহলে ইউজারনেম ও পাসওয়ার্ড localStorage-এ সংরক্ষণ করো
+                // যদি লগইন সফল না হয়, তাহলে নিচে catch ব্লকে তা মুছে ফেলার ব্যবস্থা করা হবে।
+                
                 const apiUrl = `${userInfo.server}/player_api.php?username=${userInfo.username}&password=${userInfo.password}&action=get_live_streams`;
 
                 try {
@@ -217,6 +225,11 @@
                         body.classList.remove('show-login');
                         body.classList.add('show-player');
 
+                        // সাক্সেসফুল লগইনের পর ইউজারনেম এবং পাসওয়ার্ড সংরক্ষণ করো
+                        localStorage.setItem('iptvUsername', userInfo.username);
+                        localStorage.setItem('iptvPassword', userInfo.password);
+
+
                         // Automatically play "BTV HD D2H"
                         const btvChannel = allChannels.find(channel => channel.name.toLowerCase() === 'btv hd d2h');
                         if (btvChannel) {
@@ -228,13 +241,16 @@
                             }
                         }
                     } else {
+                        // যদি সার্ভার থেকে কোনো চ্যানেল না আসে, তাহলে এটিও ফেইল্ড লগইন হিসাবে গণ্য হতে পারে
                         throw new Error('No channels found or bad credentials.');
                     }
                 } catch (error) {
                     alert(`Failed to load channels.\nError: ${error.message}\n\nPlease ensure the server URL is correct and your CORS extension is enabled.`);
                     console.error('Fetch error:', error);
-                    // Clear the saved password if login fails
-                    // localStorage.removeItem('iptvPassword');
+                    
+                    // লগইন ব্যর্থ হলে সেভ করা ক্রেডেনশিয়ালস মুছে ফেলো (যদি থাকে)
+                    localStorage.removeItem('iptvUsername');
+                    localStorage.removeItem('iptvPassword');
                 } finally {
                     loader.style.display = 'none';
                 }
