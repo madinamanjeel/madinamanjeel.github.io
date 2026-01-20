@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bus Pro - Ultimate Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
+        body { 
+            font-family: 'Hind Siliguri', sans-serif; 
+            background: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Premium Glass Effects */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Route Card Themes with Depth */
+        .card-blue { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .holiday-bg { background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); }
+        .friday-bg { background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%); }
+        .saturday-bg { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+        .route-card { 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border: 2px solid transparent;
+        }
+        
+        .route-card:hover { transform: translateY(-5px); }
+        .route-card.active-ring { 
+            border-color: #fff; 
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            transform: scale(1.02);
+        }
+
+        /* Typography & Notes */
+        .note-regular-grid { color: rgba(255, 255, 255, 0.9); font-weight: 500; font-size: 11px; }
+        .note-regular-list { color: #475569; font-weight: 600; font-size: 10px; }
+        .grid-note { font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* Animation */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-up { animation: slideUp 0.5s ease forward; }
+
+        .bus-glow {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 65px;
+            opacity: 0.15;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <nav class="sticky top-0 z-50 glass-card mx-4 my-3 rounded-3xl border-b-0">
+        <div class="max-w-xl mx-auto px-5 py-3 flex items-center justify-between">
+            <button onclick="changeDate(-1)" class="w-11 h-11 flex items-center justify-center text-blue-600 bg-white/50 rounded-2xl shadow-sm transition active:scale-90"><i class="fas fa-chevron-left"></i></button>
+            <div class="text-center relative">
+                <input type="date" id="date-picker" class="absolute inset-0 opacity-0 cursor-pointer w-full">
+                <h1 id="formatted-date" class="text-lg font-black text-slate-800 tracking-tight leading-none uppercase">-- --- ----</h1>
+                <p id="display-day" class="text-[10px] text-blue-600 font-black uppercase mt-1 tracking-[0.2em]">--</p>
+            </div>
+            <button onclick="changeDate(1)" class="w-11 h-11 flex items-center justify-center text-blue-600 bg-white/50 rounded-2xl shadow-sm transition active:scale-90"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </nav>
+
+    <div class="max-w-xl mx-auto px-5">
+        <div id="status-banner" class="flex items-center justify-between glass-card px-4 py-3 rounded-2xl mb-6">
+            <div class="flex items-center gap-3">
+                <div id="status-dot" class="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)]"></div>
+                <p id="status-name" class="text-xs font-bold text-slate-600 uppercase tracking-wider"></p>
+            </div>
+            <p id="live-clock" class="text-[10px] font-mono font-bold bg-slate-800 text-white px-3 py-1 rounded-full"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8" id="timer-grid"></div>
+
+        <div id="filter-section" class="hidden glass-card rounded-[2.5rem] p-6 mb-8 border-2 border-white/50 animate-up">
+            <div class="flex justify-between items-center mb-5">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-6 bg-blue-500 rounded-full"></div>
+                    <h3 id="filter-title" class="text-slate-800 font-black text-sm uppercase"></h3>
+                </div>
+                <button onclick="closeFilter()" class="text-slate-400 text-xl"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div id="filter-list" class="grid grid-cols-2 gap-4"></div>
+        </div>
+
+        <div class="flex items-center justify-between mb-5 px-1">
+            <h2 class="font-black text-slate-800 text-sm uppercase tracking-widest">Full Schedule</h2>
+            <div class="h-[1px] flex-1 bg-slate-300 ml-4 opacity-50"></div>
+        </div>
+
+        <div id="full-tables-container" class="space-y-8"></div>
+    </div>
+
+    <script>
+        const busData = {
+            workingDay: {
+                "BSR TO AKR": ["05:45 0615 Uttara", "08:30 Regular", "14:00 Regular", "14:30 Regular", "14:40 216", "14:50 Uttara", "15:00 Regular", "15:30 Regular", "17:00 Record Office", "19:30 Regular", "20:30 Regular"],
+                "AKR TO BSR": ["06:00 Regular", "06:50 Regular", "07:10 Regular", "07:10 Female", "07:10 216", "07:10 208", "07:20 JCO", "13:15 Regular", "17:30 Regular", "20:00 Regular", "21:00 Regular"],
+                "AIR HQ TO AKR": ["07:55 Regular", "10:30 Regular", "14:00 Regular", "14:30 Regular", "15:00 Record Office", "16:00 Record Office", "20:15 Regular"],
+                "AKR TO AIR HQ": ["06:45 Regular", "07:00 Regular", "07:05 Regular", "07:10 Regular", "07:15 Regular", "07:20 Regular", "08:20 Aviation University", "13:15 Regular", "19:45 Regular"]
+            },
+            holiday: {
+                "BSR TO AKR": ["05:45 Regular", "08:30 Regular", "12:30 Friday Only", "14:00 Regular", "17:00 Regular", "19:30 Regular", "20:30 Regular"],
+                "AKR TO BSR": ["06:00 Regular", "07:30 Regular", "09:15 Saturday Only", "13:15 Regular", "17:30 Regular", "20:00 Regular", "21:00 Regular"],
+                "AIR HQ TO AKR": ["08:00 Regular", "14:00 Regular", "13:00 Friday Only", "20:15 Regular"],
+                "AKR TO AIR HQ": ["07:30 Regular", "13:15 Regular", "12:30 Friday Only", "19:45 Regular"]
+            }
+        };
+
+        const HOLIDAY_SETTINGS = { fixed: { "02-21": "শহীদ দিবস", "03-26": "স্বাধীনতা দিবস", "05-01": "মে দিবস", "12-16": "বিজয় দিবস" }, variable: { "2026-02-04": "শবে বরাত", "2026-03-20": "ঈদুল ফিতর" } };
+
+        let viewDate = new Date();
+        let currentOpenRoute = null;
+
+        function getNoteClass(note, isGrid = false) {
+            const n = note.toLowerCase();
+            if (n === 'regular') return isGrid ? 'note-regular-grid' : 'note-regular-list';
+            if (n.includes('female')) return isGrid ? 'grid-note text-pink-200' : 'text-pink-600 font-bold';
+            if (n.includes('uttara')) return isGrid ? 'grid-note text-amber-200' : 'text-amber-700 font-bold';
+            if (n.includes('aviation')) return isGrid ? 'grid-note text-indigo-200' : 'text-indigo-600 font-bold';
+            if (n.includes('jco')) return isGrid ? 'grid-note text-emerald-200' : 'text-emerald-700 font-bold';
+            if (n.includes('216')) return isGrid ? 'grid-note text-orange-200' : 'text-orange-600 font-bold';
+            if (n.includes('208')) return isGrid ? 'text-white underline font-bold' : 'text-black font-black';
+            if (n.includes('office')) return isGrid ? 'grid-note text-green-200' : 'text-green-600 font-bold';
+            return isGrid ? 'note-regular-grid' : 'note-regular-list';
+        }
+
+        function filterBusByDay(bList, dayIdx) {
+            return bList.filter(bus => {
+                if (bus.includes("Friday Only") && dayIdx !== 5) return false;
+                if (bus.includes("Saturday Only") && dayIdx !== 6) return false;
+                return true;
+            });
+        }
+
+        function changeDate(days) { viewDate.setDate(viewDate.getDate() + days); currentOpenRoute = null; updateUI(); }
+        document.getElementById('date-picker').addEventListener('change', (e) => { viewDate = new Date(e.target.value); currentOpenRoute = null; updateUI(); });
+
+        function updateUI() {
+            const now = new Date();
+            const isToday = viewDate.toDateString() === now.toDateString();
+            const dayIdx = viewDate.getDay();
+            const mmdd = `${String(viewDate.getMonth() + 1).padStart(2, '0')}-${String(viewDate.getDate()).padStart(2, '0')}`;
+            const holidayName = HOLIDAY_SETTINGS.fixed[mmdd] || HOLIDAY_SETTINGS.variable[viewDate.toISOString().split('T')[0]];
+            const isHoliday = (dayIdx === 5 || dayIdx === 6 || holidayName);
+            const scheduleKey = isHoliday ? 'holiday' : 'workingDay';
+
+            document.getElementById('formatted-date').innerText = viewDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('display-day').innerText = viewDate.toLocaleDateString('bn-BD', { weekday: 'long' });
+
+            const nameLabel = document.getElementById('status-name');
+            const dot = document.getElementById('status-dot');
+            if (holidayName) { nameLabel.innerText = holidayName; dot.className = "w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"; }
+            else if (dayIdx === 5 || dayIdx === 6) { nameLabel.innerText = (dayIdx === 5 ? "শুক্রবার" : "শনিবার"); dot.className = "w-3 h-3 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]"; }
+            else { nameLabel.innerText = "সাধারণ কর্মদিবস"; dot.className = "w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"; }
+
+            let theme = isHoliday ? (dayIdx === 5 ? 'friday-bg' : (dayIdx === 6 ? 'saturday-bg' : 'holiday-bg')) : 'card-blue';
+            const grid = document.getElementById('timer-grid');
+            grid.innerHTML = '';
+            
+            Object.keys(busData[scheduleKey]).forEach(route => {
+                const dayFilteredList = filterBusByDay(busData[scheduleKey][route], dayIdx);
+                const nextBus = getNextBusInfo(dayFilteredList, isToday ? now : null);
+                const isActive = currentOpenRoute === route;
+                
+                grid.innerHTML += `
+                    <div onclick="showRouteDetails('${route}', '${scheduleKey}')" 
+                         class="route-card p-6 text-white rounded-[2rem] shadow-xl ${theme} ${isActive ? 'active-ring' : ''}">
+                        <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest mb-1">${route}</p>
+                        <h3 class="text-3xl font-black leading-none">${nextBus.time}</h3>
+                        <p class="text-[10px] mt-2 font-bold ${getNoteClass(nextBus.note, true)}">${nextBus.note}</p>
+                        <div class="mt-4 bg-white/20 backdrop-blur-md inline-block px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-tighter">
+                            ${nextBus.label}
+                        </div>
+                        <i class="fas fa-bus bus-glow"></i>
+                    </div>`;
+            });
+
+            renderFullTables(scheduleKey, dayIdx);
+        }
+
+        function showRouteDetails(route, type) {
+            const section = document.getElementById('filter-section');
+            if (currentOpenRoute === route) { closeFilter(); return; }
+            currentOpenRoute = route;
+            updateUI();
+
+            const now = new Date();
+            const dayIdx = viewDate.getDay();
+            const isToday = viewDate.toDateString() === now.toDateString();
+            const times = filterBusByDay(busData[type][route], dayIdx);
+            const filtered = isToday ? times.filter(t => {
+                let [h, m] = t.split(' ')[0].split(':');
+                let bTime = new Date(); bTime.setHours(h, m, 0);
+                return bTime > now;
+            }) : times;
+
+            section.classList.remove('hidden');
+            document.getElementById('filter-title').innerText = route;
+            const list = document.getElementById('filter-list');
+            list.innerHTML = filtered.length > 0 ? filtered.map(t => {
+                const parts = t.split(' ');
+                const time = parts[0];
+                const note = parts.slice(1).join(' ') || "Regular";
+                return `<div class="bg-white/50 p-4 rounded-3xl text-center border border-white">
+                    <p class="text-blue-700 font-black text-xl leading-none">${time}</p>
+                    <p class="text-[9px] uppercase font-black mt-2 ${getNoteClass(note, false)}">${note}</p>
+                </div>`;
+            }).join('') : '<p class="col-span-2 text-center text-slate-400 py-4 font-bold italic">No more buses today</p>';
+            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function closeFilter() { document.getElementById('filter-section').classList.add('hidden'); currentOpenRoute = null; updateUI(); }
+
+        function getNextBusInfo(times, refTime) {
+            if (times.length === 0) return { time: "--:--", note: "", label: "No Trips" };
+            let targetBus = times[0]; let label = "Next Up";
+            if (refTime) {
+                let found = false;
+                for (let tStr of times) {
+                    let [h, m] = tStr.split(' ')[0].split(':');
+                    let bTime = new Date(); bTime.setHours(h, m, 0);
+                    if (bTime > refTime) { targetBus = tStr; let diff = Math.floor((bTime - refTime) / 60000); label = `${Math.floor(diff/60)}h ${diff%60}m Left`; found = true; break; }
+                }
+                if (!found) return { time: "DONE", note: "See you tomorrow", label: "Ended" };
+            }
+            const parts = targetBus.split(' ');
+            return { time: parts[0], note: parts.slice(1).join(' ') || "Regular", label: label };
+        }
+
+        function renderFullTables(type, dayIdx) {
+            const container = document.getElementById('full-tables-container');
+            const layouts = [{ title: 'BSR MT ROUTE', r: ['BSR TO AKR', 'AKR TO BSR'] }, { title: 'AIR HQ ROUTE', r: ['AIR HQ TO AKR', 'AKR TO AIR HQ'] }];
+            container.innerHTML = layouts.map(l => `
+                <div class="glass-card rounded-[2.5rem] overflow-hidden">
+                    <div class="bg-slate-800 text-white py-3 text-[10px] font-black text-center uppercase tracking-[0.3em]">${l.title}</div>
+                    <div class="grid grid-cols-2 divide-x divide-slate-200/50">
+                        ${l.r.map(rName => {
+                            const filteredList = filterBusByDay(busData[type][rName], dayIdx);
+                            return `<div class="p-4">
+                                <p class="text-[9px] font-black text-blue-600 mb-5 text-center bg-blue-50/50 py-1.5 rounded-2xl uppercase tracking-tighter">${rName}</p>
+                                ${filteredList.map(t => {
+                                    const parts = t.split(' ');
+                                    const time = parts[0];
+                                    const note = parts.slice(1).join(' ') || "Regular";
+                                    return `<div class="mb-4 text-center">
+                                        <p class="text-slate-800 font-black text-sm leading-none">${time}</p>
+                                        <p class="text-[9px] uppercase font-bold mt-1.5 ${getNoteClass(note, false)}">${note}</p>
+                                    </div>`;
+                                }).join('')}
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>`).join('');
+        }
+
+        setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' }); }, 1000);
+        updateUI();
+    </script>
+</body>
+</html>
