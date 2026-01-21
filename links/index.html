@@ -179,7 +179,6 @@
                 padding: 8px 0;
             }
             .container {
-                /* For screens up to 768px (most tablets and larger phones), two columns */
                 grid-template-columns: repeat(2, 1fr); 
                 padding: 15px;
             }
@@ -195,9 +194,6 @@
 
         @media (max-width: 480px) { /* Smaller mobile screens */
             .container {
-                /* For very small mobile screens (e.g., iPhone SE), still keep two columns
-                   if the content fits well, or switch to 1fr if necessary for extreme cases.
-                   Using minmax(120px, 1fr) ensures minimum width while allowing flexibility. */
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
             }
             .section-heading {
@@ -255,6 +251,10 @@
         <a href="https://www.baf.mil.bd/index.php" class="service-link sky-white">
             <i class="fas fa-plane"></i>
             বাংলাদেশ বিমান বাহিনী
+        </a>
+        <a href="https://madinamanjeel.github.io/baf/bus/index.html" class="service-link sky-white">
+            <i class="fas fa-bus"></i>
+            সার্ভিস বাস শিডিউল
         </a>
         <a href="https://psolution.baf.mil.bd/" class="service-link sky-white">
             <i class="fas fa-hand-holding-usd"></i>
