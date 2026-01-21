@@ -17,7 +17,7 @@
         .inner-box { background: white; border-radius: 18px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; margin-top: 8px; min-height: 90px; }
         .time-val { font-size: 24px; font-weight: 900; color: #1e293b; line-height: 1; }
 
-        /* নোট কালার */
+        
         .note-regular { color: #64748b; font-weight: 700; }
         .note-female { color: #db2777; font-weight: 900; }
         .note-aaub { color: #2563eb; font-weight: 900; }
@@ -167,7 +167,7 @@
         const isToday = viewDate.toDateString() === now.toDateString();
         if (openRoute === route) { closeFilter(); } else {
             openRoute = route; section.classList.remove('hidden');
-            // Changed "NEXT TRIPS" to "NEXT BUSES"
+            
             document.getElementById('filter-title').innerText = route + " (NEXT BUSES)";
             let list = filterBusesByDay(busData[type][route], dayIdx);
             if (isToday) { list = list.filter(t => { const [h, m] = t.split(' ')[0].split(':'); const bTime = new Date(); bTime.setHours(parseInt(h), parseInt(m), 0); return bTime > now; }); }
