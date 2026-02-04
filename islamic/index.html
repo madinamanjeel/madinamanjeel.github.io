@@ -56,10 +56,6 @@
             background-position: center;
         }
 
-        .direction-text {
-            display: none;
-        }
-
         .error-message {
             margin-top: 10px;
             color: red;
@@ -84,45 +80,31 @@
             border: 0;
         }
 
-        .search-container {
-            text-align: center;
-            padding: 20px;
-            background-color: #f4f4f4;
+        /* Banner Style for Hanafi Fiqh */
+        .banner-container {
             display: flex;
             justify-content: center;
-            align-items: center;
+            margin: 20px 0 15px 0;
         }
-        .search-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: scale(0.7);
+        .banner-container a {
+            width: 80%;
+            display: block;
+            text-decoration: none;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
-        .search-container form {
-            display: flex;
-            align-items: center;
+        .banner-container a:hover {
+            transform: scale(1.02);
         }
-        .search-container input[type="text"] {
-            padding: 10px;
-            border: 2px solid #003366;
-            border-radius: 5px;
-            font-size: 16px;
-            width: 300px;
-        }
-        .search-container button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #003366;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-        .search-container button:hover {
-            background-color: #ffcc00;
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
+        /* Button Links Style */
         .newspaper {
             display: flex;
             justify-content: center;
@@ -152,16 +134,13 @@
 </head>
 <body>
 
-<!-- Compass -->
 <div class="compass-container">
     <div class="compass-needle" id="needle"></div>
     <div class="qibla-indicator"></div>
 </div>
 
-<div class="direction-text" id="direction" style="display: none;"></div>
 <div class="error-message" id="error" style="display: none;"></div>
 
-<!-- YouTube Video -->
 <div class="video-container">
     <iframe 
         src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" 
@@ -169,8 +148,15 @@
         allowfullscreen>
     </iframe>
 </div>
+
 <p></p>
-<!-- Links -->
+
+<div class="banner-container">
+    <a href="https://hanafifiqh.net/">
+        <img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh">
+    </a>
+</div>
+
 <div class="newspaper">
     <a href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w&feature=shared">Al Quran</a>
 </div>
@@ -225,7 +211,6 @@ function updateCompass(heading) {
     const qiblaAngle = getQiblaAngle(latitude, longitude);
     const rotation = heading + qiblaAngle;
     needle.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
-    // দিক নির্ণয়ের টেক্সট দেখানো হচ্ছে না
 }
 
 let latitude, longitude;
