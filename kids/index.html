@@ -9,8 +9,23 @@
         :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
         body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; }
         
-        #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); position: fixed; width: 100%; height: 100%; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); z-index: 2000; }
-        #content-wrapper { display: none; }
+        /* লোডিং মেসেজটি শুরুতে লুকানো থাকবে */
+        #loading-message { 
+            display: none; 
+            text-align: center; 
+            padding-top: 100px; 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: white; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); 
+            z-index: 2000; 
+        }
+
+        /* কন্টেন্ট ডিফল্টভাবে দেখা যাবে */
+        #content-wrapper { display: block; }
 
         header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
         h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
@@ -20,8 +35,7 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        #gameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        #gameContainer { display: none; margin-bottom: 20px; }
 
         .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 350px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: crosshair; }
         .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
@@ -45,7 +59,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; font-size: 1.1rem; }
+        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 1.1rem; }
         .btn-play { background: var(--secondary); color: white; }
         .btn-cancel { background: #ff4d4d; color: white; }
     </style>
@@ -125,7 +139,6 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // এক্সেস লিস্ট
         const allowedEmails = [
             "mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", 
             "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", 
@@ -135,20 +148,19 @@
             "madina.manjeel.tv@gmail.com"
         ];
 
-        // লোড হওয়ার সাথে সাথে LocalStorage চেক
-        if (localStorage.getItem('kidZoneVerified') === 'true') {
-            document.getElementById('loading-message').style.display = 'none';
-            document.getElementById('content-wrapper').style.display = 'block';
+        // ১. প্রথমেই চেক করবে এই ব্রাউজারে আগে সাকসেসফুল লগইন হয়েছে কি না
+        if (localStorage.getItem('kidZoneVerified') !== 'true') {
+            document.getElementById('loading-message').style.display = 'block';
         }
 
         let currentUser = null;
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 if (allowedEmails.includes(user.email)) {
                     currentUser = user;
                     localStorage.setItem('kidZoneVerified', 'true');
                     document.getElementById('loading-message').style.display = 'none';
-                    document.getElementById('content-wrapper').style.display = 'block';
                     loadOnlineLeaderboard();
                 } else {
                     localStorage.removeItem('kidZoneVerified');
@@ -175,6 +187,7 @@
             });
         }
 
+        // --- GAME FUNCTIONS ---
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
 
         window.gameFunctions = {
@@ -240,9 +253,9 @@
                 const docSnap = await getDoc(userRef);
                 if (!docSnap.exists() || score > docSnap.data().score) {
                     await setDoc(userRef, { name: currentUser.displayName, photo: currentUser.photoURL, score: score, timestamp: new Date() });
-                    document.getElementById('saveMsg').innerText = "নতুন রেকর্ড সেভ হয়েছে! ✅";
+                    document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! ✅";
                 } else {
-                    document.getElementById('saveMsg').innerText = "ভালো খেলেছ! রেকর্ড ভাঙার চেষ্টা করো।";
+                    document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙতে পারোনি, চেষ্টা করো!";
                 }
             }
             document.getElementById('closeModalBtn').style.display = "block";
