@@ -106,17 +106,18 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
+        // আপনার স্ক্রিনশট থেকে পাওয়া সঠিক কনফিগারেশন
         const firebaseConfig = {
-          apiKey: "AIzaSyAXZwMx1egnLtdgExUDepoLB6b20CrGwms",
+          apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
           authDomain: "family-429c7.firebaseapp.com",
           databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
           projectId: "family-429c7",
           storageBucket: "family-429c7.firebasestorage.app",
           messagingSenderId: "982876086618",
-          appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-          measurementId: "G-R7NLCB1B92"
+          appId: "1:982876086618:web:97d56fd46148561cf2d363", // KidsBalloonGame এর App ID
+          measurementId: "G-BSGEN1KEQR"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -125,24 +126,30 @@
         const provider = new GoogleAuthProvider();
 
         let currentUser = null;
-        const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
+        const allowedEmails = [
+            "mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", 
+            "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", 
+            "lima.akter.1323@gmail.com", "ahmad.muttaqeen@gmail.com", 
+            "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", 
+            "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"
+        ];
 
         onAuthStateChanged(auth, (user) => {
-            if (user && allowedEmails.includes(user.email)) {
-                currentUser = user;
-                document.getElementById('loading-message').style.display = 'none';
-                document.getElementById('content-wrapper').style.display = 'block';
-                localStorage.setItem('hasLoggedIn', 'true');
-                loadOnlineLeaderboard();
-            } else if (user) {
-                alert("Access Denied");
-                window.location.href = "https://google.com";
+            if (user) {
+                if (allowedEmails.includes(user.email)) {
+                    currentUser = user;
+                    document.getElementById('loading-message').style.display = 'none';
+                    document.getElementById('content-wrapper').style.display = 'block';
+                    loadOnlineLeaderboard();
+                } else {
+                    alert("আপনার এই ইমেইল দিয়ে ঢোকার অনুমতি নেই: " + user.email);
+                    window.location.href = "https://google.com";
+                }
             } else {
                 signInWithRedirect(auth, provider);
             }
         });
 
-        // Online Leaderboard Loader
         function loadOnlineLeaderboard() {
             const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(5));
             onSnapshot(q, (snapshot) => {
@@ -151,7 +158,7 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     const li = document.createElement('li');
-                    li.innerHTML = `<span><img src="${data.photo || 'https://via.placeholder.com/30'}">${data.name}</span> <strong>${data.score}</strong>`;
+                    li.innerHTML = `<span><img src="${data.photo || 'https://via.placeholder.com/30'}"> ${data.name}</span> <strong>${data.score}</strong>`;
                     list.appendChild(li);
                 });
                 if(snapshot.empty) list.innerHTML = "<li>এখনও কেউ খেলেনি!</li>";
@@ -230,29 +237,24 @@
             gameRunning = false;
             document.getElementById('finalScore').innerText = score;
             document.getElementById('gameOverModal').style.display = 'flex';
-            document.getElementById('saveMsg').innerText = "স্কোর সেভ করা হচ্ছে...";
-            document.getElementById('closeModalBtn').style.display = "none";
+            document.getElementById('saveMsg').innerText = "স্কোর চেক করা হচ্ছে...";
 
             if (currentUser) {
                 try {
                     const userRef = doc(db, "scores", currentUser.uid);
                     const docSnap = await getDoc(userRef);
-                    
-                    // আগের চেয়ে ভালো স্কোর করলেই কেবল আপডেট হবে
                     if (!docSnap.exists() || score > docSnap.data().score) {
                         await setDoc(userRef, {
-                            name: currentUser.displayName,
-                            email: currentUser.email,
+                            name: currentUser.displayName || "বন্ধু",
                             photo: currentUser.photoURL,
                             score: score,
                             timestamp: new Date()
                         });
                         document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! স্কোর সেভ হয়েছে।";
                     } else {
-                        document.getElementById('saveMsg').innerText = "তোমার সেরা স্কোর ছাড়াতে পারোনি!";
+                        document.getElementById('saveMsg').innerText = "সেরা রেকর্ড ভাঙতে পারোনি, চেষ্টা করো!";
                     }
                 } catch (e) {
-                    console.error(e);
                     document.getElementById('saveMsg').innerText = "সেভ করতে সমস্যা হয়েছে।";
                 }
             }
