@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
-        body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; }
+        body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
         #content-wrapper { display: none; }
@@ -23,18 +23,32 @@
         #gameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 350px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: manipulation; }
-        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
+        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 350px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
+        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
         .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        .balloon { position: absolute; width: 50px; height: 70px; border-radius: 50%; bottom: -100px; animation: floatUp linear forwards; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; user-select: none; touch-action: none; pointer-events: auto; }
+        .balloon { 
+            position: absolute; 
+            width: 65px; 
+            height: 85px; 
+            border-radius: 50%; 
+            bottom: -120px; 
+            animation: floatUp linear forwards; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 28px; 
+            cursor: pointer; 
+            user-select: none; 
+            touch-action: none; 
+            pointer-events: auto;
+            /* বক্স সাইজ বাড়িয়ে সেন্সিটিভিটি বাড়ানো হয়েছে */
+            padding: 10px; 
+        }
         
         @keyframes floatUp { 
             0% { transform: translateY(0) translateX(0); }
-            20% { transform: translateY(-120px) translateX(20px); }
-            40% { transform: translateY(-240px) translateX(-20px); }
-            60% { transform: translateY(-360px) translateX(20px); }
-            80% { transform: translateY(-480px) translateX(-20px); }
+            50% { transform: translateY(-310px) translateX(15px); }
             100% { transform: translateY(-620px) translateX(0); }
         }
 
@@ -134,14 +148,7 @@
         const provider = new GoogleAuthProvider();
 
         let currentUser = null;
-        const allowedEmails = [
-            "mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", 
-            "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", 
-            "lima.akter.1323@gmail.com", "lima.akter.0390@gmail.com",
-            "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", 
-            "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", 
-            "madina.manjeel.tv@gmail.com"
-        ];
+        const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "lima.akter.0390@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
 
         if (localStorage.getItem('isVerifiedUser') === 'true') {
             document.getElementById('loading-message').style.display = 'none';
@@ -182,7 +189,7 @@
         }
 
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let spawnRate = 380;
+        let spawnRate = 450; // বেলুন আসার গতি একটু কমানো হয়েছে
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
 
         window.gameFunctions = {
@@ -197,18 +204,14 @@
             },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; spawnRate = 380;
+                gameRunning = true; score = 0; timeLeft = 30; spawnRate = 450;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
-                
                 startSpawning();
-                
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
-                    if(timeLeft === 20) updateSpawnRate(280);
-                    if(timeLeft === 10) updateSpawnRate(200);
                     if(timeLeft <= 0) endGame();
                 }, 1000);
             },
@@ -222,37 +225,32 @@
             gameInterval = setInterval(createBalloon, spawnRate);
         }
 
-        function updateSpawnRate(newRate) {
-            clearInterval(gameInterval);
-            spawnRate = newRate;
-            gameInterval = setInterval(createBalloon, spawnRate);
-        }
-
         function createBalloon() {
             const types = [
-                {e:'🎈', p:10, c:'#FF6B6B', s:55}, 
-                {e:'🦊', p:15, c:'#FF9F1C', s:50}, 
-                {e:'🍎', p:20, c:'#E63946', s:45}, 
-                {e:'💎', p:50, c:'#7209B7', s:40}, 
-                {e:'💣', p:-100, c:'#333', s:60} 
+                {e:'🎈', p:10, c:'#FF6B6B', s:60}, 
+                {e:'🦊', p:15, c:'#FF9F1C', s:55}, 
+                {e:'🍎', p:20, c:'#E63946', s:50}, 
+                {e:'💎', p:50, c:'#7209B7', s:45}, 
+                {e:'💣', p:-100, c:'#333', s:65} 
             ];
 
             const rand = Math.random();
             let type;
-            if (rand < 0.25) type = types[4]; // ২৫% চান্সে বোমা শুরু থেকেই আসবে
-            else if (rand < 0.35) type = types[3];
-            else if (rand < 0.5) type = types[2];
-            else if (rand < 0.7) type = types[1];
+            if (rand < 0.2) type = types[4]; 
+            else if (rand < 0.3) type = types[3];
+            else if (rand < 0.45) type = types[2];
+            else if (rand < 0.65) type = types[1];
             else type = types[0];
 
             const b = document.createElement('div');
             b.className = 'balloon'; b.innerText = type.e;
             b.style.width = type.s + 'px';
-            b.style.height = (type.s * 1.35) + 'px';
-            b.style.background = `radial-gradient(circle at 12px 12px, ${type.c}, #000)`;
-            b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
+            b.style.height = (type.s * 1.3) + 'px';
+            b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
+            b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 70) + 'px';
             
-            const speed = (Math.random() * (timeLeft < 10 ? 0.7 : 1.3)) + 0.8;
+            // বেলুন উপরে ওঠার গতি আরও স্লো করা হয়েছে (১.৫ থেকে ২.৫ সেকেন্ড)
+            const speed = (Math.random() * 1.0) + 1.5;
             b.style.animationDuration = speed + 's';
 
             const popAction = (e) => {
@@ -267,12 +265,11 @@
                 b.remove();
             };
 
+            // টাচ এবং মাউস ইভেন্ট দুটিতেই হাই সেন্সিটিভিটি
             b.addEventListener('touchstart', popAction, {passive: false});
             b.addEventListener('mousedown', popAction);
 
             document.getElementById('gameArea').appendChild(b);
-
-            // মিস করলেও এখন আর পয়েন্ট কাটা যাবে না
             setTimeout(() => { if(b.parentNode) b.remove(); }, speed * 1000);
         }
 
@@ -306,7 +303,7 @@
                             score: score,
                             timestamp: new Date()
                         });
-                        document.getElementById('saveMsg').innerText = "অবিশ্বাস্য! নতুন রেকর্ড! 🔥";
+                        document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! 🔥";
                     } else {
                         document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!";
                     }
