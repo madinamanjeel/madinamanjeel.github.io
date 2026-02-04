@@ -135,7 +135,6 @@
             "madina.manjeel.tv@gmail.com"
         ];
 
-        // ১. ভেরিফিকেশন রিপিট বন্ধ করার লজিক (LocalStorage)
         if (localStorage.getItem('isVerifiedUser') === 'true') {
             document.getElementById('loading-message').style.display = 'none';
             document.getElementById('content-wrapper').style.display = 'block';
@@ -151,7 +150,7 @@
                     loadOnlineLeaderboard();
                 } else {
                     localStorage.removeItem('isVerifiedUser');
-                    alert("আপনার এই ইমেইল দিয়ে ঢোকার অনুমতি নেই: " + user.email);
+                    alert("অনুমতি নেই: " + user.email);
                     window.location.href = "https://google.com";
                 }
             } else {
@@ -175,10 +174,10 @@
             });
         }
 
-        // --- GAME LOGIC ---
+        // --- CHALLENGING GAME LOGIC ---
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
+        let spawnRate = 400; // শুরুতে বেলুন আসার ব্যবধান
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
-        popSound.load(); // আগেভাগে অডিও লোড করে রাখা
 
         window.gameFunctions = {
             toggleGame: () => {
@@ -192,14 +191,21 @@
             },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30;
+                gameRunning = true; score = 0; timeLeft = 30; spawnRate = 400;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
-                gameInterval = setInterval(createBalloon, 350);
+                
+                startSpawning();
+                
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
+                    
+                    // সময় যত কমবে, বেলুন তত দ্রুত আসবে (চ্যালেঞ্জ!)
+                    if(timeLeft === 20) updateSpawnRate(300);
+                    if(timeLeft === 10) updateSpawnRate(200);
+                    
                     if(timeLeft <= 0) endGame();
                 }, 1000);
             },
@@ -209,30 +215,55 @@
             }
         };
 
+        function startSpawning() {
+            gameInterval = setInterval(createBalloon, spawnRate);
+        }
+
+        function updateSpawnRate(newRate) {
+            clearInterval(gameInterval);
+            spawnRate = newRate;
+            gameInterval = setInterval(createBalloon, spawnRate);
+        }
+
         function createBalloon() {
-            const types = [{e:'🎈', p:10, c:'#FF6B6B'}, {e:'🦊', p:15, c:'#FF9F1C'}, {e:'🍎', p:20, c:'#E63946'}, {e:'💎', p:50, c:'#7209B7'}, {e:'💣', p:-50, c:'#333'}];
+            // আইটেম টাইপস: ইমোজি, পয়েন্ট, কালার, সাইজ (ছোট সাইজ মানে কঠিন!)
+            const types = [
+                {e:'🎈', p:10, c:'#FF6B6B', s:60}, 
+                {e:'🦊', p:15, c:'#FF9F1C', s:55}, 
+                {e:'🍎', p:20, c:'#E63946', s:50}, 
+                {e:'💎', p:50, c:'#7209B7', s:40}, // হীরা ছোট কিন্তু দামী
+                {e:'💣', p:-50, c:'#333', s:60}    // বোমা বড় যাতে ভুল করে ট্যাপ লাগে
+            ];
+
             const rand = Math.random();
-            let type = rand < 0.6 ? types[0] : types[Math.floor(Math.random()*types.length)];
+            let type;
+            // সময় শেষ হতে থাকলে বোমার চান্স বাড়বে
+            if (timeLeft < 10 && rand > 0.7) type = types[4]; 
+            else if (rand < 0.1) type = types[3];
+            else if (rand < 0.3) type = types[2];
+            else if (rand < 0.5) type = types[1];
+            else type = types[0];
+
             const b = document.createElement('div');
             b.className = 'balloon'; b.innerText = type.e;
+            b.style.width = type.s + 'px';
+            b.style.height = (type.s * 1.3) + 'px';
             b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
             b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
-            const speed = Math.random() * 2 + 1.5;
+            
+            // গতি বাড়নো (timeLeft যত কম, স্পিড তত বেশি)
+            const speedBase = timeLeft < 15 ? 1.2 : 2;
+            const speed = Math.random() * speedBase + 1;
             b.style.animationDuration = speed + 's';
 
-            // ২ ও ৩. সেন্সিটিভিটি বাড়ানো এবং টাচ করার সাথে সাথে আওয়াজ ও ফাটা
             const popAction = (e) => {
                 if(!gameRunning) return;
                 e.preventDefault(); 
                 e.stopPropagation();
-                
                 score += type.p;
                 document.getElementById('score').innerText = score;
-                
-                // দ্রুত আওয়াজ হওয়ার জন্য ক্লোন ব্যবহার
                 const s = popSound.cloneNode();
                 s.play();
-                
                 showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
                 b.remove();
             };
@@ -261,7 +292,7 @@
             gameRunning = false;
             document.getElementById('finalScore').innerText = score;
             document.getElementById('gameOverModal').style.display = 'flex';
-            document.getElementById('saveMsg').innerText = "স্কোর চেক করা হচ্ছে...";
+            document.getElementById('saveMsg').innerText = "স্কোর চেক হচ্ছে...";
 
             if (currentUser) {
                 try {
@@ -274,9 +305,9 @@
                             score: score,
                             timestamp: new Date()
                         });
-                        document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! স্কোর সেভ হয়েছে।";
+                        document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! সাবাস! 🔥";
                     } else {
-                        document.getElementById('saveMsg').innerText = "সেরা রেকর্ড ভাঙতে পারোনি, চেষ্টা করো!";
+                        document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না! আবার চেষ্টা করো।";
                     }
                 } catch (e) {
                     document.getElementById('saveMsg').innerText = "সেভ করতে সমস্যা হয়েছে।";
