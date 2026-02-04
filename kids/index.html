@@ -2,29 +2,15 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>কিডস ফান জোন! 🎈</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
         body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; }
         
-        /* লোডিং স্ক্রিন শুরুতে লুকানো থাকবে যদি আগে ভেরিফাই করা থাকে */
-        #loading-message { 
-            display: none; 
-            text-align: center; 
-            padding-top: 100px; 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            color: white; 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); 
-            z-index: 2000; 
-        }
-
-        #content-wrapper { display: block; }
+        #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        #content-wrapper { display: none; }
 
         header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
         h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
@@ -34,37 +20,18 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        #gameContainer { display: none; margin-bottom: 20px; }
-        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 350px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: crosshair; }
-        
+        #gameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 350px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: manipulation; }
         .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
         .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        /* বেলুনের সুন্দর ডিজাইন */
-        .balloon { 
-            position: absolute; 
-            width: 55px; 
-            height: 70px; 
-            border-radius: 50%; 
-            bottom: -100px; 
-            animation: floatUp linear forwards; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-size: 32px; 
-            cursor: pointer; 
-            user-select: none;
-            box-shadow: inset -5px -10px rgba(0,0,0,0.15);
-        }
-        .balloon::after {
-            content: "▲";
-            position: absolute;
-            bottom: -8px;
-            font-size: 12px;
-            color: inherit;
-        }
-
+        .balloon { position: absolute; width: 60px; height: 80px; border-radius: 50%; bottom: -100px; animation: floatUp linear forwards; display: flex; justify-content: center; align-items: center; font-size: 28px; cursor: pointer; user-select: none; touch-action: none; pointer-events: auto; }
         @keyframes floatUp { to { transform: translateY(-600px); } }
+
+        .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
+        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
         .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid transparent; cursor: pointer; }
@@ -81,9 +48,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 1.1rem; }
-        .btn-play { background: var(--secondary); color: white; }
-        .btn-cancel { background: #ff4d4d; color: white; }
+        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -134,8 +99,7 @@
                 <h2 style="margin:0; color:var(--primary);">সময় শেষ! 🎉</h2>
                 <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
                 <p id="saveMsg">স্কোর সেভ করা হচ্ছে...</p>
-                <button id="closeModalBtn" onclick="window.gameFunctions.closeModal()" class="modal-btn btn-play" style="display:none;">আবার খেলো</button>
-                <button onclick="window.gameFunctions.cancelGame()" class="modal-btn btn-cancel">বাতিল</button>
+                <button id="closeModalBtn" onclick="window.gameFunctions.closeModal()" class="modal-btn" style="display:none;">আবার খেলো</button>
             </div>
         </div>
     </div>
@@ -161,6 +125,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
+        let currentUser = null;
         const allowedEmails = [
             "mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", 
             "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", 
@@ -170,27 +135,27 @@
             "madina.manjeel.tv@gmail.com"
         ];
 
-        // ১. LocalStorage চেক করে লোডিং স্ক্রিন দেখানো বা লুকানো
-        if (localStorage.getItem('isVerified') !== 'true') {
-            document.getElementById('loading-message').style.display = 'block';
+        // ১. ভেরিফিকেশন রিপিট বন্ধ করার লজিক (LocalStorage)
+        if (localStorage.getItem('isVerifiedUser') === 'true') {
+            document.getElementById('loading-message').style.display = 'none';
+            document.getElementById('content-wrapper').style.display = 'block';
         }
-
-        let currentUser = null;
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 if (allowedEmails.includes(user.email)) {
                     currentUser = user;
-                    localStorage.setItem('isVerified', 'true');
+                    localStorage.setItem('isVerifiedUser', 'true');
                     document.getElementById('loading-message').style.display = 'none';
+                    document.getElementById('content-wrapper').style.display = 'block';
                     loadOnlineLeaderboard();
                 } else {
-                    localStorage.removeItem('isVerified');
-                    alert("অনুমতি নেই: " + user.email);
+                    localStorage.removeItem('isVerifiedUser');
+                    alert("আপনার এই ইমেইল দিয়ে ঢোকার অনুমতি নেই: " + user.email);
                     window.location.href = "https://google.com";
                 }
             } else {
-                localStorage.removeItem('isVerified');
+                localStorage.removeItem('isVerifiedUser');
                 signInWithRedirect(auth, provider);
             }
         });
@@ -206,11 +171,14 @@
                     li.innerHTML = `<span><img src="${data.photo || 'https://via.placeholder.com/30'}"> ${data.name}</span> <strong>${data.score}</strong>`;
                     list.appendChild(li);
                 });
+                if(snapshot.empty) list.innerHTML = "<li>এখনও কেউ খেলেনি!</li>";
             });
         }
 
-        // --- গেম লজিক ---
+        // --- GAME LOGIC ---
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
+        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
+        popSound.load(); // আগেভাগে অডিও লোড করে রাখা
 
         window.gameFunctions = {
             toggleGame: () => {
@@ -220,7 +188,7 @@
             },
             playVideo: (url) => {
                 document.getElementById('videoPlayer').src = url + "&autoplay=1";
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.querySelector('.tv-frame').scrollIntoView({behavior: 'smooth'});
             },
             startGame: () => {
                 if(gameRunning) return;
@@ -228,7 +196,7 @@
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
-                gameInterval = setInterval(createBalloon, 400);
+                gameInterval = setInterval(createBalloon, 350);
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
@@ -237,42 +205,55 @@
             },
             closeModal: () => {
                 document.getElementById('gameOverModal').style.display = 'none';
-                window.gameFunctions.startGame();
-            },
-            cancelGame: () => {
-                document.getElementById('gameOverModal').style.display = 'none';
                 document.getElementById('mainStartBtn').style.display = 'block';
-                document.querySelectorAll('.balloon').forEach(b => b.remove());
             }
         };
 
         function createBalloon() {
-            const types = [
-                {e:'🎈', p:10, c:'#FF6B6B'}, 
-                {e:'🦊', p:15, c:'#FF9F1C'}, 
-                {e:'🍎', p:20, c:'#FF4D4D'}, 
-                {e:'💎', p:50, c:'#4ECDC4'}
-            ];
-            let type = types[Math.floor(Math.random()*types.length)];
+            const types = [{e:'🎈', p:10, c:'#FF6B6B'}, {e:'🦊', p:15, c:'#FF9F1C'}, {e:'🍎', p:20, c:'#E63946'}, {e:'💎', p:50, c:'#7209B7'}, {e:'💣', p:-50, c:'#333'}];
+            const rand = Math.random();
+            let type = rand < 0.6 ? types[0] : types[Math.floor(Math.random()*types.length)];
             const b = document.createElement('div');
-            b.className = 'balloon';
-            b.innerText = type.e;
-            
-            // বেলুনের কালার এবং ডিজাইন ফিক্স
-            b.style.backgroundColor = type.c;
-            b.style.color = type.c; 
-            
+            b.className = 'balloon'; b.innerText = type.e;
+            b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
             b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
-            b.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            
-            b.onclick = () => {
+            const speed = Math.random() * 2 + 1.5;
+            b.style.animationDuration = speed + 's';
+
+            // ২ ও ৩. সেন্সিটিভিটি বাড়ানো এবং টাচ করার সাথে সাথে আওয়াজ ও ফাটা
+            const popAction = (e) => {
                 if(!gameRunning) return;
+                e.preventDefault(); 
+                e.stopPropagation();
+                
                 score += type.p;
                 document.getElementById('score').innerText = score;
+                
+                // দ্রুত আওয়াজ হওয়ার জন্য ক্লোন ব্যবহার
+                const s = popSound.cloneNode();
+                s.play();
+                
+                showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
                 b.remove();
             };
+
+            b.addEventListener('touchstart', popAction, {passive: false});
+            b.addEventListener('mousedown', popAction);
+
             document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => { if(b.parentNode) b.remove(); }, 4000);
+            setTimeout(() => { if(b.parentNode) b.remove(); }, speed * 1000);
+        }
+
+        function showPointPopup(x, y, p) {
+            const popup = document.createElement('div');
+            popup.className = 'point-popup';
+            popup.innerText = (p > 0 ? "+" : "") + p;
+            popup.style.color = p > 0 ? "#28a745" : "#dc3545";
+            const rect = document.getElementById('gameArea').getBoundingClientRect();
+            popup.style.left = (x - rect.left) + 'px';
+            popup.style.top = (y - rect.top) + 'px';
+            document.getElementById('gameArea').appendChild(popup);
+            setTimeout(() => popup.remove(), 600);
         }
 
         async function endGame() {
@@ -280,16 +261,25 @@
             gameRunning = false;
             document.getElementById('finalScore').innerText = score;
             document.getElementById('gameOverModal').style.display = 'flex';
-            document.getElementById('saveMsg').innerText = "স্কোর সেভ হচ্ছে...";
+            document.getElementById('saveMsg').innerText = "স্কোর চেক করা হচ্ছে...";
 
             if (currentUser) {
-                const userRef = doc(db, "scores", currentUser.uid);
-                const docSnap = await getDoc(userRef);
-                if (!docSnap.exists() || score > docSnap.data().score) {
-                    await setDoc(userRef, { name: currentUser.displayName, photo: currentUser.photoURL, score: score, timestamp: new Date() });
-                    document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! ✅";
-                } else {
-                    document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙতে পারোনি, চেষ্টা করো!";
+                try {
+                    const userRef = doc(db, "scores", currentUser.uid);
+                    const docSnap = await getDoc(userRef);
+                    if (!docSnap.exists() || score > docSnap.data().score) {
+                        await setDoc(userRef, {
+                            name: currentUser.displayName || "বন্ধু",
+                            photo: currentUser.photoURL,
+                            score: score,
+                            timestamp: new Date()
+                        });
+                        document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! স্কোর সেভ হয়েছে।";
+                    } else {
+                        document.getElementById('saveMsg').innerText = "সেরা রেকর্ড ভাঙতে পারোনি, চেষ্টা করো!";
+                    }
+                } catch (e) {
+                    document.getElementById('saveMsg').innerText = "সেভ করতে সমস্যা হয়েছে।";
                 }
             }
             document.getElementById('closeModalBtn').style.display = "block";
