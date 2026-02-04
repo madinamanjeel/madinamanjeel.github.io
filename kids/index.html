@@ -63,7 +63,7 @@
             background: white;
             border: 5px solid var(--accent);
             border-radius: 20px;
-            height: 320px;
+            height: 350px; /* Height increased slightly */
             position: relative;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -81,17 +81,22 @@
 
         /* Balloon & Pop Effects */
         .balloon {
-            position: absolute; width: 55px; height: 75px; border-radius: 50%;
-            bottom: -100px; animation: floatUp 4s linear forwards;
+            position: absolute; width: 60px; height: 80px; border-radius: 50%;
+            bottom: -100px; 
+            /* Animation duration is now set by JS for randomness */
+            animation: floatUp linear forwards; 
             display: flex; justify-content: center; align-items: center;
-            font-size: 24px; cursor: pointer; user-select: none;
+            font-size: 28px; cursor: pointer; user-select: none;
+            transition: transform 0.1s;
         }
+        
+        .balloon:active { transform: scale(0.9); }
 
-        @keyframes floatUp { to { transform: translateY(-500px); } }
+        @keyframes floatUp { to { transform: translateY(-600px); } }
 
         .point-popup {
             position: absolute; font-weight: bold; font-size: 1.5rem;
-            pointer-events: none; animation: popUp 0.8s ease-out forwards;
+            pointer-events: none; animation: popUp 0.6s ease-out forwards;
             z-index: 15;
         }
         @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
@@ -108,6 +113,7 @@
             text-align: center; text-decoration: none; color: var(--dark);
             box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: 0.2s;
             display: flex; flex-direction: column; align-items: center; border: 3px solid transparent;
+            cursor: pointer;
         }
         .card:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.1); }
         .card-icon { font-size: 1.6rem; margin-bottom: 4px; }
@@ -130,13 +136,20 @@
         .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
         .leaderboard-list li { display: flex; justify-content: space-between; padding: 5px 10px; background: #f1f1f1; margin-bottom: 4px; border-radius: 8px; }
 
-        /* Score Saving Modal */
+        /* Modal */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center;
         }
         .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
         .modal-content input { width: 90%; padding: 10px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
+        
+        .modal-btn-group {
+            display: flex; justify-content: center; gap: 10px; margin-top: 5px;
+        }
+        .modal-btn {
+            border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -148,14 +161,14 @@
     <div class="container">
         <div class="tv-frame">
             <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=1&mute=0&controls=1" allowfullscreen></iframe>
+                <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=0&mute=0&controls=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
         </div>
 
         <div class="grid-container" style="margin-bottom: 15px;">
             <div onclick="toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
                 <span class="card-icon">🎮</span>
-                <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম খেলো (স্কোর করো!)</span>
+                <span class="card-title" style="font-size: 1.2rem;">সুপার ফাস্ট বেলুন গেম!</span>
             </div>
         </div>
 
@@ -178,15 +191,15 @@
             <a href="https://kids.poki.com" target="_blank" class="card c-1">
                 <div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div>
             </a>
-            <a href="https://youtube.com/@sisimpur/videos" target="_blank" class="card c-2">
+            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLB5F28560F451D7C1')" class="card c-2">
                 <div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div>
-            </a>
-            <a href="https://youtube.com/playlist?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu" target="_blank" class="card c-1">
+            </div>
+            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card c-1">
                 <div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div>
-            </a>
-            <a href="https://m.youtube.com/@MaasrangaKids/playlists" target="_blank" class="card c-2">
+            </div>
+            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLPIMyXW5K6I5gQO55c_OXgGSVUEp3K-Ff')" class="card c-2">
                 <div class="card-icon">📺</div><div class="card-title">মাছরাঙা</div>
-            </a>
+            </div>
         </div>
     </div>
 
@@ -195,11 +208,22 @@
             <h2 style="margin:0; color:var(--primary);">সময় শেষ! 🎉</h2>
             <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
             <input type="text" id="playerName" placeholder="তোমার নাম..." maxlength="10">
-            <button onclick="saveScore()" style="background:var(--secondary); color:white; border:none; padding:10px 25px; border-radius:10px; font-weight:bold; cursor:pointer;">সেভ করো</button>
+            <div class="modal-btn-group">
+                <button onclick="closeModal()" class="modal-btn" style="background:#ddd; color:#333;">বাতিল</button>
+                <button onclick="saveScore()" class="modal-btn" style="background:var(--secondary); color:white;">সেভ করো</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // --- VIDEO PLAYER ---
+        function playVideo(url) {
+            const player = document.getElementById('videoPlayer');
+            player.src = url + "&autoplay=1";
+            document.querySelector('.tv-frame').scrollIntoView({behavior: 'smooth'});
+        }
+
+        // --- GAME LOGIC (FASTER & HARDER) ---
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
 
@@ -216,7 +240,9 @@
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('mainStartBtn').style.display = 'none';
             
-            gameInterval = setInterval(createBalloon, 600);
+            // SPAWN RATE: 350ms (Much faster than before)
+            gameInterval = setInterval(createBalloon, 350);
+            
             timerInterval = setInterval(() => {
                 timeLeft--; 
                 document.getElementById('timer').innerText = timeLeft;
@@ -225,19 +251,21 @@
         }
 
         function createBalloon() {
+            // More types of balloons added for variety
             const types = [
                 {e:'🎈', p:10, c:'#FF6B6B'}, {e:'🎈', p:10, c:'#4ECDC4'}, 
-                {e:'🌟', p:20, c:'#FFE66D'}, {e:'😎', p:25, c:'#FF9F1C'},
-                {e:'💎', p:50, c:'#7209B7'}, {e:'💣', p:-50, c:'#333'} // Bomb!
+                {e:'🦊', p:15, c:'#FF9F1C'}, {e:'🐯', p:15, c:'#F7B500'},
+                {e:'🍎', p:20, c:'#E63946'}, {e:'💎', p:50, c:'#7209B7'}, 
+                {e:'💣', p:-50, c:'#333'} 
             ];
             
-            // Randomly select emoji with weighted probability
+            // Weighted Random Selection
             const rand = Math.random();
             let type;
-            if(rand < 0.6) type = types[Math.floor(Math.random()*2)]; // Normal
-            else if(rand < 0.8) type = types[Math.floor(Math.random()*2)+2]; // Good
-            else if(rand < 0.9) type = types[4]; // Diamond
-            else type = types[5]; // Bomb
+            if(rand < 0.5) type = types[Math.floor(Math.random()*2)]; // Normal Balloons (50%)
+            else if(rand < 0.8) type = types[Math.floor(Math.random()*3)+2]; // Animals/Fruits (30%)
+            else if(rand < 0.9) type = types[5]; // Diamond (10%)
+            else type = types[6]; // Bomb (10%)
 
             const b = document.createElement('div');
             b.classList.add('balloon');
@@ -245,24 +273,28 @@
             b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
             b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
             
+            // RANDOM SPEED: Between 1.5s (Fast) and 3.5s (Medium)
+            // This makes the game much harder and chaotic
+            const speed = Math.random() * 2 + 1.5; 
+            b.style.animationDuration = speed + 's';
+
             b.onclick = function(e) {
                 if(!gameRunning) return;
-                
                 score += type.p;
                 document.getElementById('score').innerText = score;
                 
-                // Sound
-                popSound.currentTime = 0;
-                popSound.play();
+                // Clone sound for overlapping pops
+                const soundClone = popSound.cloneNode();
+                soundClone.play();
                 
-                // Score Animation at click position
                 showPointPopup(e.clientX, e.clientY, type.p);
-                
                 this.remove();
             };
 
             document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => { if(b.parentNode) b.remove(); }, 4000);
+            
+            // Remove balloon after it flies away (based on its speed)
+            setTimeout(() => { if(b.parentNode) b.remove(); }, speed * 1000);
         }
 
         function showPointPopup(x, y, points) {
@@ -272,11 +304,15 @@
             popup.style.color = points > 0 ? "#28a745" : "#dc3545";
             
             const rect = document.getElementById('gameArea').getBoundingClientRect();
-            popup.style.left = (x - rect.left) + 'px';
-            popup.style.top = (y - rect.top) + 'px';
+            // Ensure popup stays within bounds roughly
+            let left = x - rect.left;
+            let top = y - rect.top;
+            
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
             
             document.getElementById('gameArea').appendChild(popup);
-            setTimeout(() => popup.remove(), 800);
+            setTimeout(() => popup.remove(), 600);
         }
 
         function endGame() {
@@ -287,6 +323,13 @@
             document.querySelectorAll('.balloon').forEach(b => b.remove());
         }
 
+        function closeModal() {
+            document.getElementById('gameOverModal').style.display = 'none';
+            document.getElementById('playerName').value = "";
+            document.getElementById('mainStartBtn').style.display = 'block';
+            document.getElementById('mainStartBtn').innerText = "আবার খেলো!";
+        }
+
         function saveScore() {
             const name = document.getElementById('playerName').value.trim() || "বন্ধু";
             let scores = JSON.parse(localStorage.getItem('kidsScores') || '[]');
@@ -294,9 +337,7 @@
             scores.sort((a,b) => b.score - a.score);
             localStorage.setItem('kidsScores', JSON.stringify(scores.slice(0, 5)));
             updateLeaderboard();
-            document.getElementById('gameOverModal').style.display = 'none';
-            document.getElementById('mainStartBtn').style.display = 'block';
-            document.getElementById('mainStartBtn').innerText = "আবার খেলো!";
+            closeModal();
         }
 
         function updateLeaderboard() {
