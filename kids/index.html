@@ -2,141 +2,21 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>কিডস ফান জোন! 🎈</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
+    <title>রিসেট করা হচ্ছে...</title>
     <style>
-        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
-        body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        
-        #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
-        #content-wrapper { display: none; }
-
-        header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
-        h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
-        .container { max-width: 800px; margin: 0 auto; padding: 10px; }
-
-        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; box-shadow: 0 6px 0 #C44D4D; margin-bottom: 15px; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
-
-        #gameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
-        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
-        .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
-
-        .balloon { 
-            position: absolute; 
-            bottom: -80px; 
-            animation: floatUp var(--speed) linear forwards; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-            user-select: none; 
-            touch-action: none; 
-            pointer-events: auto;
-            background: transparent; 
-            border: none;
-            padding: 15px;
-            z-index: 5;
-        }
-        
-        @keyframes floatUp { 
-            0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(15deg); }
-            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-15deg); }
-            100% { transform: translateY(-850px) translateX(0) rotate(0deg); }
-        }
-
-        .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
-
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
-        .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid transparent; cursor: pointer; }
-        .c-game { background: linear-gradient(45deg, #FF512F, #DD2476); color: white; border: none; }
-        .c-1 { border-color: #FF9F1C; } .c-2 { border-color: #2EC4B6; }
-
-        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; }
-
-        .leaderboard { background: #fff; border-radius: 15px; padding: 10px; margin-top: 10px; border: 3px solid var(--secondary); }
-        .leaderboard h3 { margin: 0 0 8px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
-        .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
-        .leaderboard-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f9f9f9; margin-bottom: 5px; border-radius: 10px; border-left: 5px solid var(--secondary); }
-        .leaderboard-list li img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
-
-        .reset-box { text-align: center; margin-top: 10px; }
-        .reset-link { color: #888; font-size: 0.8rem; text-decoration: underline; cursor: pointer; border: none; background: none; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; }
+        body { background: #2f2f2f; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+        .loader { text-align: center; }
     </style>
 </head>
 <body>
-
-    <div id="loading-message">ভেরিফাই করা হচ্ছে... একটু অপেক্ষা করো 🎈</div>
-
-    <div id="content-wrapper">
-        <header><h1>🎈 কিডস ফান জোন! 🎈</h1></header>
-        <div class="container">
-            <div class="tv-frame">
-                <div class="video-wrapper">
-                    <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=0&controls=1" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <div class="grid-container" style="margin-bottom: 15px;">
-                <div id="gameToggleBtn" onclick="window.gameFunctions.toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
-                    <span class="card-icon">🎮</span>
-                    <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
-                </div>
-            </div>
-
-            <div id="gameContainer">
-                <div class="game-area" id="gameArea">
-                    <div class="score-board">স্কোর: <span id="score">0</span></div>
-                    <div class="timer-board">সময়: <span id="timer">30</span>s</div>
-                    <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()">খেলতে ট্যাপ করো!</button>
-                </div>
-                
-                <div class="leaderboard">
-                    <h3>🏆 গ্লোবাল লিডারবোর্ড (সেরা ৫) 🏆</h3>
-                    <ul id="onlineLeaderboard" class="leaderboard-list">
-                        <li style="justify-content:center;">লোড হচ্ছে...</li>
-                    </ul>
-                </div>
-
-                <div class="reset-box">
-                    <button class="reset-link" onclick="window.gameFunctions.resetMyScore()">আমার স্কোর রিসেট করো</button>
-                </div>
-            </div>
-
-            <div class="grid-container">
-                <a href="https://kids.poki.com" target="_blank" class="card c-1"><div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div></a>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q&si=oNQQlx3cv7LE7j8B')" class="card c-2"><div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card c-1"><div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76&si=UmPVp5Ze-yaS95mA')" class="card c-2"><div class="card-icon">💁‍♀️</div><div class="card-title">মিস মুন</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLFbfBkWhGCqj5_rkkjGNklWF4NkFUDWIk&si=oV7XwCiXQ37AFsAi')" class="card c-2"><div class="card-icon">🤼‍♂️</div><div class="card-title">মোটু পাতলু</div></div>     
-            </div>
-        </div>
-
-        <div id="gameOverModal" class="modal">
-            <div class="modal-content">
-                <h2 style="margin:0; color:var(--primary);">সময় শেষ! 🎉</h2>
-                <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
-                <p id="saveMsg">স্কোর সেভ হচ্ছে...</p>
-                <button id="closeModalBtn" onclick="window.gameFunctions.closeModal()" class="modal-btn" style="display:none;">আবার খেলো</button>
-            </div>
-        </div>
+    <div class="loader">
+        <h2 id="msg">ডাটাবেস রিসেট হচ্ছে... দয়া করে অপেক্ষা করুন।</h2>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
@@ -154,212 +34,27 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        let currentUser = null;
-        const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "lima.akter.0390@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
-
-        if (localStorage.getItem('isVerifiedUser') === 'true') {
-            document.getElementById('loading-message').style.display = 'none';
-            document.getElementById('content-wrapper').style.display = 'block';
-        }
-
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if (allowedEmails.includes(user.email)) {
-                    currentUser = user;
-                    localStorage.setItem('isVerifiedUser', 'true');
-                    document.getElementById('loading-message').style.display = 'none';
-                    document.getElementById('content-wrapper').style.display = 'block';
-                    loadOnlineLeaderboard();
-                } else {
-                    localStorage.removeItem('isVerifiedUser');
-                    alert("অনুমতি নেই!");
-                    window.location.href = "https://google.com";
+                try {
+                    const snapshot = await getDocs(collection(db, "scores"));
+                    if (snapshot.empty) {
+                        document.getElementById('msg').innerText = "কোনো স্কোর খুঁজে পাওয়া যায়নি। লিডারবোর্ড ইতিমধ্যে ফাঁকা!";
+                        return;
+                    }
+
+                    const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+                    await Promise.all(deletePromises);
+
+                    document.getElementById('msg').innerHTML = "✅ সব স্কোর মুছে ফেলা হয়েছে!<br><br>এখন আপনি এই কোডটি সরিয়ে আগের গেমের কোড ব্যবহার করতে পারেন।";
+                    alert("লিডারবোর্ড সফলভাবে রিসেট হয়েছে!");
+                } catch (e) {
+                    document.getElementById('msg').innerText = "ভুল হয়েছে: " + e.message;
                 }
             } else {
-                localStorage.removeItem('isVerifiedUser');
                 signInWithRedirect(auth, provider);
             }
         });
-
-        function loadOnlineLeaderboard() {
-            const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(5));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('onlineLeaderboard');
-                list.innerHTML = "";
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span><img src="${data.photo || 'https://via.placeholder.com/30'}"> ${data.name}</span> <strong>${data.score}</strong>`;
-                    list.appendChild(li);
-                });
-            });
-        }
-
-        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let currentSpawnRate = 650; 
-        let difficultyMultiplier = 1.0; 
-        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
-
-        window.gameFunctions = {
-            toggleGame: () => {
-                const gc = document.getElementById('gameContainer');
-                const isHidden = gc.style.display === 'none' || gc.style.display === '';
-                
-                if (isHidden) {
-                    gc.style.display = 'block';
-                    setTimeout(() => {
-                        const gameArea = document.getElementById('gameArea');
-                        const offset = 80;
-                        const bodyRect = document.body.getBoundingClientRect().top;
-                        const elementRect = gameArea.getBoundingClientRect().top;
-                        const elementPosition = elementRect - bodyRect;
-                        const offsetPosition = elementPosition - offset;
-
-                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                    }, 100);
-                } else {
-                    gc.style.display = 'none';
-                }
-            },
-            playVideo: (url) => {
-                document.getElementById('videoPlayer').src = url + "&autoplay=1";
-                document.querySelector('.tv-frame').scrollIntoView({behavior: 'smooth'});
-            },
-            startGame: () => {
-                if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; 
-                currentSpawnRate = 650; difficultyMultiplier = 1.0;
-                document.getElementById('score').innerText = 0;
-                document.getElementById('timer').innerText = 30;
-                document.getElementById('mainStartBtn').style.display = 'none';
-                
-                startSpawning();
-                
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    document.getElementById('timer').innerText = timeLeft;
-                    if(timeLeft % 5 === 0 && timeLeft > 0) increaseDifficulty();
-                    if(timeLeft <= 0) endGame();
-                }, 1000);
-            },
-            closeModal: () => {
-                document.getElementById('gameOverModal').style.display = 'none';
-                document.getElementById('mainStartBtn').style.display = 'block';
-            },
-            resetMyScore: async () => {
-                if (!currentUser) return;
-                if (confirm("আপনি কি নিশ্চিতভাবে আপনার আগের সব স্কোর মুছে ফেলতে চান? এটি আর ফিরিয়ে আনা যাবে না।")) {
-                    try {
-                        const userRef = doc(db, "scores", currentUser.uid);
-                        await deleteDoc(userRef);
-                        alert("আপনার স্কোর সফলভাবে রিসেট হয়েছে!");
-                    } catch (e) {
-                        alert("রিসেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
-                    }
-                }
-            }
-        };
-
-        function increaseDifficulty() {
-            currentSpawnRate = Math.max(220, currentSpawnRate - 85);
-            difficultyMultiplier += 0.22;
-            clearInterval(gameInterval);
-            startSpawning();
-        }
-
-        function startSpawning() {
-            gameInterval = setInterval(createBalloon, currentSpawnRate);
-        }
-
-        function createBalloon() {
-            const types = [
-                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
-                {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
-                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
-                {e:'💎', p:50, fs: 50, speed: 3.8, drift: 55}, 
-                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
-            ];
-
-            const rand = Math.random();
-            let type;
-            if (rand < 0.2) type = types[4]; 
-            else if (rand < 0.35) type = types[3];
-            else if (rand < 0.55) type = types[2];
-            else if (rand < 0.75) type = types[1];
-            else type = types[0];
-
-            const b = document.createElement('div');
-            b.className = 'balloon'; 
-            b.innerText = type.e;
-            
-            const finalSpeed = Math.max(1.8, type.speed / difficultyMultiplier);
-            const finalDrift = type.drift;
-
-            b.style.setProperty('--speed', finalSpeed + 's');
-            b.style.setProperty('--drift', finalDrift + 'px');
-            b.style.fontSize = type.fs + 'px';
-            
-            const areaWidth = document.getElementById('gameArea').clientWidth;
-            const safeMargin = 60; 
-            b.style.left = (safeMargin + Math.random() * (areaWidth - (safeMargin * 2 + 50))) + 'px';
-
-            const popAction = (e) => {
-                if(!gameRunning) return;
-                e.preventDefault(); 
-                score += type.p;
-                document.getElementById('score').innerText = score;
-                const s = popSound.cloneNode();
-                s.play();
-                showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
-                b.remove();
-            };
-
-            b.addEventListener('touchstart', popAction, {passive: false});
-            b.addEventListener('mousedown', popAction);
-
-            document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => { if(b.parentNode) b.remove(); }, finalSpeed * 1000);
-        }
-
-        function showPointPopup(x, y, p) {
-            const popup = document.createElement('div');
-            popup.className = 'point-popup';
-            popup.innerText = (p > 0 ? "+" : "") + p;
-            popup.style.color = p > 0 ? "#28a745" : "#dc3545";
-            const rect = document.getElementById('gameArea').getBoundingClientRect();
-            popup.style.left = (x - rect.left) + 'px';
-            popup.style.top = (y - rect.top) + 'px';
-            document.getElementById('gameArea').appendChild(popup);
-            setTimeout(() => popup.remove(), 600);
-        }
-
-        async function endGame() {
-            clearInterval(gameInterval); clearInterval(timerInterval);
-            gameRunning = false;
-            document.getElementById('finalScore').innerText = score;
-            document.getElementById('gameOverModal').style.display = 'flex';
-            document.getElementById('saveMsg').innerText = "স্কোর সেভ হচ্ছে...";
-
-            if (currentUser) {
-                try {
-                    const userRef = doc(db, "scores", currentUser.uid);
-                    const docSnap = await getDoc(userRef);
-                    if (!docSnap.exists() || score > docSnap.data().score) {
-                        await setDoc(userRef, {
-                            name: currentUser.displayName || "বন্ধু",
-                            photo: currentUser.photoURL,
-                            score: score,
-                            timestamp: new Date()
-                        });
-                        document.getElementById('saveMsg').innerText = "অবিশ্বাস্য! নতুন রেকর্ড! 🔥";
-                    } else {
-                        document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!";
-                    }
-                } catch (e) {}
-            }
-            document.getElementById('closeModalBtn').style.display = "block";
-            document.querySelectorAll('.balloon').forEach(b => b.remove());
-        }
     </script>
 </body>
 </html>
