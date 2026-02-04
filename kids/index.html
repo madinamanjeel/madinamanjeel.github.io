@@ -67,6 +67,9 @@
         .leaderboard-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f9f9f9; margin-bottom: 5px; border-radius: 10px; border-left: 5px solid var(--secondary); }
         .leaderboard-list li img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
 
+        .reset-box { text-align: center; margin-top: 10px; }
+        .reset-link { color: #888; font-size: 0.8rem; text-decoration: underline; cursor: pointer; border: none; background: none; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
         .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; }
@@ -98,11 +101,16 @@
                     <div class="timer-board">সময়: <span id="timer">30</span>s</div>
                     <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()">খেলতে ট্যাপ করো!</button>
                 </div>
+                
                 <div class="leaderboard">
                     <h3>🏆 গ্লোবাল লিডারবোর্ড (সেরা ৫) 🏆</h3>
                     <ul id="onlineLeaderboard" class="leaderboard-list">
                         <li style="justify-content:center;">লোড হচ্ছে...</li>
                     </ul>
+                </div>
+
+                <div class="reset-box">
+                    <button class="reset-link" onclick="window.gameFunctions.resetMyScore()">আমার স্কোর রিসেট করো</button>
                 </div>
             </div>
 
@@ -128,7 +136,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
@@ -199,19 +207,15 @@
                 
                 if (isHidden) {
                     gc.style.display = 'block';
-                    // স্ক্রল ফিক্স: ইমোজি গেম বাটনের ঠিক নিচে স্ক্রল হবে যাতে গেম এরিয়া পূর্ণ দেখা যায়
                     setTimeout(() => {
                         const gameArea = document.getElementById('gameArea');
-                        const offset = 80; // স্কোরবোর্ড যেন ঢেকে না যায় সেজন্য অফসেট
+                        const offset = 80;
                         const bodyRect = document.body.getBoundingClientRect().top;
                         const elementRect = gameArea.getBoundingClientRect().top;
                         const elementPosition = elementRect - bodyRect;
                         const offsetPosition = elementPosition - offset;
 
-                        window.scrollTo({
-                            top: offsetPosition,
-                            behavior: 'smooth'
-                        });
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
                     }, 100);
                 } else {
                     gc.style.display = 'none';
@@ -234,17 +238,25 @@
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
-                    
-                    if(timeLeft % 5 === 0 && timeLeft > 0) {
-                        increaseDifficulty();
-                    }
-                    
+                    if(timeLeft % 5 === 0 && timeLeft > 0) increaseDifficulty();
                     if(timeLeft <= 0) endGame();
                 }, 1000);
             },
             closeModal: () => {
                 document.getElementById('gameOverModal').style.display = 'none';
                 document.getElementById('mainStartBtn').style.display = 'block';
+            },
+            resetMyScore: async () => {
+                if (!currentUser) return;
+                if (confirm("আপনি কি নিশ্চিতভাবে আপনার আগের সব স্কোর মুছে ফেলতে চান? এটি আর ফিরিয়ে আনা যাবে না।")) {
+                    try {
+                        const userRef = doc(db, "scores", currentUser.uid);
+                        await deleteDoc(userRef);
+                        alert("আপনার স্কোর সফলভাবে রিসেট হয়েছে!");
+                    } catch (e) {
+                        alert("রিসেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+                    }
+                }
             }
         };
 
@@ -265,7 +277,7 @@
                 {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
                 {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
                 {e:'💎', p:50, fs: 50, speed: 3.8, drift: 55}, 
-                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15} // এখানে -১০০ এর বদলে -৫০ করা হয়েছে
+                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
             ];
 
             const rand = Math.random();
