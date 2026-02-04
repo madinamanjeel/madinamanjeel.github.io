@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>মাল্টিপ্লেয়ার লুডু কিং! 🎲</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --red: #FF4747; --blue: #4777FF; --green: #2ECC71; --yellow: #F1C40F; }
+        body { font-family: 'Baloo Da 2', sans-serif; background: #2c3e50; color: white; margin: 0; text-align: center; }
+        
+        header { background: #e74c3c; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .setup-box { background: rgba(255,255,255,0.1); margin: 15px; padding: 20px; border-radius: 15px; }
+        
+        input { padding: 10px; border-radius: 8px; border: none; width: 60%; font-size: 1rem; margin-bottom: 10px; }
+        .btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; font-weight: bold; }
+        .btn-roll { background: #e74c3c; padding: 15px 30px; font-size: 1.4rem; margin-top: 20px; box-shadow: 0 5px 0 #c0392b; }
+        .btn-roll:active { transform: translateY(3px); box-shadow: 0 2px 0 #c0392b; }
+        .btn-roll:disabled { background: #95a5a6; box-shadow: none; cursor: not-allowed; }
+
+        /* লুডু বোর্ড */
+        #ludo-board { 
+            width: 330px; height: 330px; 
+            margin: 20px auto;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Ludo_board.svg/1024px-Ludo_board.svg.png');
+            background-size: 100% 100%;
+            position: relative;
+            border: 6px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* ঘুটির ডিজাইন */
+        .pawn { 
+            width: 22px; height: 22px; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            position: absolute; 
+            z-index: 100;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .pawn-red { background: var(--red); }
+        .pawn-blue { background: var(--blue); }
+
+        .dice-display { font-size: 4rem; margin: 10px 0; display: block; }
+        .status-msg { font-size: 1.2rem; color: #f1c40f; font-weight: bold; height: 30px; }
+    </style>
+</head>
+<body>
+
+    <header><h1>🎲 লুডু মাল্টিপ্লেয়ার!</h1></header>
+
+    <div id="setup-area" class="setup-box">
+        <input type="text" id="roomCode" placeholder="রুম কোড (যেমন: 5566)">
+        <button class="btn" onclick="window.game.joinRoom()">রুমে জয়েন করো</button>
+        <p style="font-size: 0.9rem; margin-top: 10px;">বন্ধুকেও একই কোড দিয়ে জয়েন করতে বলো।</p>
+    </div>
+
+    <div id="game-area" style="display:none;">
+        <div class="status-msg" id="statusMsg">অপেক্ষা করুন...</div>
+        
+        <div id="ludo-board">
+            <div id="pawn_red" class="pawn pawn-red" style="bottom: 45px; left: 45px;"></div>
+            <div id="pawn_blue" class="pawn pawn-blue" style="top: 45px; right: 45px;"></div>
+        </div>
+
+        <div class="dice-section">
+            <span class="dice-display" id="diceResult">🎲</span>
+            <button id="rollBtn" class="btn btn-roll" onclick="window.game.rollDice()" disabled>ছক্কা চালুন!</button>
+        </div>
+        <p id="playerTag" style="margin-top: 15px; font-weight: bold;"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        // আপনার ফায়ারবেস কনফিগ (স্ক্রিনশট অনুযায়ী)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+            authDomain: "family-429c7.firebaseapp.com",
+            databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "family-429c7",
+            storageBucket: "family-429c7.firebasestorage.app",
+            messagingSenderId: "982876086618",
+            appId: "1:982876086618:web:96b7e7186b3b0cd7f2d363"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let myColor = null;
+        let roomID = null;
+
+        // বোর্ডের কিছু ডামি কোঅর্ডিনেট (রিয়েল পাথ পরে বড় করা যাবে)
+        const path = {
+            red: [{b:45, l:45}, {b:135, l:135}, {b:135, l:110}, {b:135, l:85}, {b:135, l:60}],
+            blue: [{t:45, r:45}, {t:135, r:135}, {t:135, r:110}, {t:135, r:85}, {t:135, r:60}]
+        };
+
+        window.game = {
+            joinRoom: () => {
+                const code = document.getElementById('roomCode').value;
+                if(!code) return alert("রুম কোড দিন!");
+                roomID = code;
+                
+                const roomRef = ref(db, 'ludoRooms/' + roomID);
+                
+                onValue(roomRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if(!data) {
+                        // প্রথম প্লেয়ার (লাল)
+                        myColor = 'red';
+                        set(roomRef, {
+                            turn: 'red',
+                            dice: 1,
+                            redPos: 0,
+                            bluePos: 0,
+                            players: 1
+                        });
+                    } else if(!myColor && data.players === 1) {
+                        // দ্বিতীয় প্লেয়ার (নীল)
+                        myColor = 'blue';
+                        update(roomRef, { players: 2 });
+                    }
+                    
+                    if(myColor) {
+                        document.getElementById('setup-area').style.display = 'none';
+                        document.getElementById('game-area').style.display = 'block';
+                        document.getElementById('playerTag').innerText = "আপনি: " + (myColor === 'red' ? "লাল প্লেয়ার" : "নীল প্লেয়ার");
+                        document.getElementById('playerTag').style.color = (myColor === 'red' ? '#ff4747' : '#4777ff');
+                        updateUI(data);
+                    }
+                });
+            },
+
+            rollDice: () => {
+                const roll = Math.floor(Math.random() * 6) + 1;
+                const roomRef = ref(db, 'ludoRooms/' + roomID);
+                
+                onValue(roomRef, (snapshot) => {
+                    const data = snapshot.val();
+                    let nextPos = (myColor === 'red' ? data.redPos : data.bluePos) + roll;
+                    if(nextPos > 4) nextPos = 4; // ডামি শেষ সীমানা
+
+                    update(roomRef, {
+                        dice: roll,
+                        [myColor + 'Pos']: nextPos,
+                        turn: (myColor === 'red' ? 'blue' : 'red')
+                    });
+                }, { onlyOnce: true });
+            }
+        };
+
+        function updateUI(data) {
+            if(!data) return;
+
+            // ডাইস আপডেট
+            const diceEmoji = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+            document.getElementById('diceResult').innerText = diceEmoji[data.dice] || "🎲";
+            
+            // টার্ন মেসেজ
+            if(data.turn === myColor) {
+                document.getElementById('statusMsg').innerText = "আপনার চাল! ছক্কা টিপুন।";
+                document.getElementById('rollBtn').disabled = false;
+            } else {
+                document.getElementById('statusMsg').innerText = "অন্য প্লেয়ারের জন্য অপেক্ষা করুন...";
+                document.getElementById('rollBtn').disabled = true;
+            }
+
+            // ঘুটি নড়াচড়া (রেড)
+            const redPawn = document.getElementById('pawn_red');
+            const rPos = path.red[data.redPos];
+            redPawn.style.bottom = rPos.b + 'px'; redPawn.style.left = rPos.l + 'px';
+
+            // ঘুটি নড়াচড়া (ব্লু)
+            const bluePawn = document.getElementById('pawn_blue');
+            const bPos = path.blue[data.bluePos];
+            bluePawn.style.top = bPos.t + 'px'; bluePawn.style.right = bPos.r + 'px';
+        }
+    </script>
+</body>
+</html>
