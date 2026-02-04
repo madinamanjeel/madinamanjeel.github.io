@@ -1,172 +1,312 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids Entertainment Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <title>কিডস ফান জোন! 🎈</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* General Body Styles */
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #2F2F2F;
+        }
+
         body {
-            font-family: 'Open Sans', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            background: linear-gradient(to bottom right, #B3E0FF, #D9F2FF, #FFFACD); /* Softer sky blue to light blue to light yellow gradient */
-            color: #333;
+            font-family: 'Baloo Da 2', 'Fredoka', sans-serif;
+            margin: 0; padding: 0;
+            background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        header {
+            background: #FF9A9E;
+            padding: 8px;
             text-align: center;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            border-bottom: 4px solid rgba(0,0,0,0.1);
+            border-radius: 0 0 30% 30% / 10px;
         }
 
-        /* Header Section */
-        .header {
-            background-color: #FFB6C1; /* Light Pink */
-            padding: 20px 0;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            position: relative;
-            z-index: 10;
+        h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 10px; }
+
+        /* Video Section */
+        .tv-frame {
+            background: #FF6B6B;
+            padding: 8px;
+            border-radius: 15px;
+            box-shadow: 0 6px 0 #C44D4D;
+            margin-bottom: 15px;
         }
 
-        .header h1 {
-            font-family: 'Chewy', cursive;
-            color: #FFFFFF;
-            font-size: 3.5em;
-            text-shadow: 4px 4px 0 #FFD700, 6px 6px 0 #FF7F50; /* Gold and Coral shadow */
-            margin: 0;
-            padding: 0;
-            letter-spacing: 2px;
-        }
-
-        /* Main Content Wrapper */
-        .main-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent white background */
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 5;
-        }
-
-        /* Video Container */
         .video-wrapper {
-            background-color: #FFF;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-            margin-bottom: 30px;
-            border: 5px solid #8FBC8F; /* Dark Sea Green border */
-        }
-
-        .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
+            padding-bottom: 56.25%;
+            height: 0; background: #000; border-radius: 10px; overflow: hidden;
+        }
+
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* Game Section Control */
+        #gameContainer {
+            display: none;
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .game-area {
+            background: white;
+            border: 5px solid var(--accent);
+            border-radius: 20px;
+            height: 320px;
+            position: relative;
             overflow: hidden;
-            width: 100%;
-            margin: 0 auto;
-            background: #000;
-            border-radius: 10px;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: crosshair;
         }
 
-        /* Navigation Links (Newspaper style renamed for clarity) */
-        .navigation-links {
+        .score-board, .timer-board {
+            position: absolute; top: 8px; font-weight: bold;
+            background: rgba(255, 255, 255, 0.9); padding: 3px 12px;
+            border-radius: 15px; z-index: 10; font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .score-board { left: 10px; color: #333; }
+        .timer-board { right: 10px; color: var(--primary); }
+
+        /* Balloon & Pop Effects */
+        .balloon {
+            position: absolute; width: 55px; height: 75px; border-radius: 50%;
+            bottom: -100px; animation: floatUp 4s linear forwards;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; cursor: pointer; user-select: none;
+        }
+
+        @keyframes floatUp { to { transform: translateY(-500px); } }
+
+        .point-popup {
+            position: absolute; font-weight: bold; font-size: 1.5rem;
+            pointer-events: none; animation: popUp 0.8s ease-out forwards;
+            z-index: 15;
+        }
+        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
+
+        /* Grid Buttons */
+        .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
-            gap: 20px;
-            padding: 0 20px; /* Add some padding on the sides */
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px; margin-top: 10px;
         }
 
-        .navigation-links a {
-            display: flex; /* Use flexbox for centering content */
-            justify-content: center;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #AEC6CF; /* Cadet Blue - softer blue */
-            border: 3px solid #6A8A8A; /* Darker Cadet Blue border */
-            border-radius: 15px;
-            text-decoration: none;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #FFFFFF;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0 0.3s ease;
-            background-image: linear-gradient(135deg, #AEC6CF, #87CEEB); /* Cadet Blue to Sky Blue */
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-            min-height: 60px; /* Ensure consistent height */
+        .card {
+            background: white; border-radius: 12px; padding: 12px;
+            text-align: center; text-decoration: none; color: var(--dark);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: 0.2s;
+            display: flex; flex-direction: column; align-items: center; border: 3px solid transparent;
+        }
+        .card:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.1); }
+        .card-icon { font-size: 1.6rem; margin-bottom: 4px; }
+        .card-title { font-size: 0.85rem; font-weight: bold; }
+
+        .c-game { background: linear-gradient(45deg, #FF512F, #DD2476); color: white; border: none; }
+        .c-1 { border-color: #FF9F1C; } .c-2 { border-color: #2EC4B6; }
+
+        /* Start Button */
+        .start-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--primary); color: white; border: none;
+            padding: 12px 25px; font-size: 1.2rem; border-radius: 30px;
+            cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20;
         }
 
-        .navigation-links a:hover {
-            background-color: #87CEEB; /* Sky Blue */
-            transform: translateY(-5px) scale(1.02); /* Lift and slightly scale */
-            box-shadow: 0 10px 20px rgba(0, 150, 255, 0.6);
-            border-color: #FFD700; /* Gold border on hover */
-        }
+        /* Leaderboard under Game */
+        .leaderboard { background: #fff; border-radius: 15px; padding: 10px; margin-top: 10px; border: 3px solid var(--secondary); }
+        .leaderboard h3 { margin: 0 0 8px 0; font-size: 1rem; text-align: center; color: var(--primary); }
+        .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
+        .leaderboard-list li { display: flex; justify-content: space-between; padding: 5px 10px; background: #f1f1f1; margin-bottom: 4px; border-radius: 8px; }
 
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5em;
-            }
-            .navigation-links {
-                grid-template-columns: 1fr; /* Stack links on small screens */
-            }
-            .navigation-links a {
-                font-size: 1.2em;
-                padding: 12px 15px;
-            }
+        /* Score Saving Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center;
         }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            .main-content {
-                padding: 10px;
-            }
-            .video-wrapper {
-                padding: 10px;
-            }
-        }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
+        .modal-content input { width: 90%; padding: 10px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Kids Fun Zone!</h1>
-    </div>
 
-    <div class="main-content">
-        <div class="video-wrapper">
-            <div class="video-container">
-                <iframe
-                    src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=1?autoplay=1?autoplay=1&mute=1"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                </iframe>
+    <header>
+        <h1>🎈 কিডস ফান জোন! 🎈</h1>
+    </header>
+
+    <div class="container">
+        <div class="tv-frame">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=1&mute=0&controls=1" allowfullscreen></iframe>
             </div>
         </div>
 
-        <div class="navigation-links">
-            <a href="https://m.youtube.com/shorts/Q22NqZwEk9k">Gomgom</a>
-            <a href="https://youtube.com/@sisimpur/videos">Sisimpur</a>
-            <a href="https://youtube.com/playlist?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu&feature=shared">Bangla Rhymes</a>
-            <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1o_rTz7f9TwG9Kk0PrE6K4m&feature=shared">Dance Music</a>
-            <a href="https://m.youtube.com/@MotuPatluTVShow2024Benga-xv7pl/videos">Motu Patlu</a>
-            <a href="https://m.youtube.com/@MaasrangaKids/playlists">Maasranga Kids</a>
+        <div class="grid-container" style="margin-bottom: 15px;">
+            <div onclick="toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
+                <span class="card-icon">🎮</span>
+                <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম খেলো (স্কোর করো!)</span>
+            </div>
+        </div>
+
+        <div id="gameContainer">
+            <div class="game-area" id="gameArea">
+                <div class="score-board">স্কোর: <span id="score">0</span></div>
+                <div class="timer-board">সময়: <span id="timer">30</span>s</div>
+                <button class="start-btn" id="mainStartBtn" onclick="startGame()">খেলতে ট্যাপ করো!</button>
+            </div>
+            
+            <div class="leaderboard">
+                <h3>🏆 সেরা খেলোয়াড় তালিকা 🏆</h3>
+                <ul id="mainLeaderboard" class="leaderboard-list">
+                    <li style="justify-content:center;">এখনও কেউ খেলেনি!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <a href="https://kids.poki.com" target="_blank" class="card c-1">
+                <div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div>
+            </a>
+            <a href="https://youtube.com/@sisimpur/videos" target="_blank" class="card c-2">
+                <div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div>
+            </a>
+            <a href="https://youtube.com/playlist?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu" target="_blank" class="card c-1">
+                <div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div>
+            </a>
+            <a href="https://m.youtube.com/@MaasrangaKids/playlists" target="_blank" class="card c-2">
+                <div class="card-icon">📺</div><div class="card-title">মাছরাঙা</div>
+            </a>
         </div>
     </div>
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin:0; color:var(--primary);">সময় শেষ! 🎉</h2>
+            <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
+            <input type="text" id="playerName" placeholder="তোমার নাম..." maxlength="10">
+            <button onclick="saveScore()" style="background:var(--secondary); color:white; border:none; padding:10px 25px; border-radius:10px; font-weight:bold; cursor:pointer;">সেভ করো</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
+        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
+
+        function toggleGame() {
+            const gc = document.getElementById('gameContainer');
+            gc.style.display = (gc.style.display === 'block') ? 'none' : 'block';
+            if(gc.style.display === 'block') gc.scrollIntoView({behavior: 'smooth'});
+        }
+
+        function startGame() {
+            if(gameRunning) return;
+            gameRunning = true; score = 0; timeLeft = 30;
+            document.getElementById('score').innerText = score;
+            document.getElementById('timer').innerText = timeLeft;
+            document.getElementById('mainStartBtn').style.display = 'none';
+            
+            gameInterval = setInterval(createBalloon, 600);
+            timerInterval = setInterval(() => {
+                timeLeft--; 
+                document.getElementById('timer').innerText = timeLeft;
+                if(timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function createBalloon() {
+            const types = [
+                {e:'🎈', p:10, c:'#FF6B6B'}, {e:'🎈', p:10, c:'#4ECDC4'}, 
+                {e:'🌟', p:20, c:'#FFE66D'}, {e:'😎', p:25, c:'#FF9F1C'},
+                {e:'💎', p:50, c:'#7209B7'}, {e:'💣', p:-50, c:'#333'} // Bomb!
+            ];
+            
+            // Randomly select emoji with weighted probability
+            const rand = Math.random();
+            let type;
+            if(rand < 0.6) type = types[Math.floor(Math.random()*2)]; // Normal
+            else if(rand < 0.8) type = types[Math.floor(Math.random()*2)+2]; // Good
+            else if(rand < 0.9) type = types[4]; // Diamond
+            else type = types[5]; // Bomb
+
+            const b = document.createElement('div');
+            b.classList.add('balloon');
+            b.innerText = type.e;
+            b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
+            b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
+            
+            b.onclick = function(e) {
+                if(!gameRunning) return;
+                
+                score += type.p;
+                document.getElementById('score').innerText = score;
+                
+                // Sound
+                popSound.currentTime = 0;
+                popSound.play();
+                
+                // Score Animation at click position
+                showPointPopup(e.clientX, e.clientY, type.p);
+                
+                this.remove();
+            };
+
+            document.getElementById('gameArea').appendChild(b);
+            setTimeout(() => { if(b.parentNode) b.remove(); }, 4000);
+        }
+
+        function showPointPopup(x, y, points) {
+            const popup = document.createElement('div');
+            popup.classList.add('point-popup');
+            popup.innerText = (points > 0 ? "+" : "") + points;
+            popup.style.color = points > 0 ? "#28a745" : "#dc3545";
+            
+            const rect = document.getElementById('gameArea').getBoundingClientRect();
+            popup.style.left = (x - rect.left) + 'px';
+            popup.style.top = (y - rect.top) + 'px';
+            
+            document.getElementById('gameArea').appendChild(popup);
+            setTimeout(() => popup.remove(), 800);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval); clearInterval(timerInterval);
+            gameRunning = false;
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('gameOverModal').style.display = 'flex';
+            document.querySelectorAll('.balloon').forEach(b => b.remove());
+        }
+
+        function saveScore() {
+            const name = document.getElementById('playerName').value.trim() || "বন্ধু";
+            let scores = JSON.parse(localStorage.getItem('kidsScores') || '[]');
+            scores.push({name, score});
+            scores.sort((a,b) => b.score - a.score);
+            localStorage.setItem('kidsScores', JSON.stringify(scores.slice(0, 5)));
+            updateLeaderboard();
+            document.getElementById('gameOverModal').style.display = 'none';
+            document.getElementById('mainStartBtn').style.display = 'block';
+            document.getElementById('mainStartBtn').innerText = "আবার খেলো!";
+        }
+
+        function updateLeaderboard() {
+            const list = document.getElementById('mainLeaderboard');
+            const scores = JSON.parse(localStorage.getItem('kidsScores') || '[]');
+            if(scores.length === 0) return;
+            list.innerHTML = scores.map((s, i) => `<li><span>${i+1}. ${s.name}</span> <span>${s.score}</span></li>`).join('');
+        }
+
+        updateLeaderboard();
+    </script>
 </body>
 </html>
