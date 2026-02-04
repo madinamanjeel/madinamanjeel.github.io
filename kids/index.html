@@ -90,6 +90,11 @@
                     <span class="card-icon">🎮</span>
                     <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
                 </div>
+
+                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card" style="grid-column: 1 / -1; background: linear-gradient(45deg, #43a047, #1de9b6); color: white; border: none; flex-direction: row; justify-content: center; gap: 15px; text-decoration: none;">
+                    <span class="card-icon">🎲</span>
+                    <span class="card-title" style="font-size: 1.2rem;">লুডু খেলো!</span>
+                </a>
             </div>
 
             <div id="gameContainer">
@@ -105,17 +110,6 @@
                     </ul>
                 </div>
             </div>
-<div class="grid-container" style="margin-bottom: 15px;">
-    <div id="gameToggleBtn" onclick="window.gameFunctions.toggleGame()" class="card c-game" style="flex-direction: row; justify-content: center; gap: 15px;">
-        <span class="card-icon">🎮</span>
-        <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
-    </div>
-    
-    <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card" style="background: linear-gradient(45deg, #43a047, #1de9b6); color: white; border: none; flex-direction: row; justify-content: center; gap: 15px; text-decoration: none;">
-        <span class="card-icon">🎲</span>
-        <span class="card-title" style="font-size: 1.2rem;">লুডু খেলো!</span>
-    </a>
-</div>
 
             <div class="grid-container">
                 <a href="https://kids.poki.com" target="_blank" class="card c-1"><div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div></a>
@@ -253,7 +247,7 @@
                 {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
                 {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
                 {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
-                {e:'💎', p:50, fs: 50, speed: 2.3, drift: 55}, // আরও দ্রুত করা হয়েছে
+                {e:'💎', p:50, fs: 50, speed: 2.3, drift: 55},
                 {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
             ];
 
@@ -269,9 +263,8 @@
             b.style.setProperty('--drift', type.drift + 'px');
             b.style.fontSize = type.fs + 'px';
             
-            // পজিশন ফিক্স: এখন পুরো স্ক্রিন জুড়েই বেলুন আসবে
             const areaWidth = document.getElementById('gameArea').clientWidth;
-            const bWidth = 70; // বেলুনের গড় উইডথ
+            const bWidth = 70; 
             const randomLeft = Math.random() * (areaWidth - bWidth);
             b.style.left = randomLeft + 'px';
 
