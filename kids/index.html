@@ -5,170 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>কিডস ফান জোন! 🎈</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
-        :root {
-            --primary: #FF6B6B;
-            --secondary: #4ECDC4;
-            --accent: #FFE66D;
-            --dark: #2F2F2F;
-        }
-
-        body {
-            font-family: 'Baloo Da 2', 'Fredoka', sans-serif;
-            margin: 0; padding: 0;
-            background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
-            color: var(--dark);
-            overflow-x: hidden;
-        }
-
-        header {
-            background: #FF9A9E;
-            padding: 8px;
-            text-align: center;
-            border-bottom: 4px solid rgba(0,0,0,0.1);
-            border-radius: 0 0 30% 30% / 10px;
-        }
-
+        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
+        body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; }
+        header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
         h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
-
         .container { max-width: 800px; margin: 0 auto; padding: 10px; }
-
+        
         /* Video Section */
-        .tv-frame {
-            background: #FF6B6B;
-            padding: 8px;
-            border-radius: 15px;
-            box-shadow: 0 6px 0 #C44D4D;
-            margin-bottom: 15px;
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0; background: #000; border-radius: 10px; overflow: hidden;
-        }
-
+        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; box-shadow: 0 6px 0 #C44D4D; margin-bottom: 15px; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* Game Section Control */
-        #gameContainer {
-            display: none;
-            margin-bottom: 20px;
-            animation: fadeIn 0.4s ease;
-        }
+        /* Login Section */
+        #authSection { text-align: center; background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; display: block; }
+        .google-btn { background: #4285F4; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; display: flex; align-items: center; margin: 0 auto; gap: 10px; }
 
+        /* Game Section */
+        #gameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 350px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
+        .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        .game-area {
-            background: white;
-            border: 5px solid var(--accent);
-            border-radius: 20px;
-            height: 350px; /* Height increased slightly */
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            cursor: crosshair;
-        }
-
-        .score-board, .timer-board {
-            position: absolute; top: 8px; font-weight: bold;
-            background: rgba(255, 255, 255, 0.9); padding: 3px 12px;
-            border-radius: 15px; z-index: 10; font-size: 1.1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .score-board { left: 10px; color: #333; }
-        .timer-board { right: 10px; color: var(--primary); }
-
-        /* Balloon & Pop Effects */
-        .balloon {
-            position: absolute; width: 60px; height: 80px; border-radius: 50%;
-            bottom: -100px; 
-            /* Animation duration is now set by JS for randomness */
-            animation: floatUp linear forwards; 
-            display: flex; justify-content: center; align-items: center;
-            font-size: 28px; cursor: pointer; user-select: none;
-            transition: transform 0.1s;
-        }
-        
-        .balloon:active { transform: scale(0.9); }
-
+        .balloon { position: absolute; width: 60px; height: 80px; border-radius: 50%; bottom: -100px; animation: floatUp linear forwards; display: flex; justify-content: center; align-items: center; font-size: 28px; cursor: pointer; user-select: none; }
         @keyframes floatUp { to { transform: translateY(-600px); } }
 
-        .point-popup {
-            position: absolute; font-weight: bold; font-size: 1.5rem;
-            pointer-events: none; animation: popUp 0.6s ease-out forwards;
-            z-index: 15;
-        }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
-
         /* Grid Buttons */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px; margin-top: 10px;
-        }
-
-        .card {
-            background: white; border-radius: 12px; padding: 12px;
-            text-align: center; text-decoration: none; color: var(--dark);
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: 0.2s;
-            display: flex; flex-direction: column; align-items: center; border: 3px solid transparent;
-            cursor: pointer;
-        }
-        .card:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.1); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
+        .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); transition: 0.2s; display: flex; flex-direction: column; align-items: center; border: 3px solid transparent; cursor: pointer; }
+        .card:active { transform: translateY(3px); }
         .card-icon { font-size: 1.6rem; margin-bottom: 4px; }
-        .card-title { font-size: 0.85rem; font-weight: bold; }
-
         .c-game { background: linear-gradient(45deg, #FF512F, #DD2476); color: white; border: none; }
         .c-1 { border-color: #FF9F1C; } .c-2 { border-color: #2EC4B6; }
 
-        /* Start Button */
-        .start-btn {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--primary); color: white; border: none;
-            padding: 12px 25px; font-size: 1.2rem; border-radius: 30px;
-            cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20;
-        }
-
-        /* Leaderboard under Game */
+        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; }
+        
         .leaderboard { background: #fff; border-radius: 15px; padding: 10px; margin-top: 10px; border: 3px solid var(--secondary); }
         .leaderboard h3 { margin: 0 0 8px 0; font-size: 1rem; text-align: center; color: var(--primary); }
-        .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
-        .leaderboard-list li { display: flex; justify-content: space-between; padding: 5px 10px; background: #f1f1f1; margin-bottom: 4px; border-radius: 8px; }
-
-        /* Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center;
-        }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-content input { width: 90%; padding: 10px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; }
-        
-        .modal-btn-group {
-            display: flex; justify-content: center; gap: 10px; margin-top: 5px;
-        }
-        .modal-btn {
-            border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; flex: 1;
-        }
+        .leaderboard-list { list-style: none; padding: 0; margin: 0; }
+        .leaderboard-list li { display: flex; justify-content: space-between; padding: 5px 10px; background: #f1f1f1; margin-bottom: 4px; border-radius: 8px; align-items: center; }
+        .user-pic { width: 25px; height: 25px; border-radius: 50%; margin-right: 8px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🎈 কিডস ফান জোন! 🎈</h1>
-    </header>
+    <header><h1>🎈 কিডস ফান জোন! 🎈</h1></header>
 
     <div class="container">
         <div class="tv-frame">
             <div class="video-wrapper">
-                <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=0&mute=0&controls=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=0&controls=1" allowfullscreen></iframe>
             </div>
+        </div>
+
+        <div id="authSection">
+            <p>অনলাইন লিডারবোর্ডে নাম লেখাতে লগিন করো!</p>
+            <button class="google-btn" onclick="googleLogin()">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Google দিয়ে লগিন
+            </button>
         </div>
 
         <div class="grid-container" style="margin-bottom: 15px;">
             <div onclick="toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
                 <span class="card-icon">🎮</span>
-                <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
+                <span class="card-title" style="font-size: 1.2rem;">সুপার ফাস্ট বেলুন গেম!</span>
             </div>
         </div>
 
@@ -180,52 +86,72 @@
             </div>
             
             <div class="leaderboard">
-                <h3>🏆 সেরা খেলোয়াড় তালিকা 🏆</h3>
-                <ul id="mainLeaderboard" class="leaderboard-list">
-                    <li style="justify-content:center;">এখনও কেউ খেলেনি!</li>
+                <h3>🏆 বিশ্ব সেরা ৫ খেলোয়াড় 🏆</h3>
+                <ul id="onlineLeaderboard" class="leaderboard-list">
+                    <li style="justify-content:center;">লগিন করে স্কোরবোর্ড দেখো...</li>
                 </ul>
             </div>
         </div>
 
         <div class="grid-container">
-            <a href="https://kids.poki.com" target="_blank" class="card c-1">
-                <div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div>
-            </a>
-            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLB5F28560F451D7C1')" class="card c-2">
-                <div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div>
-            </div>
-            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card c-1">
-                <div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div>
-            </div>
-            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLPIMyXW5K6I5gQO55c_OXgGSVUEp3K-Ff')" class="card c-2">
-                <div class="card-icon">📺</div><div class="card-title">মাছরাঙা</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="gameOverModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin:0; color:var(--primary);">সময় শেষ! 🎉</h2>
-            <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
-            <input type="text" id="playerName" placeholder="তোমার নাম..." maxlength="10">
-            <div class="modal-btn-group">
-                <button onclick="closeModal()" class="modal-btn" style="background:#ddd; color:#333;">বাতিল</button>
-                <button onclick="saveScore()" class="modal-btn" style="background:var(--secondary); color:white;">সেভ করো</button>
-            </div>
+            <a href="https://kids.poki.com" target="_blank" class="card c-1"><div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div></a>
+            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLB5F28560F451D7C1')" class="card c-2"><div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div></div>
+            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card c-1"><div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div></div>
+            <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLPIMyXW5K6I5gQO55c_OXgGSVUEp3K-Ff')" class="card c-2"><div class="card-icon">📺</div><div class="card-title">মাছরাঙা</div></div>
         </div>
     </div>
 
     <script>
-        // --- VIDEO PLAYER ---
-        function playVideo(url) {
-            const player = document.getElementById('videoPlayer');
-            player.src = url + "&autoplay=1";
-            document.querySelector('.tv-frame').scrollIntoView({behavior: 'smooth'});
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXZwMxiegnltdgExUDepoLB6b20CrGwms",
+            authDomain: "family-429c7.firebaseapp.com",
+            databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "family-429c7",
+            storageBucket: "family-429c7.firebasestorage.app",
+            messagingSenderId: "982876086618",
+            appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
+            measurementId: "G-R7NLCB1B92"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // অনুমোদিত ইমেইল লিস্ট
+        const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
+
+        let currentUser = null;
+        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
+
+        auth.onAuthStateChanged(user => {
+            if (user && allowedEmails.includes(user.email)) {
+                currentUser = user;
+                document.getElementById('authSection').style.display = 'none';
+                loadLeaderboard();
+            } else if (user) {
+                alert("অনুমতি নেই!"); auth.signOut();
+            }
+        });
+
+        function googleLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider);
         }
 
-        // --- GAME LOGIC (FASTER & HARDER) ---
-        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
+        function loadLeaderboard() {
+            db.collection("scores").orderBy("score", "desc").limit(5).onSnapshot(snap => {
+                const list = document.getElementById('onlineLeaderboard');
+                list.innerHTML = snap.docs.map(doc => {
+                    const d = doc.data();
+                    return `<li><span><img src="${d.photo}" class="user-pic">${d.name}</span><strong>${d.score}</strong></li>`;
+                }).join('');
+            });
+        }
+
+        function playVideo(url) {
+            document.getElementById('videoPlayer').src = url + "&autoplay=1";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
 
         function toggleGame() {
             const gc = document.getElementById('gameContainer');
@@ -236,118 +162,47 @@
         function startGame() {
             if(gameRunning) return;
             gameRunning = true; score = 0; timeLeft = 30;
-            document.getElementById('score').innerText = score;
-            document.getElementById('timer').innerText = timeLeft;
+            document.getElementById('score').innerText = 0;
             document.getElementById('mainStartBtn').style.display = 'none';
-            
-            // SPAWN RATE: 350ms (Much faster than before)
             gameInterval = setInterval(createBalloon, 350);
-            
             timerInterval = setInterval(() => {
-                timeLeft--; 
-                document.getElementById('timer').innerText = timeLeft;
+                timeLeft--; document.getElementById('timer').innerText = timeLeft;
                 if(timeLeft <= 0) endGame();
             }, 1000);
         }
 
         function createBalloon() {
-            // More types of balloons added for variety
-            const types = [
-                {e:'🎈', p:10, c:'#FF6B6B'}, {e:'🎈', p:10, c:'#4ECDC4'}, 
-                {e:'🦊', p:15, c:'#FF9F1C'}, {e:'🐯', p:15, c:'#F7B500'},
-                {e:'🍎', p:20, c:'#E63946'}, {e:'💎', p:50, c:'#7209B7'}, 
-                {e:'💣', p:-50, c:'#333'} 
-            ];
-            
-            // Weighted Random Selection
-            const rand = Math.random();
-            let type;
-            if(rand < 0.5) type = types[Math.floor(Math.random()*2)]; // Normal Balloons (50%)
-            else if(rand < 0.8) type = types[Math.floor(Math.random()*3)+2]; // Animals/Fruits (30%)
-            else if(rand < 0.9) type = types[5]; // Diamond (10%)
-            else type = types[6]; // Bomb (10%)
-
+            const types = [{e:'🎈', p:10, c:'#FF6B6B'}, {e:'🦊', p:15, c:'#FF9F1C'}, {e:'💎', p:50, c:'#7209B7'}, {e:'💣', p:-50, c:'#333'}];
+            const type = types[Math.random() < 0.1 ? 3 : Math.floor(Math.random()*3)];
             const b = document.createElement('div');
-            b.classList.add('balloon');
-            b.innerText = type.e;
+            b.className = 'balloon'; b.innerText = type.e;
             b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
             b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
-            
-            // RANDOM SPEED: Between 1.5s (Fast) and 3.5s (Medium)
-            // This makes the game much harder and chaotic
-            const speed = Math.random() * 2 + 1.5; 
+            const speed = Math.random() * 2 + 1.5;
             b.style.animationDuration = speed + 's';
-
-            b.onclick = function(e) {
+            b.onclick = function() {
                 if(!gameRunning) return;
-                score += type.p;
-                document.getElementById('score').innerText = score;
-                
-                // Clone sound for overlapping pops
-                const soundClone = popSound.cloneNode();
-                soundClone.play();
-                
-                showPointPopup(e.clientX, e.clientY, type.p);
+                score += type.p; document.getElementById('score').innerText = score;
                 this.remove();
             };
-
             document.getElementById('gameArea').appendChild(b);
-            
-            // Remove balloon after it flies away (based on its speed)
-            setTimeout(() => { if(b.parentNode) b.remove(); }, speed * 1000);
+            setTimeout(() => b.remove(), speed * 1000);
         }
 
-        function showPointPopup(x, y, points) {
-            const popup = document.createElement('div');
-            popup.classList.add('point-popup');
-            popup.innerText = (points > 0 ? "+" : "") + points;
-            popup.style.color = points > 0 ? "#28a745" : "#dc3545";
-            
-            const rect = document.getElementById('gameArea').getBoundingClientRect();
-            // Ensure popup stays within bounds roughly
-            let left = x - rect.left;
-            let top = y - rect.top;
-            
-            popup.style.left = left + 'px';
-            popup.style.top = top + 'px';
-            
-            document.getElementById('gameArea').appendChild(popup);
-            setTimeout(() => popup.remove(), 600);
-        }
-
-        function endGame() {
+        async function endGame() {
             clearInterval(gameInterval); clearInterval(timerInterval);
             gameRunning = false;
-            document.getElementById('finalScore').innerText = score;
-            document.getElementById('gameOverModal').style.display = 'flex';
-            document.querySelectorAll('.balloon').forEach(b => b.remove());
-        }
-
-        function closeModal() {
-            document.getElementById('gameOverModal').style.display = 'none';
-            document.getElementById('playerName').value = "";
+            alert("সময় শেষ! স্কোর: " + score);
+            if(currentUser) {
+                const ref = db.collection("scores").doc(currentUser.uid);
+                const doc = await ref.get();
+                if(!doc.exists || score > doc.data().score) {
+                    await ref.set({ name: currentUser.displayName, photo: currentUser.photoURL, score: score });
+                }
+            }
             document.getElementById('mainStartBtn').style.display = 'block';
             document.getElementById('mainStartBtn').innerText = "আবার খেলো!";
         }
-
-        function saveScore() {
-            const name = document.getElementById('playerName').value.trim() || "বন্ধু";
-            let scores = JSON.parse(localStorage.getItem('kidsScores') || '[]');
-            scores.push({name, score});
-            scores.sort((a,b) => b.score - a.score);
-            localStorage.setItem('kidsScores', JSON.stringify(scores.slice(0, 5)));
-            updateLeaderboard();
-            closeModal();
-        }
-
-        function updateLeaderboard() {
-            const list = document.getElementById('mainLeaderboard');
-            const scores = JSON.parse(localStorage.getItem('kidsScores') || '[]');
-            if(scores.length === 0) return;
-            list.innerHTML = scores.map((s, i) => `<li><span>${i+1}. ${s.name}</span> <span>${s.score}</span></li>`).join('');
-        }
-
-        updateLeaderboard();
     </script>
 </body>
 </html>
