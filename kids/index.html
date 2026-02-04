@@ -29,7 +29,7 @@
 
         .balloon { 
             position: absolute; 
-            bottom: -100px; 
+            bottom: -80px; 
             animation: floatUp var(--speed) linear forwards; 
             display: flex; 
             justify-content: center; 
@@ -40,15 +40,16 @@
             pointer-events: auto;
             background: transparent; 
             border: none;
-            padding: 20px;
+            padding: 15px;
+            z-index: 5;
         }
         
+        /* ইমোজিগুলো স্ক্রিনের ভেতর রাখার জন্য ড্রিফট লিমিট করা হয়েছে */
         @keyframes floatUp { 
             0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            25% { transform: translateY(-180px) translateX(var(--drift)) rotate(10deg); }
-            50% { transform: translateY(-360px) translateX(calc(var(--drift) * -1.5)) rotate(-10deg); }
-            75% { transform: translateY(-540px) translateX(var(--drift)) rotate(10deg); }
-            100% { transform: translateY(-750px) translateX(0) rotate(0deg); }
+            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(15deg); }
+            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-15deg); }
+            100% { transform: translateY(-850px) translateX(0) rotate(0deg); }
         }
 
         .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
@@ -188,7 +189,7 @@
         }
 
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let currentSpawnRate = 600; // শুরুতে একটু ধীরে
+        let currentSpawnRate = 650; 
         let difficultyMultiplier = 1.0; 
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
 
@@ -205,7 +206,7 @@
             startGame: () => {
                 if(gameRunning) return;
                 gameRunning = true; score = 0; timeLeft = 30; 
-                currentSpawnRate = 600; difficultyMultiplier = 1.0;
+                currentSpawnRate = 650; difficultyMultiplier = 1.0;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
@@ -216,7 +217,6 @@
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
                     
-                    // ধাপে ধাপে হার্ড করা (প্রতি ৫ সেকেন্ডে)
                     if(timeLeft % 5 === 0 && timeLeft > 0) {
                         increaseDifficulty();
                     }
@@ -231,12 +231,8 @@
         };
 
         function increaseDifficulty() {
-            // বেলুন আসার গ্যাপ কমানো (মিনিমাম ২০০ মি.সে.)
-            currentSpawnRate = Math.max(200, currentSpawnRate - 80);
-            // এনিমেশন এবং ড্রিফট স্পিড বাড়ানো
-            difficultyMultiplier += 0.25;
-            
-            // নতুন স্পন রেট অনুযায়ী ইন্টারভাল আপডেট
+            currentSpawnRate = Math.max(220, currentSpawnRate - 85);
+            difficultyMultiplier += 0.22; // খুব বেশি ওভারস্পিড হওয়া আটকানো হয়েছে
             clearInterval(gameInterval);
             startSpawning();
         }
@@ -247,16 +243,16 @@
 
         function createBalloon() {
             const types = [
-                {e:'🎈', p:10, fs: 75, speed: 5.5, drift: 20}, 
-                {e:'🦊', p:15, fs: 70, speed: 5.0, drift: 35}, 
-                {e:'🍎', p:20, fs: 60, speed: 4.0, drift: 50}, 
-                {e:'💎', p:50, fs: 50, speed: 3.0, drift: 70}, 
-                {e:'💣', p:-100, fs: 85, speed: 4.5, drift: 10} 
+                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
+                {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
+                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
+                {e:'💎', p:50, fs: 50, speed: 3.8, drift: 55}, // স্পিড ব্যালেন্স করা হয়েছে
+                {e:'💣', p:-100, fs: 85, speed: 4.5, drift: 15} 
             ];
 
             const rand = Math.random();
             let type;
-            if (rand < 0.22) type = types[4]; 
+            if (rand < 0.2) type = types[4]; 
             else if (rand < 0.35) type = types[3];
             else if (rand < 0.55) type = types[2];
             else if (rand < 0.75) type = types[1];
@@ -266,14 +262,17 @@
             b.className = 'balloon'; 
             b.innerText = type.e;
             
-            // ডিফিকাল্টি অনুযায়ী স্পিড এবং ড্রিফট ক্যালকুলেশন
-            const finalSpeed = Math.max(1.2, type.speed / difficultyMultiplier);
-            const finalDrift = type.drift * difficultyMultiplier;
+            const finalSpeed = Math.max(1.8, type.speed / difficultyMultiplier);
+            const finalDrift = type.drift; // ড্রিফট স্ক্রিনের ভেতর রাখা হয়েছে
 
             b.style.setProperty('--speed', finalSpeed + 's');
             b.style.setProperty('--drift', finalDrift + 'px');
             b.style.fontSize = type.fs + 'px';
-            b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 80) + 'px';
+            
+            // সেফ জোন ক্যালকুলেশন: ইমোজিগুলো যেন ডানে-বামে ডালের কারণে বাইরে না যায়
+            const areaWidth = document.getElementById('gameArea').clientWidth;
+            const safeMargin = 60; // দুই পাশে ৬০ পিক্সেল জায়গা রাখা হয়েছে
+            b.style.left = (safeMargin + Math.random() * (areaWidth - (safeMargin * 2 + 50))) + 'px';
 
             const popAction = (e) => {
                 if(!gameRunning) return;
@@ -290,6 +289,7 @@
             b.addEventListener('mousedown', popAction);
 
             document.getElementById('gameArea').appendChild(b);
+            // বেলুনগুলো স্ক্রিন অতিক্রম করার পর রিমুভ হবে
             setTimeout(() => { if(b.parentNode) b.remove(); }, finalSpeed * 1000);
         }
 
