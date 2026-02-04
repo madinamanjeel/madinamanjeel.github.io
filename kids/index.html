@@ -29,7 +29,7 @@
 
         .balloon { 
             position: absolute; 
-            bottom: -80px; 
+            bottom: -90px; 
             animation: floatUp var(--speed) linear forwards; 
             display: flex; 
             justify-content: center; 
@@ -40,14 +40,14 @@
             pointer-events: auto;
             background: transparent; 
             border: none;
-            padding: 15px;
+            padding: 10px;
             z-index: 5;
         }
         
         @keyframes floatUp { 
             0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(15deg); }
-            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-15deg); }
+            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(10deg); }
+            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-10deg); }
             100% { transform: translateY(-850px) translateX(0) rotate(0deg); }
         }
 
@@ -155,20 +155,16 @@
         }
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                if (allowedEmails.includes(user.email)) {
-                    currentUser = user;
-                    localStorage.setItem('isVerifiedUser', 'true');
-                    document.getElementById('loading-message').style.display = 'none';
-                    document.getElementById('content-wrapper').style.display = 'block';
-                    loadOnlineLeaderboard();
-                } else {
-                    localStorage.removeItem('isVerifiedUser');
-                    alert("অনুমতি নেই!");
-                    window.location.href = "https://google.com";
-                }
+            if (user && allowedEmails.includes(user.email)) {
+                currentUser = user;
+                localStorage.setItem('isVerifiedUser', 'true');
+                document.getElementById('loading-message').style.display = 'none';
+                document.getElementById('content-wrapper').style.display = 'block';
+                loadOnlineLeaderboard();
+            } else if (user) {
+                alert("অনুমতি নেই!");
+                window.location.href = "https://google.com";
             } else {
-                localStorage.removeItem('isVerifiedUser');
                 signInWithRedirect(auth, provider);
             }
         });
@@ -196,7 +192,6 @@
             toggleGame: () => {
                 const gc = document.getElementById('gameContainer');
                 const isHidden = gc.style.display === 'none' || gc.style.display === '';
-                
                 if (isHidden) {
                     gc.style.display = 'block';
                     setTimeout(() => {
@@ -204,17 +199,10 @@
                         const offset = 80;
                         const bodyRect = document.body.getBoundingClientRect().top;
                         const elementRect = gameArea.getBoundingClientRect().top;
-                        const elementPosition = elementRect - bodyRect;
-                        const offsetPosition = elementPosition - offset;
-
-                        window.scrollTo({
-                            top: offsetPosition,
-                            behavior: 'smooth'
-                        });
+                        const offsetPosition = (elementRect - bodyRect) - offset;
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
                     }, 100);
-                } else {
-                    gc.style.display = 'none';
-                }
+                } else { gc.style.display = 'none'; }
             },
             playVideo: (url) => {
                 document.getElementById('videoPlayer').src = url + "&autoplay=1";
@@ -222,22 +210,15 @@
             },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; 
-                currentSpawnRate = 650; difficultyMultiplier = 1.0;
+                gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 650; difficultyMultiplier = 1.0;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
-                
                 startSpawning();
-                
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
-                    
-                    if(timeLeft % 5 === 0 && timeLeft > 0) {
-                        increaseDifficulty();
-                    }
-                    
+                    if(timeLeft % 5 === 0 && timeLeft > 0) increaseDifficulty();
                     if(timeLeft <= 0) endGame();
                 }, 1000);
             },
@@ -249,54 +230,46 @@
 
         function increaseDifficulty() {
             currentSpawnRate = Math.max(220, currentSpawnRate - 85);
-            difficultyMultiplier += 0.22;
+            difficultyMultiplier += 0.25;
             clearInterval(gameInterval);
             startSpawning();
         }
 
-        function startSpawning() {
-            gameInterval = setInterval(createBalloon, currentSpawnRate);
-        }
+        function startSpawning() { gameInterval = setInterval(createBalloon, currentSpawnRate); }
 
         function createBalloon() {
             const types = [
                 {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
                 {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
                 {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
-                {e:'💎', p:50, fs: 50, speed: 2.5, drift: 55}, // এখানে হিরার স্পিড ২.৫ সেকেন্ড করা হয়েছে (আগে ৩.৮ ছিল)
+                {e:'💎', p:50, fs: 50, speed: 2.3, drift: 55}, // আরও দ্রুত করা হয়েছে
                 {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
             ];
 
             const rand = Math.random();
-            let type;
-            if (rand < 0.2) type = types[4]; 
-            else if (rand < 0.35) type = types[3];
-            else if (rand < 0.55) type = types[2];
-            else if (rand < 0.75) type = types[1];
-            else type = types[0];
+            let type = rand < 0.2 ? types[4] : rand < 0.35 ? types[3] : rand < 0.55 ? types[2] : rand < 0.75 ? types[1] : types[0];
 
             const b = document.createElement('div');
             b.className = 'balloon'; 
             b.innerText = type.e;
             
-            const finalSpeed = Math.max(1.2, type.speed / difficultyMultiplier);
-            const finalDrift = type.drift;
-
+            const finalSpeed = Math.max(1.1, type.speed / difficultyMultiplier);
             b.style.setProperty('--speed', finalSpeed + 's');
-            b.style.setProperty('--drift', finalDrift + 'px');
+            b.style.setProperty('--drift', type.drift + 'px');
             b.style.fontSize = type.fs + 'px';
             
+            // পজিশন ফিক্স: এখন পুরো স্ক্রিন জুড়েই বেলুন আসবে
             const areaWidth = document.getElementById('gameArea').clientWidth;
-            const safeMargin = 60; 
-            b.style.left = (safeMargin + Math.random() * (areaWidth - (safeMargin * 2 + 50))) + 'px';
+            const bWidth = 70; // বেলুনের গড় উইডথ
+            const randomLeft = Math.random() * (areaWidth - bWidth);
+            b.style.left = randomLeft + 'px';
 
             const popAction = (e) => {
                 if(!gameRunning) return;
                 e.preventDefault(); 
                 score += type.p;
                 document.getElementById('score').innerText = score;
-                const s = popSound.cloneNode();
-                s.play();
+                popSound.cloneNode().play();
                 showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
                 b.remove();
             };
@@ -325,24 +298,13 @@
             gameRunning = false;
             document.getElementById('finalScore').innerText = score;
             document.getElementById('gameOverModal').style.display = 'flex';
-            document.getElementById('saveMsg').innerText = "স্কোর সেভ হচ্ছে...";
-
             if (currentUser) {
-                try {
-                    const userRef = doc(db, "scores", currentUser.uid);
-                    const docSnap = await getDoc(userRef);
-                    if (!docSnap.exists() || score > docSnap.data().score) {
-                        await setDoc(userRef, {
-                            name: currentUser.displayName || "বন্ধু",
-                            photo: currentUser.photoURL,
-                            score: score,
-                            timestamp: new Date()
-                        });
-                        document.getElementById('saveMsg').innerText = "অবিশ্বাস্য! নতুন রেকর্ড! 🔥";
-                    } else {
-                        document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!";
-                    }
-                } catch (e) {}
+                const userRef = doc(db, "scores", currentUser.uid);
+                const docSnap = await getDoc(userRef);
+                if (!docSnap.exists() || score > docSnap.data().score) {
+                    await setDoc(userRef, { name: currentUser.displayName, photo: currentUser.photoURL, score: score });
+                    document.getElementById('saveMsg').innerText = "অবিশ্বাস্য! নতুন রেকর্ড! 🔥";
+                } else { document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!"; }
             }
             document.getElementById('closeModalBtn').style.display = "block";
             document.querySelectorAll('.balloon').forEach(b => b.remove());
