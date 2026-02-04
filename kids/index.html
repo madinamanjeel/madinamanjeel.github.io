@@ -199,10 +199,9 @@
                 
                 if (isHidden) {
                     gc.style.display = 'block';
-                    // স্ক্রল ফিক্স: ইমোজি গেম বাটনের ঠিক নিচে স্ক্রল হবে যাতে গেম এরিয়া পূর্ণ দেখা যায়
                     setTimeout(() => {
                         const gameArea = document.getElementById('gameArea');
-                        const offset = 80; // স্কোরবোর্ড যেন ঢেকে না যায় সেজন্য অফসেট
+                        const offset = 80;
                         const bodyRect = document.body.getBoundingClientRect().top;
                         const elementRect = gameArea.getBoundingClientRect().top;
                         const elementPosition = elementRect - bodyRect;
@@ -264,8 +263,8 @@
                 {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
                 {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
                 {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
-                {e:'💎', p:50, fs: 50, speed: 3.8, drift: 55}, 
-                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15} // এখানে -১০০ এর বদলে -৫০ করা হয়েছে
+                {e:'💎', p:50, fs: 50, speed: 2.5, drift: 55}, // এখানে হিরার স্পিড ২.৫ সেকেন্ড করা হয়েছে (আগে ৩.৮ ছিল)
+                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
             ];
 
             const rand = Math.random();
@@ -280,7 +279,7 @@
             b.className = 'balloon'; 
             b.innerText = type.e;
             
-            const finalSpeed = Math.max(1.8, type.speed / difficultyMultiplier);
+            const finalSpeed = Math.max(1.2, type.speed / difficultyMultiplier);
             const finalDrift = type.drift;
 
             b.style.setProperty('--speed', finalSpeed + 's');
