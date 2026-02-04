@@ -44,7 +44,6 @@
             z-index: 5;
         }
         
-        /* ইমোজিগুলো স্ক্রিনের ভেতর রাখার জন্য ড্রিফট লিমিট করা হয়েছে */
         @keyframes floatUp { 
             0% { transform: translateY(0) translateX(0) rotate(0deg); }
             33% { transform: translateY(-250px) translateX(var(--drift)) rotate(15deg); }
@@ -87,7 +86,7 @@
             </div>
 
             <div class="grid-container" style="margin-bottom: 15px;">
-                <div onclick="window.gameFunctions.toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
+                <div id="gameToggleBtn" onclick="window.gameFunctions.toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
                     <span class="card-icon">🎮</span>
                     <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
                 </div>
@@ -196,8 +195,27 @@
         window.gameFunctions = {
             toggleGame: () => {
                 const gc = document.getElementById('gameContainer');
-                gc.style.display = (gc.style.display === 'block') ? 'none' : 'block';
-                if(gc.style.display === 'block') gc.scrollIntoView({behavior: 'smooth'});
+                const isHidden = gc.style.display === 'none' || gc.style.display === '';
+                
+                if (isHidden) {
+                    gc.style.display = 'block';
+                    // স্ক্রল ফিক্স: ইমোজি গেম বাটনের ঠিক নিচে স্ক্রল হবে যাতে গেম এরিয়া পূর্ণ দেখা যায়
+                    setTimeout(() => {
+                        const gameArea = document.getElementById('gameArea');
+                        const offset = 80; // স্কোরবোর্ড যেন ঢেকে না যায় সেজন্য অফসেট
+                        const bodyRect = document.body.getBoundingClientRect().top;
+                        const elementRect = gameArea.getBoundingClientRect().top;
+                        const elementPosition = elementRect - bodyRect;
+                        const offsetPosition = elementPosition - offset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                } else {
+                    gc.style.display = 'none';
+                }
             },
             playVideo: (url) => {
                 document.getElementById('videoPlayer').src = url + "&autoplay=1";
@@ -232,7 +250,7 @@
 
         function increaseDifficulty() {
             currentSpawnRate = Math.max(220, currentSpawnRate - 85);
-            difficultyMultiplier += 0.22; // খুব বেশি ওভারস্পিড হওয়া আটকানো হয়েছে
+            difficultyMultiplier += 0.22;
             clearInterval(gameInterval);
             startSpawning();
         }
@@ -246,8 +264,8 @@
                 {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
                 {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
                 {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
-                {e:'💎', p:50, fs: 50, speed: 3.8, drift: 55}, // স্পিড ব্যালেন্স করা হয়েছে
-                {e:'💣', p:-100, fs: 85, speed: 4.5, drift: 15} 
+                {e:'💎', p:50, fs: 50, speed: 3.8, drift: 55}, 
+                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15} // এখানে -১০০ এর বদলে -৫০ করা হয়েছে
             ];
 
             const rand = Math.random();
@@ -263,15 +281,14 @@
             b.innerText = type.e;
             
             const finalSpeed = Math.max(1.8, type.speed / difficultyMultiplier);
-            const finalDrift = type.drift; // ড্রিফট স্ক্রিনের ভেতর রাখা হয়েছে
+            const finalDrift = type.drift;
 
             b.style.setProperty('--speed', finalSpeed + 's');
             b.style.setProperty('--drift', finalDrift + 'px');
             b.style.fontSize = type.fs + 'px';
             
-            // সেফ জোন ক্যালকুলেশন: ইমোজিগুলো যেন ডানে-বামে ডালের কারণে বাইরে না যায়
             const areaWidth = document.getElementById('gameArea').clientWidth;
-            const safeMargin = 60; // দুই পাশে ৬০ পিক্সেল জায়গা রাখা হয়েছে
+            const safeMargin = 60; 
             b.style.left = (safeMargin + Math.random() * (areaWidth - (safeMargin * 2 + 50))) + 'px';
 
             const popAction = (e) => {
@@ -289,7 +306,6 @@
             b.addEventListener('mousedown', popAction);
 
             document.getElementById('gameArea').appendChild(b);
-            // বেলুনগুলো স্ক্রিন অতিক্রম করার পর রিমুভ হবে
             setTimeout(() => { if(b.parentNode) b.remove(); }, finalSpeed * 1000);
         }
 
