@@ -27,11 +27,10 @@
         .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
         .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        /* বেলুনের ডানে-বায়ে দোলার এনিমেশন */
+        /* শুধুমাত্র ইমোজি শো করার স্টাইল */
         .balloon { 
             position: absolute; 
-            border-radius: 50%; 
-            bottom: -150px; 
+            bottom: -100px; 
             animation: floatUp var(--speed) linear forwards; 
             display: flex; 
             justify-content: center; 
@@ -40,16 +39,18 @@
             user-select: none; 
             touch-action: none; 
             pointer-events: auto;
-            box-sizing: content-box;
-            padding: 15px; /* হিটবক্স বড় করা হয়েছে */
+            /* পেছনের বর্ডার ও কালার বাদ দেওয়া হয়েছে */
+            background: transparent; 
+            border: none;
+            padding: 20px; /* ক্লিক করার সুবিধা বাড়াতে হিটবক্স রাখা হয়েছে */
         }
         
         @keyframes floatUp { 
-            0% { transform: translateY(0) translateX(0); }
-            20% { transform: translateY(-150px) translateX(var(--drift)); }
-            50% { transform: translateY(-350px) translateX(calc(var(--drift) * -1)); }
-            80% { transform: translateY(-550px) translateX(var(--drift)); }
-            100% { transform: translateY(-750px) translateX(0); }
+            0% { transform: translateY(0) translateX(0) rotate(0deg); }
+            25% { transform: translateY(-180px) translateX(var(--drift)) rotate(10deg); }
+            50% { transform: translateY(-360px) translateX(calc(var(--drift) * -1.5)) rotate(-10deg); }
+            75% { transform: translateY(-540px) translateX(var(--drift)) rotate(10deg); }
+            100% { transform: translateY(-750px) translateX(0) rotate(0deg); }
         }
 
         .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
@@ -204,7 +205,7 @@
             },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; spawnRate = 450;
+                gameRunning = true; score = 0; timeLeft = 30;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
@@ -227,11 +228,11 @@
 
         function createBalloon() {
             const types = [
-                {e:'🎈', p:10, c:'#FF6B6B', s:70, speed: 4.5, drift: 20}, // বড় ও স্লো
-                {e:'🦊', p:15, c:'#FF9F1C', s:60, speed: 3.8, drift: 35}, // মাঝারি
-                {e:'🍎', p:20, c:'#E63946', s:50, speed: 3.0, drift: 50}, // ছোট ও ফাস্ট
-                {e:'💎', p:50, c:'#7209B7', s:40, speed: 2.2, drift: 70}, // খুব ছোট ও খুব ফাস্ট
-                {e:'💣', p:-100, c:'#333', s:75, speed: 4.0, drift: 10}  // বোমা
+                {e:'🎈', p:10, fs: 70, speed: 4.5, drift: 20}, // সাধারণ বেলুন
+                {e:'🦊', p:15, fs: 65, speed: 4.0, drift: 35}, // ফক্স
+                {e:'🍎', p:20, fs: 55, speed: 3.5, drift: 45}, // আপেল
+                {e:'💎', p:50, fs: 45, speed: 2.5, drift: 60}, // হীরা (দ্রুত)
+                {e:'💣', p:-100, fs: 75, speed: 4.2, drift: 10} // বোমা
             ];
 
             const rand = Math.random();
@@ -246,13 +247,10 @@
             b.className = 'balloon'; 
             b.innerText = type.e;
             
-            // সিএসএস ভেরিয়েবল দিয়ে বৈচিত্র্য আনা
             b.style.setProperty('--speed', type.speed + 's');
             b.style.setProperty('--drift', type.drift + 'px');
-            b.style.width = type.s + 'px';
-            b.style.height = (type.s * 1.2) + 'px';
-            b.style.fontSize = (type.s * 0.5) + 'px';
-            b.style.background = `radial-gradient(circle at 30% 30%, ${type.c}, #000)`;
+            // ইমোজি সাইজ অ্যাডজাস্টমেন্ট
+            b.style.fontSize = type.fs + 'px';
             b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 80) + 'px';
 
             const popAction = (e) => {
@@ -303,7 +301,7 @@
                             score: score,
                             timestamp: new Date()
                         });
-                        document.getElementById('saveMsg').innerText = "অবিশ্বাস্য! নতুন রেকর্ড! 🔥";
+                        document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! 🔥";
                     } else {
                         document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!";
                     }
