@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>কিডস ফান জোন! 🎈</title>
+    <title>কিডস ফান জোন! (সুপার হার্ড) 🎈</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
@@ -27,9 +27,15 @@
         .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
         .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        /* বেলুনের ডিজাইন ঠিক রাখা হয়েছে */
-        .balloon { position: absolute; width: 60px; height: 80px; border-radius: 50%; bottom: -100px; animation: floatUp linear forwards; display: flex; justify-content: center; align-items: center; font-size: 28px; cursor: pointer; user-select: none; touch-action: none; pointer-events: auto; }
-        @keyframes floatUp { to { transform: translateY(-600px); } }
+        .balloon { position: absolute; width: 50px; height: 70px; border-radius: 50%; bottom: -100px; animation: floatUp linear forwards; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; user-select: none; touch-action: none; pointer-events: auto; }
+        /* হার্ড মোডে বেলুন একটু এঁকেবেঁকে উঠবে */
+        @keyframes floatUp { 
+            0% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-150px) translateX(15px); }
+            50% { transform: translateY(-300px) translateX(-15px); }
+            75% { transform: translateY(-450px) translateX(15px); }
+            100% { transform: translateY(-600px) translateX(0); }
+        }
 
         .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
         @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
@@ -68,7 +74,7 @@
             <div class="grid-container" style="margin-bottom: 15px;">
                 <div onclick="window.gameFunctions.toggleGame()" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
                     <span class="card-icon">🎮</span>
-                    <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
+                    <span class="card-title" style="font-size: 1.2rem;">সুপার হার্ড মোড!</span>
                 </div>
             </div>
 
@@ -175,9 +181,9 @@
             });
         }
 
-        // --- চ্যালেঞ্জিং গেম লজিক ---
+        // --- হার্ড মোড লজিক ---
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let spawnRate = 400; 
+        let spawnRate = 350; // আরও দ্রুত বেলুন আসবে
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
 
         window.gameFunctions = {
@@ -192,7 +198,7 @@
             },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; spawnRate = 400;
+                gameRunning = true; score = 0; timeLeft = 30; spawnRate = 350;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
@@ -203,9 +209,9 @@
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
                     
-                    // চ্যালেঞ্জ: ১০ সেকেন্ড বাকি থাকলে বেলুন দ্রুত আসবে
-                    if(timeLeft === 20) updateSpawnRate(300);
-                    if(timeLeft === 10) updateSpawnRate(220);
+                    // সময় কমার সাথে সাথে গতি পাগলের মতো বাড়বে
+                    if(timeLeft === 20) updateSpawnRate(250);
+                    if(timeLeft === 10) updateSpawnRate(180);
                     
                     if(timeLeft <= 0) endGame();
                 }, 1000);
@@ -228,31 +234,30 @@
 
         function createBalloon() {
             const types = [
-                {e:'🎈', p:10, c:'#FF6B6B', s:60}, 
-                {e:'🦊', p:15, c:'#FF9F1C', s:55}, 
-                {e:'🍎', p:20, c:'#E63946', s:50}, 
-                {e:'💎', p:50, c:'#7209B7', s:40}, 
-                {e:'💣', p:-50, c:'#333', s:60}
+                {e:'🎈', p:10, c:'#FF6B6B', s:50}, 
+                {e:'🦊', p:15, c:'#FF9F1C', s:45}, 
+                {e:'🍎', p:20, c:'#E63946', s:40}, 
+                {e:'💎', p:50, c:'#7209B7', s:35}, // হীরা অনেক ছোট
+                {e:'💣', p:-100, c:'#333', s:55} // বোমায় এখন -১০০ পয়েন্ট!
             ];
 
             const rand = Math.random();
             let type;
-            if (timeLeft < 12 && rand > 0.75) type = types[4]; // শেষে বোমার চান্স বেশি
+            if (timeLeft < 15 && rand > 0.7) type = types[4]; 
             else if (rand < 0.1) type = types[3];
-            else if (rand < 0.3) type = types[2];
-            else if (rand < 0.5) type = types[1];
+            else if (rand < 0.25) type = types[2];
+            else if (rand < 0.45) type = types[1];
             else type = types[0];
 
             const b = document.createElement('div');
             b.className = 'balloon'; b.innerText = type.e;
             b.style.width = type.s + 'px';
             b.style.height = (type.s * 1.35) + 'px';
-            b.style.background = `radial-gradient(circle at 15px 15px, ${type.c}, #000)`;
-            b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 60) + 'px';
+            b.style.background = `radial-gradient(circle at 12px 12px, ${type.c}, #000)`;
+            b.style.left = Math.random() * (document.getElementById('gameArea').clientWidth - 50) + 'px';
             
-            // চ্যালেঞ্জিং স্পিড
-            const speedBase = timeLeft < 15 ? 1.3 : 2.1;
-            const speed = Math.random() * speedBase + 1.2;
+            // গতি অনেক বেশি
+            const speed = (Math.random() * (timeLeft < 10 ? 0.8 : 1.5)) + 0.8;
             b.style.animationDuration = speed + 's';
 
             const popAction = (e) => {
@@ -271,7 +276,17 @@
             b.addEventListener('mousedown', popAction);
 
             document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => { if(b.parentNode) b.remove(); }, speed * 1000);
+
+            // মিস করলে নেগেটিভ পয়েন্ট লজিক
+            setTimeout(() => { 
+                if(b.parentNode) {
+                    if(type.p > 0) { // শুধু ভালো বেলুন মিস করলে পয়েন্ট কমবে
+                        score = Math.max(0, score - 5);
+                        document.getElementById('score').innerText = score;
+                    }
+                    b.remove();
+                }
+            }, speed * 1000);
         }
 
         function showPointPopup(x, y, p) {
@@ -304,9 +319,9 @@
                             score: score,
                             timestamp: new Date()
                         });
-                        document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! 🔥";
+                        document.getElementById('saveMsg').innerText = "বাপরে! এত কঠিন মোডেও রেকর্ড?! 🔥";
                     } else {
-                        document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙতে পারলে না!";
+                        document.getElementById('saveMsg').innerText = "হার্ড মোডে স্কোর করা কঠিন, তাই না?";
                     }
                 } catch (e) {
                     document.getElementById('saveMsg').innerText = "সেভ করতে সমস্যা হয়েছে।";
