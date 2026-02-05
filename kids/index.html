@@ -221,20 +221,19 @@
         const provider = new GoogleAuthProvider();
 
         let currentUser = null;
-        const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "lima.akter.0390@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
 
+        // AUTHENTICATION LOGIC UPDATED: Any logged-in user is allowed
         onAuthStateChanged(auth, (user) => {
-            if (user && allowedEmails.includes(user.email)) {
+            if (user) {
+                // If user exists, allow access regardless of email
                 currentUser = user;
                 localStorage.setItem('isVerifiedUser', 'true');
                 document.getElementById('loading-message').style.display = 'none';
                 document.getElementById('content-wrapper').style.display = 'block';
                 loadLeaderboard("scores", "onlineLeaderboard");
                 loadLeaderboard("snake_scores", "snakeLeaderboard");
-            } else if (user) {
-                alert("অনুমতি নেই!");
-                window.location.href = "https://google.com";
             } else {
+                // If no user, trigger Google Login
                 signInWithRedirect(auth, provider);
             }
         });
@@ -388,13 +387,12 @@
             saveScore(score, "scores", "সময় শেষ! 🎉");
         }
 
-        
+        // ================= SNAKE LOGIC (OPTIMIZED WITH QUEUE) =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
         let isPaused = false;
-        // Input Buffer: Stores inputs to be executed in subsequent frames
-        let inputQueue = []; 
+        let inputQueue = []; // Fast Input Buffer
         const box = 20;
 
         const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
@@ -424,7 +422,7 @@
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
                 
-                // Speed maintained at 330ms as per original logic
+                // Speed maintained at 330ms as per previous fix
                 snakeLoop = setInterval(drawSnake, 330); 
             },
             togglePause: () => {
