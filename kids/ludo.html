@@ -6,79 +6,97 @@
     <title>কিডস ফান জোন! 🎈</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; --snake: #4CAF50; }
+        /* আপনার মূল স্টাইলগুলো এখানে */
+        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; --snake-color: #4CAF50; }
         body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
-        #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; }
+        #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
         #content-wrapper { display: none; }
 
-        header { background: #FF9A9E; padding: 10px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); }
+        header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
         h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
         .container { max-width: 800px; margin: 0 auto; padding: 10px; }
 
-        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 6px 0 #C44D4D; }
+        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; box-shadow: 0 6px 0 #C44D4D; margin-bottom: 15px; }
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        /* Menu Section */
-        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
-        .card { background: white; border-radius: 12px; padding: 15px; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 0 rgba(0,0,0,0.1); border: none; }
-        .c-game { background: linear-gradient(45deg, #FF512F, #DD2476); color: white; }
-        .c-snake { background: linear-gradient(45deg, #1D976C, #93F9B9); color: white; }
-        .c-ludo { background: linear-gradient(45deg, #43a047, #1de9b6); color: white; }
+        #gameContainer, #snakeContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* Game Displays */
-        #gameContainer, #snakeContainer { display: none; margin-bottom: 20px; }
-        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; }
-        .score-board { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); padding: 5px 15px; border-radius: 20px; z-index: 10; font-weight: bold; font-size: 1.2rem; }
+        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
+        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
+        .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        #snakeCanvas { width: 100%; height: 100%; display: block; background: #f9f9f9; }
-        
-        /* Navigation Controls for Snake */
-        .snake-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 200px; margin: 15px auto; }
-        .s-btn { background: white; border: 3px solid var(--secondary); padding: 15px; border-radius: 15px; font-size: 1.5rem; text-align: center; cursor: pointer; user-select: none; box-shadow: 0 4px 0 var(--secondary); }
-        .s-btn:active { transform: translateY(3px); box-shadow: none; }
+        /* সাপের খেলার বিশেষ কন্ট্রোল */
+        #snakeCanvas { background: #f9f9f9; display: block; width: 100%; height: 100%; }
+        .snake-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 180px; margin: 15px auto; }
+        .s-btn { background: white; border: 3px solid var(--secondary); padding: 12px; border-radius: 12px; text-align: center; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 0 var(--secondary); }
+        .s-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--secondary); }
 
-        /* Leaderboard Style */
+        .balloon { position: absolute; bottom: -95px; animation: floatUp var(--speed) linear forwards; display: flex; justify-content: center; align-items: center; cursor: pointer; user-select: none; touch-action: none; pointer-events: auto; background: transparent; border: none; padding: 10px; z-index: 5; }
+        @keyframes floatUp { 0% { transform: translateY(0) translateX(0) rotate(0deg); } 100% { transform: translateY(-850px) translateX(var(--drift)) rotate(0deg); } }
+
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
+        .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid transparent; cursor: pointer; }
+        .c-game { background: linear-gradient(45deg, #FF512F, #DD2476); color: white; border: none; }
+        .c-snake { background: linear-gradient(45deg, #1D976C, #93F9B9); color: white; border: none; }
+        .c-1 { border-color: #FF9F1C; } .c-2 { border-color: #2EC4B6; }
+
+        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; }
+
         .leaderboard { background: #fff; border-radius: 15px; padding: 10px; margin-top: 10px; border: 3px solid var(--secondary); }
-        .leaderboard h3 { margin: 5px 0; text-align: center; color: var(--primary); font-size: 1.1rem; }
-        .leaderboard-list { list-style: none; padding: 0; margin: 0; }
-        .leaderboard-list li { display: flex; justify-content: space-between; padding: 8px; background: #f9f9f9; margin-bottom: 5px; border-radius: 10px; font-size: 0.9rem; border-left: 5px solid var(--secondary); }
-        .leaderboard-list li img { width: 25px; height: 25px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
-
-        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 15px 30px; font-size: 1.3rem; border-radius: 40px; cursor: pointer; z-index: 20; box-shadow: 0 5px 0 #C44D4D; }
+        .leaderboard h3 { margin: 0 0 8px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
+        .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
+        .leaderboard-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f9f9f9; margin-bottom: 5px; border-radius: 10px; border-left: 5px solid var(--secondary); }
+        .leaderboard-list li img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 80%; max-width: 300px; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
+        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <div id="loading-message">লোড হচ্ছে... একটু অপেক্ষা করো 🚀</div>
+    <div id="loading-message">ভেরিফাই করা হচ্ছে... একটু অপেক্ষা করো 🎈</div>
 
     <div id="content-wrapper">
         <header><h1>🎈 কিডস ফান জোন! 🎈</h1></header>
         <div class="container">
             <div class="tv-frame">
                 <div class="video-wrapper">
-                    <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE" allowfullscreen></iframe>
+                    <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=0&controls=1" allowfullscreen></iframe>
                 </div>
             </div>
 
-            <div class="menu-grid">
-                <div onclick="window.gameFunctions.toggleGame('balloon')" class="card c-game">🎮 বেলুন গেম!</div>
-                <div onclick="window.gameFunctions.toggleGame('snake')" class="card c-snake">🐍 সাপের খেলা!</div>
-                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card c-ludo">🎲 লুডু খেলো!</a>
+            <div class="grid-container" style="margin-bottom: 15px;">
+                <div id="gameToggleBtn" onclick="window.gameFunctions.toggleGame('balloon')" class="card c-game" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
+                    <span class="card-icon">🎮</span>
+                    <span class="card-title" style="font-size: 1.2rem;">বেলুন গেম!</span>
+                </div>
+
+                <div onclick="window.gameFunctions.toggleGame('snake')" class="card c-snake" style="grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 15px;">
+                    <span class="card-icon">🐍</span>
+                    <span class="card-title" style="font-size: 1.2rem;">সাপের খেলা!</span>
+                </div>
+
+                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card" style="grid-column: 1 / -1; background: linear-gradient(45deg, #43a047, #1de9b6); color: white; border: none; flex-direction: row; justify-content: center; gap: 15px; text-decoration: none;">
+                    <span class="card-icon">🎲</span>
+                    <span class="card-title" style="font-size: 1.2rem;">লুডু খেলো!</span>
+                </a>
             </div>
 
             <div id="gameContainer">
                 <div class="game-area" id="gameArea">
                     <div class="score-board">স্কোর: <span id="score">0</span></div>
-                    <button class="start-btn" onclick="window.gameFunctions.startGame()">বেলুন গেম শুরু!</button>
+                    <div class="timer-board">সময়: <span id="timer">30</span>s</div>
+                    <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()">খেলতে ট্যাপ করো!</button>
                 </div>
                 <div class="leaderboard">
-                    <h3>🏆 বেলুন গেম লিডারবোর্ড</h3>
-                    <ul id="balloonLeaderboard" class="leaderboard-list"><li>লোড হচ্ছে...</li></ul>
+                    <h3>🏆 গ্লোবাল লিডারবোর্ড (বেলুন গেম) 🏆</h3>
+                    <ul id="onlineLeaderboard" class="leaderboard-list">
+                        <li style="justify-content:center;">লোড হচ্ছে...</li>
+                    </ul>
                 </div>
             </div>
 
@@ -95,18 +113,27 @@
                     <div style="grid-column: 2;" class="s-btn" onclick="window.snakeFunctions.setDir('DOWN')">⬇️</div>
                 </div>
                 <div class="leaderboard">
-                    <h3>🏆 সাপের খেলা লিডারবোর্ড</h3>
-                    <ul id="snakeLeaderboard" class="leaderboard-list"><li>লোড হচ্ছে...</li></ul>
+                    <h3>🏆 গ্লোবাল লিডারবোর্ড (সাপের খেলা) 🏆</h3>
+                    <ul id="snakeLeaderboard" class="leaderboard-list">
+                        <li style="justify-content:center;">লোড হচ্ছে...</li>
+                    </ul>
                 </div>
+            </div>
+
+            <div class="grid-container">
+                <a href="https://kids.poki.com" target="_blank" class="card c-1"><div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div></a>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card c-2"><div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card c-1"><div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLFbfBkWhGCqj5_rkkjGNklWF4NkFUDWIk')" class="card c-2"><div class="card-icon">🤼‍♂️</div><div class="card-title">মোটু পাতলু</div></div>     
             </div>
         </div>
 
         <div id="gameOverModal" class="modal">
             <div class="modal-content">
-                <h2 id="modalStatus">খেলা শেষ! 🎉</h2>
-                <p>তোমার স্কোর: <span id="finalScore">0</span></p>
-                <p id="saveMsg">সেভ হচ্ছে...</p>
-                <button onclick="location.reload()" style="background:var(--secondary); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:bold;">আবার খেলো</button>
+                <h2 id="modalTitle" style="margin:0; color:var(--primary);">সময় শেষ! 🎉</h2>
+                <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
+                <p id="saveMsg">স্কোর সেভ হচ্ছে...</p>
+                <button id="closeModalBtn" onclick="window.gameFunctions.closeModal()" class="modal-btn">আবার খেলো</button>
             </div>
         </div>
     </div>
@@ -116,7 +143,6 @@
         import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
         import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // Your Exact Config from Screenshot
         const firebaseConfig = {
           apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
           authDomain: "family-429c7.firebaseapp.com",
@@ -139,43 +165,82 @@
         onAuthStateChanged(auth, (user) => {
             if (user && allowedEmails.includes(user.email)) {
                 currentUser = user;
+                localStorage.setItem('isVerifiedUser', 'true');
                 document.getElementById('loading-message').style.display = 'none';
                 document.getElementById('content-wrapper').style.display = 'block';
-                // Load Leaderboards
-                setupLeaderboard("scores", "balloonLeaderboard");
-                setupLeaderboard("snake_scores", "snakeLeaderboard");
+                loadLeaderboard("scores", "onlineLeaderboard");
+                loadLeaderboard("snake_scores", "snakeLeaderboard");
             } else if (user) {
-                alert("দুঃখিত, আপনার অনুমতি নেই!");
+                alert("অনুমতি নেই!");
             } else {
                 signInWithRedirect(auth, provider);
             }
         });
 
-        function setupLeaderboard(colName, elementId) {
+        function loadLeaderboard(colName, elementId) {
             const q = query(collection(db, colName), orderBy("score", "desc"), limit(5));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById(elementId);
                 list.innerHTML = "";
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    list.innerHTML += `<li><span><img src="${data.photo}"> ${data.name}</span> <b>${data.score}</b></li>`;
+                    list.innerHTML += `<li><span><img src="${data.photo || 'https://via.placeholder.com/30'}"> ${data.name}</span> <strong>${data.score}</strong></li>`;
                 });
             });
         }
 
-        // --- Balloon Game ---
-        let bScore = 0;
+        // --- বেলুন গেম লজিক (আপনার মূল কোড অনুযায়ী) ---
+        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
+        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
+
         window.gameFunctions = {
             toggleGame: (type) => {
-                document.getElementById('gameContainer').style.display = type === 'balloon' ? 'block' : 'none';
-                document.getElementById('snakeContainer').style.display = type === 'snake' ? 'block' : 'none';
+                const bc = document.getElementById('gameContainer');
+                const sc = document.getElementById('snakeContainer');
+                if(type === 'balloon') {
+                    bc.style.display = (bc.style.display === 'block' ? 'none' : 'block');
+                    sc.style.display = 'none';
+                } else {
+                    sc.style.display = (sc.style.display === 'block' ? 'none' : 'block');
+                    bc.style.display = 'none';
+                    if(sc.style.display === 'block') window.snakeFunctions.init();
+                }
+            },
+            playVideo: (url) => {
+                document.getElementById('videoPlayer').src = url + "?autoplay=1";
             },
             startGame: () => {
-                // Balloon game logic here...
+                if(gameRunning) return;
+                gameRunning = true; score = 0; timeLeft = 30;
+                document.getElementById('score').innerText = 0;
+                document.getElementById('timer').innerText = 30;
+                document.getElementById('mainStartBtn').style.display = 'none';
+                gameInterval = setInterval(createBalloon, 600);
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('timer').innerText = timeLeft;
+                    if(timeLeft <= 0) endGame("scores", score);
+                }, 1000);
+            },
+            closeModal: () => {
+                document.getElementById('gameOverModal').style.display = 'none';
+                document.getElementById('mainStartBtn').style.display = 'block';
+                document.getElementById('snakeStartBtn').style.display = 'block';
             }
         };
 
-        // --- Snake Game ---
+        function createBalloon() {
+            const b = document.createElement('div');
+            b.className = 'balloon'; b.innerText = "🎈"; b.style.fontSize = "70px";
+            b.style.left = Math.random() * 80 + '%';
+            b.style.setProperty('--speed', (Math.random()*2+3)+'s');
+            b.style.setProperty('--drift', (Math.random()*40-20)+'px');
+            b.onclick = () => { if(!gameRunning) return; score+=10; document.getElementById('score').innerText = score; popSound.cloneNode().play(); b.remove(); };
+            document.getElementById('gameArea').appendChild(b);
+            setTimeout(() => b.remove(), 4000);
+        }
+
+        // --- সাপের খেলা লজিক ---
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake, frog, d, sScore, sInterval;
@@ -185,13 +250,14 @@
             init: () => {
                 canvas.width = canvas.parentElement.clientWidth;
                 canvas.height = 380;
-                snake = [{x: 8 * box, y: 10 * box}];
+                snake = [{x: 9 * box, y: 10 * box}];
                 frog = { x: Math.floor(Math.random()*15 + 1)*box, y: Math.floor(Math.random()*15 + 1)*box };
             },
             start: () => {
                 window.snakeFunctions.init();
                 document.getElementById('snakeStartBtn').style.display = 'none';
                 d = "RIGHT"; sScore = 0;
+                document.getElementById('snakeScoreDisplay').innerText = 0;
                 sInterval = setInterval(drawSnake, 150);
             },
             setDir: (dir) => { d = dir; }
@@ -204,38 +270,38 @@
                 ctx.fillRect(snake[i].x, snake[i].y, box-1, box-1);
             }
             ctx.font = "20px serif"; ctx.fillText("🐸", frog.x, frog.y + 15);
-            
             let sX = snake[0].x, sY = snake[0].y;
             if(d == "UP") sY -= box; if(d == "DOWN") sY += box;
             if(d == "LEFT") sX -= box; if(d == "RIGHT") sX += box;
-
-            // Border Pass Logic
             if(sX < 0) sX = Math.floor(canvas.width/box)*box - box;
             if(sX >= canvas.width) sX = 0;
             if(sY < 0) sY = Math.floor(canvas.height/box)*box - box;
             if(sY >= canvas.height) sY = 0;
-
             if(sX == frog.x && sY == frog.y){
                 sScore++; document.getElementById('snakeScoreDisplay').innerText = sScore;
                 frog = { x: Math.floor(Math.random()*(canvas.width/box-2) + 1)*box, y: Math.floor(Math.random()*(canvas.height/box-2) + 1)*box };
             } else { snake.pop(); }
-
             let head = {x: sX, y: sY};
             if(snake.some(s => s.x == head.x && s.y == head.y)){
-                clearInterval(sInterval); finalizeGame("snake_scores", sScore);
+                clearInterval(sInterval); endGame("snake_scores", sScore);
             }
             snake.unshift(head);
         }
 
-        async function finalizeGame(colName, finalScore) {
+        async function endGame(col, finalScore) {
+            clearInterval(gameInterval); clearInterval(timerInterval); clearInterval(sInterval);
+            gameRunning = false;
+            document.getElementById('modalTitle').innerText = (col === "scores" ? "সময় শেষ! 🎉" : "খেলা শেষ! 🐍");
             document.getElementById('finalScore').innerText = finalScore;
             document.getElementById('gameOverModal').style.display = 'flex';
-            const userRef = doc(db, colName, currentUser.uid);
-            const snap = await getDoc(userRef);
-            if(!snap.exists() || finalScore > snap.data().score){
-                await setDoc(userRef, { name: currentUser.displayName, photo: currentUser.photoURL, score: finalScore });
-                document.getElementById('saveMsg').innerText = "অবিশ্বাস্য! নতুন রেকর্ড! 🔥";
-            } else { document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!"; }
+            if (currentUser) {
+                const userRef = doc(db, col, currentUser.uid);
+                const docSnap = await getDoc(userRef);
+                if (!docSnap.exists() || finalScore > docSnap.data().score) {
+                    await setDoc(userRef, { name: currentUser.displayName, photo: currentUser.photoURL, score: finalScore });
+                    document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! 🔥";
+                } else { document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!"; }
+            }
         }
     </script>
 </body>
