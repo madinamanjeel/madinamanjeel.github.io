@@ -226,7 +226,6 @@
         let currentUser = null;
 
         // --- INSTANT LOAD CHECK (OPTIMISTIC UI) ---
-        // যদি ব্রাউজার মনে রাখে যে ইউজার ভেরিফাইড, তাহলে সাথে সাথে লোডিং সরিয়ে কন্টেন্ট দেখাবে।
         if (localStorage.getItem('isVerifiedUser') === 'true') {
             document.getElementById('loading-message').style.display = 'none';
             document.getElementById('content-wrapper').style.display = 'block';
@@ -235,24 +234,16 @@
         // AUTHENTICATION LOGIC
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is verified by Firebase
                 currentUser = user;
                 localStorage.setItem('isVerifiedUser', 'true');
-                
-                // Ensure UI is visible (in case local storage was cleared or first login)
                 document.getElementById('loading-message').style.display = 'none';
                 document.getElementById('content-wrapper').style.display = 'block';
-                
                 loadLeaderboard("scores", "onlineLeaderboard");
                 loadLeaderboard("snake_scores", "snakeLeaderboard");
             } else {
-                // Not logged in or session expired
-                // If we optimistically showed the content, hide it now
                 localStorage.removeItem('isVerifiedUser');
                 document.getElementById('loading-message').style.display = 'block';
                 document.getElementById('content-wrapper').style.display = 'none';
-                
-                // Trigger Login
                 signInWithRedirect(auth, provider);
             }
         });
@@ -286,7 +277,13 @@
                 } else {
                     el.style.display = 'block';
                     if(type === 'snake') window.snakeFunctions.initCanvas();
-                    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                    
+                    // --- UPDATED SCROLL LOGIC ---
+                    setTimeout(() => {
+                        // Aligns top of game to top of screen, then adjusts slightly down for header
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        window.scrollBy(0, -50); 
+                    }, 300);
                 }
             },
             closeGame: () => {
@@ -432,7 +429,9 @@
                 
                 document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
-                document.getElementById('snakeControls').style.display = 'grid'; 
+                
+                const controls = document.getElementById('snakeControls');
+                controls.style.display = 'grid'; 
                 
                 const pBtn = document.getElementById('snakePauseBtn');
                 pBtn.style.display = 'flex';
@@ -443,6 +442,11 @@
                 
                 // Speed maintained at 330ms
                 snakeLoop = setInterval(drawSnake, 330); 
+
+                // --- FOCUS CONTROLS ---
+                setTimeout(() => {
+                   controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
             },
             togglePause: () => {
                 isPaused = !isPaused;
