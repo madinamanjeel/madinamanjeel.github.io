@@ -20,7 +20,7 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        /* Main Game Buttons Style - Uniform */
+        /* Unified Top Buttons */
         .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
         .main-game-btn { 
             background: linear-gradient(45deg, #FF512F, #DD2476); color: white; 
@@ -33,7 +33,6 @@
         .main-game-btn.ludo { background: linear-gradient(45deg, #43a047, #1de9b6); box-shadow: 0 5px 0 #2e7d32; }
         .main-game-btn.poki { background: linear-gradient(45deg, #FF9966, #FF5E62); box-shadow: 0 5px 0 #c0392b; }
 
-        /* Video/Link Cards (Bottom Section) */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 20px; }
         .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid #FF9F1C; cursor: pointer; }
         
@@ -42,24 +41,36 @@
 
         .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
         
-        /* Balloon UI */
-        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
+        /* Balloon Styles (Restored) */
+        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
         .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
+        
+        .balloon { 
+            position: absolute; bottom: -95px; animation: floatUp var(--speed) linear forwards; 
+            display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; user-select: none; touch-action: none; pointer-events: auto;
+            background: transparent; border: none; padding: 10px; z-index: 5;
+        }
+        @keyframes floatUp { 
+            0% { transform: translateY(0) translateX(0) rotate(0deg); }
+            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(10deg); }
+            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-10deg); }
+            100% { transform: translateY(-850px) translateX(0) rotate(0deg); }
+        }
+        .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
+        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
-        /* Snake UI & Diamond Controls */
+        /* Snake Styles */
         .snake-canvas-wrapper { width: 100%; display: flex; justify-content: center; background: #222; padding: 10px 0; }
         canvas { background: #000; border-radius: 5px; box-shadow: 0 0 10px rgba(0,255,0,0.2); }
         
+        /* Diamond Control Panel */
         .control-panel { 
             background: rgba(0,0,0,0.05); border-radius: 30px; padding: 15px; margin: 10px auto; 
             width: 200px; height: 180px;
-            display: grid; 
-            grid-template-columns: 1fr 1fr 1fr; 
-            grid-template-rows: 1fr 1fr 1fr;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
             gap: 5px; align-items: center; justify-items: center;
         }
-        
-        /* Grid positions for Diamond Shape */
         .btn-up { grid-column: 2; grid-row: 1; }
         .btn-left { grid-column: 1; grid-row: 2; }
         .btn-right { grid-column: 3; grid-row: 2; }
@@ -206,77 +217,136 @@
             });
         }
 
-        // ================= BALLOON LOGIC =================
-        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
-
+        // ================= GLOBAL GAME UTILS =================
         window.gameFunctions = {
             toggleGame: (type) => {
                 const targetId = type === 'balloon' ? 'gameContainer' : 'snakeGameContainer';
                 const otherId = type === 'balloon' ? 'snakeGameContainer' : 'gameContainer';
                 
-                document.getElementById(otherId).style.display = 'none'; // Hide other
-                
+                document.getElementById(otherId).style.display = 'none';
                 const el = document.getElementById(targetId);
+                
                 if (el.style.display === 'block') {
-                    el.style.display = 'none'; // Hide if already shown
+                    el.style.display = 'none';
                 } else {
-                    el.style.display = 'block'; // Show
+                    el.style.display = 'block';
                     if(type === 'snake') window.snakeFunctions.initCanvas();
-                    // Smooth scroll to game
-                    setTimeout(() => {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
+                    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
                 }
             },
             playVideo: (url) => { document.getElementById('videoPlayer').src = url + "&autoplay=1"; },
             startGame: () => {
+                // Balloon Start Logic
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30;
+                gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 500; difficultyMultiplier = 1.0;
+                document.getElementById('score').innerText = 0;
+                document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
-                gameInterval = setInterval(createBalloon, 600);
+                startSpawning();
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
-                    if(timeLeft <= 0) endBalloon();
+                    if(timeLeft % 5 === 0 && timeLeft > 0) increaseDifficulty();
+                    if(timeLeft <= 0) endGame();
                 }, 1000);
             },
             closeModal: () => { 
                 document.getElementById('gameOverModal').style.display = 'none';
                 document.getElementById('mainStartBtn').style.display = 'block';
                 document.getElementById('snakeStartBtn').style.display = 'block';
+                document.querySelectorAll('.balloon').forEach(b => b.remove());
             }
         };
 
-        function createBalloon() {
-            const b = document.createElement('div');
-            b.className = 'balloon'; b.innerText = "🎈";
-            b.style.left = Math.random() * 80 + "%";
-            b.style.setProperty('--speed', '4s');
-            b.style.position = 'absolute'; b.style.bottom = '-50px'; b.style.fontSize = '50px';
-            b.style.animation = "floatUp 4s linear forwards";
-            b.onclick = () => { score+=10; document.getElementById('score').innerText = score; popSound.play(); b.remove(); };
-            document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => b.remove(), 4000);
+        // ================= BALLOON LOGIC (RESTORED) =================
+        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
+        let currentSpawnRate = 500; 
+        let difficultyMultiplier = 1.0; 
+        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
+
+        function increaseDifficulty() {
+            currentSpawnRate = Math.max(180, currentSpawnRate - 70); 
+            difficultyMultiplier += 0.2;
+            clearInterval(gameInterval);
+            startSpawning();
         }
 
-        async function endBalloon() {
+        function startSpawning() { gameInterval = setInterval(createBalloon, currentSpawnRate); }
+
+        function createBalloon() {
+            const types = [
+                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 20}, 
+                {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 25}, 
+                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 30}, 
+                {e:'💎', p:50, fs: 50, speed: 3.5, drift: 30}, 
+                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
+            ];
+
+            const rand = Math.random();
+            let type = rand < 0.25 ? types[4] : rand < 0.45 ? types[3] : rand < 0.65 ? types[2] : rand < 0.85 ? types[1] : types[0];
+
+            const b = document.createElement('div');
+            b.className = 'balloon'; b.innerText = type.e;
+            
+            const finalSpeed = Math.max(1.5, type.speed / difficultyMultiplier);
+            b.style.setProperty('--speed', finalSpeed + 's');
+            
+            const areaWidth = document.getElementById('gameArea').clientWidth;
+            const bWidth = 80; 
+            const maxDrift = type.drift;
+            const randomLeft = Math.random() * (areaWidth - (bWidth + maxDrift * 2)) + maxDrift;
+            
+            b.style.left = randomLeft + 'px';
+            b.style.setProperty('--drift', (Math.random() > 0.5 ? maxDrift : -maxDrift) + 'px');
+            b.style.fontSize = type.fs + 'px';
+
+            const popAction = (e) => {
+                if(!gameRunning) return;
+                e.preventDefault(); 
+                score += type.p;
+                document.getElementById('score').innerText = score;
+                popSound.cloneNode().play();
+                showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
+                b.remove();
+            };
+
+            b.addEventListener('touchstart', popAction, {passive: false});
+            b.addEventListener('mousedown', popAction);
+
+            document.getElementById('gameArea').appendChild(b);
+            setTimeout(() => { if(b.parentNode) b.remove(); }, finalSpeed * 1000);
+        }
+
+        function showPointPopup(x, y, p) {
+            const popup = document.createElement('div');
+            popup.className = 'point-popup';
+            popup.innerText = (p > 0 ? "+" : "") + p;
+            popup.style.color = p > 0 ? "#28a745" : "#dc3545";
+            const rect = document.getElementById('gameArea').getBoundingClientRect();
+            popup.style.left = (x - rect.left) + 'px';
+            popup.style.top = (y - rect.top) + 'px';
+            document.getElementById('gameArea').appendChild(popup);
+            setTimeout(() => popup.remove(), 600);
+        }
+
+        async function endGame() {
             clearInterval(gameInterval); clearInterval(timerInterval);
             gameRunning = false;
-            saveScore(score, "scores", "সময় শেষ!");
+            saveScore(score, "scores", "সময় শেষ! 🎉");
         }
 
-        // ================= SNAKE LOGIC =================
+        // ================= SNAKE LOGIC (FIXED) =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
         const box = 20;
 
         // Sounds
+        const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
         const frogSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/frog.mp3');
         const eatSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakeeating.mp3');
-        // Preload sounds
-        frogSound.volume = 0.5;
+        
+        let lastFrogSoundTime = 0;
 
         window.snakeFunctions = {
             initCanvas: () => {
@@ -286,11 +356,11 @@
                 sScore = 0; snake = [{x: 5*box, y: 5*box}]; dir = "RIGHT";
                 document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
-                document.getElementById('snakeControls').style.display = 'grid'; // Changed to grid
+                document.getElementById('snakeControls').style.display = 'grid'; 
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
-                // Speed decreased (Interval increased from 180 to 250)
-                snakeLoop = setInterval(drawSnake, 250); 
+                // Sensitivity Increased (Lower interval = faster response)
+                snakeLoop = setInterval(drawSnake, 160); 
             },
             changeDir: (newDir) => {
                 if(newDir=="UP" && dir!="DOWN") dir="UP";
@@ -307,7 +377,6 @@
         function drawSnake() {
             ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
             
-            // Draw Frog
             ctx.font = "20px Arial"; ctx.fillText("🐸", frog.x, frog.y + 18);
 
             for(let i=0; i<snake.length; i++){
@@ -319,31 +388,37 @@
 
             let headX = snake[0].x; let headY = snake[0].y;
             
-            // Logic to play sound if snake moves towards frog
-            // Calculate current distance
-            let distToFrog = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
+            // Random Hissing (20% chance per move)
+            if(Math.random() > 0.80) {
+                 hissSound.volume = 0.3;
+                 hissSound.play().catch(e=>{});
+            }
             
+            // Frog Sound Logic (Once every 10 sec if moving closer)
+            let distBefore = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
+
             if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
             if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
 
-            // Border Wrap-around
+            // Border Wrap
             if(headX < 0) headX = 280; if(headX > 280) headX = 0;
             if(headY < 0) headY = 280; if(headY > 280) headY = 0;
 
-            // Calculate new distance
-            let newDistToFrog = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
+            let distAfter = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
 
-            // If new distance is less than old distance (Getting Closer), play frog sound
-            if (newDistToFrog < distToFrog) {
-                // Clone node allows overlapping sounds if needed, or just play
-                let soundClone = frogSound.cloneNode();
-                soundClone.volume = 0.3; // Low volume for constant movement
-                soundClone.play().catch(e => {}); // Catch play errors
+            // Play frog sound only if getting closer AND 10 seconds passed since last sound
+            if (distAfter < distBefore) {
+                const now = Date.now();
+                if(now - lastFrogSoundTime > 10000) {
+                    frogSound.volume = 0.5;
+                    frogSound.play().catch(e=>{});
+                    lastFrogSoundTime = now;
+                }
             }
 
             if(headX == frog.x && headY == frog.y) {
                 sScore += 10; document.getElementById('snakeScore').innerText = sScore;
-                eatSound.play(); // Distinct Eating Sound
+                eatSound.play(); 
                 spawnFrog();
             } else {
                 snake.pop();
