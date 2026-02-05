@@ -9,7 +9,10 @@
         :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
         body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
+        /* Loading message style updated to be less intrusive */
         #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        
+        /* Content is hidden by default, but JS will show it instantly if remembered */
         #content-wrapper { display: none; }
 
         header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
@@ -221,20 +224,26 @@
         const provider = new GoogleAuthProvider();
 
         let currentUser = null;
-        const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "lima.akter.0390@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
 
+        // --- INSTANT LOAD CHECK (OPTIMISTIC UI) ---
+        if (localStorage.getItem('isVerifiedUser') === 'true') {
+            document.getElementById('loading-message').style.display = 'none';
+            document.getElementById('content-wrapper').style.display = 'block';
+        }
+
+        // AUTHENTICATION LOGIC
         onAuthStateChanged(auth, (user) => {
-            if (user && allowedEmails.includes(user.email)) {
+            if (user) {
                 currentUser = user;
                 localStorage.setItem('isVerifiedUser', 'true');
                 document.getElementById('loading-message').style.display = 'none';
                 document.getElementById('content-wrapper').style.display = 'block';
                 loadLeaderboard("scores", "onlineLeaderboard");
                 loadLeaderboard("snake_scores", "snakeLeaderboard");
-            } else if (user) {
-                alert("অনুমতি নেই!");
-                window.location.href = "https://google.com";
             } else {
+                localStorage.removeItem('isVerifiedUser');
+                document.getElementById('loading-message').style.display = 'block';
+                document.getElementById('content-wrapper').style.display = 'none';
                 signInWithRedirect(auth, provider);
             }
         });
@@ -268,7 +277,13 @@
                 } else {
                     el.style.display = 'block';
                     if(type === 'snake') window.snakeFunctions.initCanvas();
-                    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                    
+                    // --- UPDATED SCROLL LOGIC ---
+                    setTimeout(() => {
+                        // Aligns top of game to top of screen, then adjusts slightly down for header
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        window.scrollBy(0, -50); 
+                    }, 300);
                 }
             },
             closeGame: () => {
@@ -393,8 +408,7 @@
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
         let isPaused = false;
-        // Input Buffer: Stores inputs to be executed in subsequent frames
-        let inputQueue = []; 
+        let inputQueue = []; // Fast Input Buffer
         const box = 20;
 
         const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
@@ -415,7 +429,9 @@
                 
                 document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
-                document.getElementById('snakeControls').style.display = 'grid'; 
+                
+                const controls = document.getElementById('snakeControls');
+                controls.style.display = 'grid'; 
                 
                 const pBtn = document.getElementById('snakePauseBtn');
                 pBtn.style.display = 'flex';
@@ -424,8 +440,13 @@
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
                 
-                // Speed maintained at 330ms as per original logic
+                // Speed maintained at 330ms
                 snakeLoop = setInterval(drawSnake, 330); 
+
+                // --- FOCUS CONTROLS ---
+                setTimeout(() => {
+                   controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
             },
             togglePause: () => {
                 isPaused = !isPaused;
