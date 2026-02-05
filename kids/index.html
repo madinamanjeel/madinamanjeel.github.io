@@ -29,7 +29,7 @@
 
         .balloon { 
             position: absolute; 
-            bottom: -90px; 
+            bottom: -95px; 
             animation: floatUp var(--speed) linear forwards; 
             display: flex; 
             justify-content: center; 
@@ -189,7 +189,7 @@
         }
 
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let currentSpawnRate = 650; 
+        let currentSpawnRate = 500; // বেলুন আসার গতি বাড়ানো হয়েছে (আগে ৬৫০ ছিল)
         let difficultyMultiplier = 1.0; 
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
 
@@ -215,7 +215,7 @@
             },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 650; difficultyMultiplier = 1.0;
+                gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 500; difficultyMultiplier = 1.0;
                 document.getElementById('score').innerText = 0;
                 document.getElementById('timer').innerText = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
@@ -234,8 +234,8 @@
         };
 
         function increaseDifficulty() {
-            currentSpawnRate = Math.max(220, currentSpawnRate - 85);
-            difficultyMultiplier += 0.25;
+            currentSpawnRate = Math.max(180, currentSpawnRate - 70); // লেভেল বাড়লে আরও দ্রুত বেলুন আসবে
+            difficultyMultiplier += 0.2;
             clearInterval(gameInterval);
             startSpawning();
         }
@@ -244,29 +244,33 @@
 
         function createBalloon() {
             const types = [
-                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 25}, 
-                {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 35}, 
-                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 45}, 
-                {e:'💎', p:50, fs: 50, speed: 2.3, drift: 55},
+                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 20}, 
+                {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 25}, 
+                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 30}, 
+                {e:'💎', p:50, fs: 50, speed: 3.5, drift: 30}, // ডায়মন্ডের গতি কমানো হয়েছে (আগে ২.৩ ছিল)
                 {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
             ];
 
             const rand = Math.random();
-            let type = rand < 0.2 ? types[4] : rand < 0.35 ? types[3] : rand < 0.55 ? types[2] : rand < 0.75 ? types[1] : types[0];
+            let type = rand < 0.25 ? types[4] : rand < 0.45 ? types[3] : rand < 0.65 ? types[2] : rand < 0.85 ? types[1] : types[0];
 
             const b = document.createElement('div');
             b.className = 'balloon'; 
             b.innerText = type.e;
             
-            const finalSpeed = Math.max(1.1, type.speed / difficultyMultiplier);
+            const finalSpeed = Math.max(1.5, type.speed / difficultyMultiplier);
             b.style.setProperty('--speed', finalSpeed + 's');
-            b.style.setProperty('--drift', type.drift + 'px');
-            b.style.fontSize = type.fs + 'px';
             
             const areaWidth = document.getElementById('gameArea').clientWidth;
-            const bWidth = 70; 
-            const randomLeft = Math.random() * (areaWidth - bWidth);
+            const bWidth = 80; 
+            
+            // বেলুন যাতে ডান/বাম দিয়ে বের হয়ে না যায় তার ক্যালকুলেশন
+            const maxDrift = type.drift;
+            const randomLeft = Math.random() * (areaWidth - (bWidth + maxDrift * 2)) + maxDrift;
+            
             b.style.left = randomLeft + 'px';
+            b.style.setProperty('--drift', (Math.random() > 0.5 ? maxDrift : -maxDrift) + 'px');
+            b.style.fontSize = type.fs + 'px';
 
             const popAction = (e) => {
                 if(!gameRunning) return;
