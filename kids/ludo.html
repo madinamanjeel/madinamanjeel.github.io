@@ -20,7 +20,7 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        /* Unified Card Grid for ALL buttons */
+        /* Unified Card Grid */
         .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
         
         .card { 
@@ -70,15 +70,15 @@
         .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
         @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
-        /* Snake Styles - White Theme */
+        /* Snake Styles */
         .snake-canvas-wrapper { width: 100%; display: flex; justify-content: center; background: #fff; padding: 10px 0; }
         canvas { background: #f9f9f9; border-radius: 5px; border: 2px solid #ddd; }
         
         .control-panel { 
             background: rgba(0,0,0,0.05); border-radius: 30px; padding: 15px; margin: 5px auto; 
-            width: 200px; height: 170px;
+            width: 220px; height: 180px; /* Increased size slightly */
             display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
-            gap: 5px; align-items: center; justify-items: center;
+            gap: 8px; align-items: center; justify-items: center;
         }
         .btn-up { grid-column: 2; grid-row: 1; }
         .btn-left { grid-column: 1; grid-row: 2; }
@@ -86,14 +86,16 @@
         .btn-down { grid-column: 2; grid-row: 3; }
 
         .d-btn { 
-            width: 55px; height: 55px; background: var(--secondary); border: none; border-radius: 50%; 
-            color: white; font-size: 1.5rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; 
+            width: 60px; height: 60px; /* Bigger buttons */
+            background: var(--secondary); border: none; border-radius: 50%; 
+            color: white; font-size: 1.8rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
-            user-select: none; -webkit-user-select: none; touch-action: none; /* Prevents scroll delay */
+            user-select: none; -webkit-user-select: none; touch-action: none; 
+            -webkit-tap-highlight-color: transparent;
         }
         .d-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a9d8f; background: #2a9d8f; }
 
-        /* Pause Button for Snake */
+        /* Pause Button */
         .pause-btn {
             position: absolute; top: 10px; right: 55px;
             background: #FF9F1C; color: white;
@@ -155,10 +157,10 @@
                     <button class="start-btn" id="snakeStartBtn" onclick="window.snakeFunctions.startSnake()">সাপ খেলা শুরু!</button>
                     
                     <div class="control-panel" id="snakeControls" style="display:none;">
-                        <button class="d-btn btn-up" ontouchstart="window.snakeFunctions.handleInput(event, 'UP')" onmousedown="window.snakeFunctions.handleInput(event, 'UP')">⬆️</button>
-                        <button class="d-btn btn-left" ontouchstart="window.snakeFunctions.handleInput(event, 'LEFT')" onmousedown="window.snakeFunctions.handleInput(event, 'LEFT')">⬅️</button>
-                        <button class="d-btn btn-right" ontouchstart="window.snakeFunctions.handleInput(event, 'RIGHT')" onmousedown="window.snakeFunctions.handleInput(event, 'RIGHT')">➡️</button>
-                        <button class="d-btn btn-down" ontouchstart="window.snakeFunctions.handleInput(event, 'DOWN')" onmousedown="window.snakeFunctions.handleInput(event, 'DOWN')">⬇️</button>
+                        <button class="d-btn btn-up" onpointerdown="window.snakeFunctions.handleInput(event, 'UP')">⬆️</button>
+                        <button class="d-btn btn-left" onpointerdown="window.snakeFunctions.handleInput(event, 'LEFT')">⬅️</button>
+                        <button class="d-btn btn-right" onpointerdown="window.snakeFunctions.handleInput(event, 'RIGHT')">➡️</button>
+                        <button class="d-btn btn-down" onpointerdown="window.snakeFunctions.handleInput(event, 'DOWN')">⬇️</button>
                     </div>
                 </div>
                 <div class="leaderboard" style="border-color: #2ecc71;">
@@ -386,18 +388,17 @@
             saveScore(score, "scores", "সময় শেষ! 🎉");
         }
 
-        // ================= SNAKE LOGIC (Buffered Input + Pause) =================
+        // ================= SNAKE LOGIC (INSTANT RESPONSE) =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
-        let inputQueue = []; // For buffering inputs
         let isPaused = false;
+        let changingDirection = false; // Lock to prevent 180 degree turn in one tick
         const box = 20;
 
         const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
         const frogSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/frog.mp3');
         const eatSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakeeating.mp3');
-        
         let lastFrogSoundTime = 0;
 
         window.snakeFunctions = {
@@ -406,31 +407,35 @@
             },
             startSnake: () => {
                 sScore = 0; snake = [{x: 5*box, y: 5*box}]; dir = "RIGHT";
-                inputQueue = []; // Clear queue
                 isPaused = false;
+                changingDirection = false;
                 document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
                 document.getElementById('snakeControls').style.display = 'grid'; 
                 
-                // Show Pause Button
                 const pBtn = document.getElementById('snakePauseBtn');
                 pBtn.style.display = 'flex';
                 pBtn.innerText = '⏸️';
 
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
-                snakeLoop = setInterval(drawSnake, 300); 
+                // Speed: 250ms (Balance between speed and control window)
+                snakeLoop = setInterval(drawSnake, 250); 
             },
             togglePause: () => {
                 isPaused = !isPaused;
                 document.getElementById('snakePauseBtn').innerText = isPaused ? "▶️" : "⏸️";
             },
             handleInput: (e, newDir) => {
-                // Prevent Default to stop scroll/zoom delay
-                if(e.cancelable) e.preventDefault();
-                
-                // Push to queue instead of changing dir immediately
-                inputQueue.push(newDir);
+                // Prevent scrolling/zooming
+                if(e.cancelable) e.preventDefault(); 
+                if(isPaused || changingDirection) return;
+
+                // Update Direction Immediately
+                if(newDir=="UP" && dir!="DOWN") { dir="UP"; changingDirection = true; }
+                else if(newDir=="DOWN" && dir!="UP") { dir="DOWN"; changingDirection = true; }
+                else if(newDir=="LEFT" && dir!="RIGHT") { dir="LEFT"; changingDirection = true; }
+                else if(newDir=="RIGHT" && dir!="LEFT") { dir="RIGHT"; changingDirection = true; }
             }
         };
 
@@ -441,14 +446,7 @@
         function drawSnake() {
             if(isPaused) return;
 
-            // Process Input Queue (One move per frame)
-            if(inputQueue.length > 0) {
-                let nextDir = inputQueue.shift();
-                if(nextDir=="UP" && dir!="DOWN") dir="UP";
-                else if(nextDir=="DOWN" && dir!="UP") dir="DOWN";
-                else if(nextDir=="LEFT" && dir!="RIGHT") dir="LEFT";
-                else if(nextDir=="RIGHT" && dir!="LEFT") dir="RIGHT";
-            }
+            changingDirection = false; // Allow input for next move
 
             ctx.fillStyle = "#fff"; 
             ctx.fillRect(0,0,300,300);
@@ -469,14 +467,16 @@
                  hissSound.play().catch(e=>{});
             }
             
-            let distBefore = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
-
+            // Logic Move
             if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
             if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
 
+            // Wall Teleport
             if(headX < 0) headX = 280; if(headX > 280) headX = 0;
             if(headY < 0) headY = 280; if(headY > 280) headY = 0;
 
+            // Sound Logic
+            let distBefore = Math.abs(snake[0].x - frog.x) + Math.abs(snake[0].y - frog.y);
             let distAfter = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
 
             if (distAfter < distBefore) {
