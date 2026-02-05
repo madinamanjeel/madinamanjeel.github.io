@@ -76,7 +76,7 @@
         
         .control-panel { 
             background: rgba(0,0,0,0.05); border-radius: 30px; padding: 15px; margin: 5px auto; 
-            width: 220px; height: 180px; /* Increased size slightly */
+            width: 220px; height: 180px; 
             display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
             gap: 8px; align-items: center; justify-items: center;
         }
@@ -86,7 +86,7 @@
         .btn-down { grid-column: 2; grid-row: 3; }
 
         .d-btn { 
-            width: 60px; height: 60px; /* Bigger buttons */
+            width: 60px; height: 60px; 
             background: var(--secondary); border: none; border-radius: 50%; 
             color: white; font-size: 1.8rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
@@ -388,12 +388,12 @@
             saveScore(score, "scores", "সময় শেষ! 🎉");
         }
 
-        // ================= SNAKE LOGIC (INSTANT RESPONSE) =================
+        // ================= SNAKE LOGIC (MODIFIED) =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
         let isPaused = false;
-        let changingDirection = false; // Lock to prevent 180 degree turn in one tick
+        let changingDirection = false; 
         const box = 20;
 
         const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
@@ -419,19 +419,18 @@
 
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
-                // Speed: 250ms (Balance between speed and control window)
-                snakeLoop = setInterval(drawSnake, 250); 
+                
+                // === CHANGE: Speed made SLOWER (250 -> 450) ===
+                snakeLoop = setInterval(drawSnake, 450); 
             },
             togglePause: () => {
                 isPaused = !isPaused;
                 document.getElementById('snakePauseBtn').innerText = isPaused ? "▶️" : "⏸️";
             },
             handleInput: (e, newDir) => {
-                // Prevent scrolling/zooming
                 if(e.cancelable) e.preventDefault(); 
                 if(isPaused || changingDirection) return;
 
-                // Update Direction Immediately
                 if(newDir=="UP" && dir!="DOWN") { dir="UP"; changingDirection = true; }
                 else if(newDir=="DOWN" && dir!="UP") { dir="DOWN"; changingDirection = true; }
                 else if(newDir=="LEFT" && dir!="RIGHT") { dir="LEFT"; changingDirection = true; }
@@ -439,14 +438,33 @@
             }
         };
 
+        // === CHANGE: Frog will check collision with snake before spawning ===
         function spawnFrog() {
-            frog = { x: Math.floor(Math.random()*14+1)*box, y: Math.floor(Math.random()*14+1)*box };
+            let validPosition = false;
+            while(!validPosition) {
+                // Generate random X, Y between 0 and 14 (for 15x15 grid)
+                let newX = Math.floor(Math.random() * 15) * box;
+                let newY = Math.floor(Math.random() * 15) * box;
+
+                validPosition = true;
+                // Check if this spot is occupied by the snake
+                for(let part of snake) {
+                    if(part.x === newX && part.y === newY) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                
+                if(validPosition) {
+                    frog = { x: newX, y: newY };
+                }
+            }
         }
 
         function drawSnake() {
             if(isPaused) return;
 
-            changingDirection = false; // Allow input for next move
+            changingDirection = false; 
 
             ctx.fillStyle = "#fff"; 
             ctx.fillRect(0,0,300,300);
@@ -467,15 +485,12 @@
                  hissSound.play().catch(e=>{});
             }
             
-            // Logic Move
             if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
             if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
 
-            // Wall Teleport
             if(headX < 0) headX = 280; if(headX > 280) headX = 0;
             if(headY < 0) headY = 280; if(headY > 280) headY = 0;
 
-            // Sound Logic
             let distBefore = Math.abs(snake[0].x - frog.x) + Math.abs(snake[0].y - frog.y);
             let distAfter = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
 
