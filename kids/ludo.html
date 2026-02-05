@@ -20,44 +20,34 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        /* Game Containers */
+        /* Main Game Buttons Style - Uniform */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
+        .main-game-btn { 
+            background: linear-gradient(45deg, #FF512F, #DD2476); color: white; 
+            border: none; border-radius: 15px; padding: 15px; text-align: center; 
+            text-decoration: none; box-shadow: 0 5px 0 #C44D4D; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.1rem; font-weight: bold;
+        }
+        .main-game-btn.snake { background: linear-gradient(45deg, #11998e, #38ef7d); box-shadow: 0 5px 0 #0e7a71; }
+        .main-game-btn.ludo { background: linear-gradient(45deg, #43a047, #1de9b6); box-shadow: 0 5px 0 #2e7d32; }
+
+        .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid #FF9F1C; cursor: pointer; }
+        
         #gameContainer, #snakeGameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
         
-        /* Balloon Styles */
-        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
+        /* Balloon UI */
+        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; }
         .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
 
-        .balloon { 
-            position: absolute; bottom: -95px; animation: floatUp var(--speed) linear forwards; 
-            display: flex; justify-content: center; align-items: center; 
-            cursor: pointer; user-select: none; touch-action: none; pointer-events: auto;
-            background: transparent; border: none; padding: 10px; z-index: 5;
-        }
-        @keyframes floatUp { 
-            0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(10deg); }
-            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-10deg); }
-            100% { transform: translateY(-850px) translateX(0) rotate(0deg); }
-        }
-        .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
-
-        /* Snake Game Styles */
-        .snake-canvas-wrapper { width: 100%; height: 100%; background: #222; display: flex; justify-content: center; align-items: center; }
-        canvas { background: #000; box-shadow: 0 0 10px rgba(0,255,0,0.2); }
-        .d-pad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; max-width: 200px; margin: 10px auto; }
-        .d-btn { background: var(--secondary); border: none; border-radius: 10px; padding: 15px; color: white; font-size: 1.5rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; touch-action: manipulation; }
-        .d-btn:active { transform: translateY(4px); box-shadow: none; }
-        
-        /* General UI */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
-        .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid transparent; cursor: pointer; }
-        .c-game { background: linear-gradient(45deg, #FF512F, #DD2476); color: white; border: none; }
-        .c-snake { background: linear-gradient(45deg, #11998e, #38ef7d); color: white; border: none; }
-        .c-1 { border-color: #FF9F1C; } .c-2 { border-color: #2EC4B6; }
+        /* Snake UI */
+        .snake-canvas-wrapper { width: 100%; display: flex; justify-content: center; background: #222; padding: 10px 0; }
+        canvas { background: #000; border-radius: 5px; }
+        .control-panel { background: rgba(0,0,0,0.1); border-radius: 50px; padding: 20px; margin: 15px auto; max-width: 200px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center; }
+        .d-btn { width: 55px; height: 55px; background: var(--secondary); border: none; border-radius: 15px; color: white; font-size: 1.5rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .d-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a9d8f; }
 
         .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; }
 
@@ -65,7 +55,7 @@
         .leaderboard h3 { margin: 0 0 8px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
         .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
         .leaderboard-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f9f9f9; margin-bottom: 5px; border-radius: 10px; border-left: 5px solid var(--secondary); }
-        .leaderboard-list li img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
+        .leaderboard-list li img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
@@ -85,41 +75,34 @@
                 </div>
             </div>
 
-            <div class="grid-container" style="margin-bottom: 15px;">
-                <div onclick="window.gameFunctions.toggleGame('balloon')" class="card c-game" style="flex-direction: row; justify-content: center; gap: 10px;">
-                    <span class="card-icon">🎈</span> <span class="card-title">বেলুন গেম</span>
-                </div>
-                <div onclick="window.gameFunctions.toggleGame('snake')" class="card c-snake" style="flex-direction: row; justify-content: center; gap: 10px;">
-                    <span class="card-icon">🐍</span> <span class="card-title">সাপের গেম</span>
-                </div>
+            <div class="grid-container" style="margin-bottom: 15px; grid-template-columns: 1fr 1fr;">
+                <div onclick="window.gameFunctions.toggleGame('balloon')" class="main-game-btn">🎈 বেলুন গেম</div>
+                <div onclick="window.gameFunctions.toggleGame('snake')" class="main-game-btn snake">🐍 সাপের গেম</div>
+                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="main-game-btn ludo" style="grid-column: 1 / -1;">🎲 লুডু খেলো!</a>
             </div>
 
             <div id="gameContainer">
                 <div class="game-area" id="gameArea">
-                    <div class="score-board">স্কোর: <span id="score">0</span></div>
+                    <div class="score-board">Score: <span id="score">0</span></div>
                     <div class="timer-board">সময়: <span id="timer">30</span>s</div>
                     <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()">খেলতে ট্যাপ করো!</button>
                 </div>
                 <div class="leaderboard">
                     <h3>🏆 বেলুন মাস্টার (সেরা ৫) 🏆</h3>
-                    <ul id="onlineLeaderboard" class="leaderboard-list"><li style="justify-content:center;">লোড হচ্ছে...</li></ul>
+                    <ul id="onlineLeaderboard" class="leaderboard-list"><li>লোড হচ্ছে...</li></ul>
                 </div>
             </div>
 
             <div id="snakeGameContainer">
-                <div class="game-area" style="height: auto; padding-bottom: 10px; background: #333; border-color: #4CAF50;">
-                    <div class="score-board" style="color: black;">স্নেক স্কোর: <span id="snakeScore">0</span></div>
-                    
+                <div class="game-area" style="height: auto; background: #333; border-color: #4CAF50;">
+                    <div class="score-board" style="position: relative; top: 0; left: 0; border-radius: 0; background: #eee; text-align: center;">Score: <span id="snakeScore">0</span></div>
                     <div class="snake-canvas-wrapper">
                         <canvas id="snakeCanvas" width="300" height="300"></canvas>
                     </div>
-                    
                     <button class="start-btn" id="snakeStartBtn" onclick="window.snakeFunctions.startSnake()">সাপ খেলা শুরু!</button>
                     
-                    <div class="d-pad" id="snakeControls" style="display:none;">
-                        <div></div>
-                        <button class="d-btn" onclick="window.snakeFunctions.changeDir('UP')">⬆️</button>
-                        <div></div>
+                    <div class="control-panel" id="snakeControls" style="display:none;">
+                        <div></div><button class="d-btn" onclick="window.snakeFunctions.changeDir('UP')">⬆️</button><div></div>
                         <button class="d-btn" onclick="window.snakeFunctions.changeDir('LEFT')">⬅️</button>
                         <button class="d-btn" onclick="window.snakeFunctions.changeDir('DOWN')">⬇️</button>
                         <button class="d-btn" onclick="window.snakeFunctions.changeDir('RIGHT')">➡️</button>
@@ -127,25 +110,24 @@
                 </div>
                 <div class="leaderboard" style="border-color: #4CAF50;">
                     <h3>🐍 স্ন্যাক চ্যাম্পিয়ন (সেরা ৫) 🐍</h3>
-                    <ul id="snakeLeaderboard" class="leaderboard-list"><li style="justify-content:center;">লোড হচ্ছে...</li></ul>
+                    <ul id="snakeLeaderboard" class="leaderboard-list"><li>লোড হচ্ছে...</li></ul>
                 </div>
             </div>
 
             <div class="grid-container">
-                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card" style="background: linear-gradient(45deg, #43a047, #1de9b6); color: white;"><div class="card-icon">🎲</div><div class="card-title">লুডু খেলো</div></a>
-                <a href="https://kids.poki.com" target="_blank" class="card c-1"><div class="card-icon">🕹️</div><div class="card-title">পোকি গেমস</div></a>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q&si=oNQQlx3cv7LE7j8B')" class="card c-2"><div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card c-1"><div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76&si=UmPVp5Ze-yaS95mA')" class="card c-2"><div class="card-icon">💁‍♀️</div><div class="card-title">মিস মুন</div></div>
+                <a href="https://kids.poki.com" target="_blank" class="card"><div class="card-icon">🕹️</div><div>পোকি গেমস</div></a>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card"><div class="card-icon">🐸</div><div>সিসিমপুর</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card"><div class="card-icon">🎶</div><div>বাংলা ছড়া</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card"><div class="card-icon">💁‍♀️</div><div>মিস মুন</div></div>
             </div>
         </div>
 
         <div id="gameOverModal" class="modal">
             <div class="modal-content">
-                <h2 id="modalTitle" style="margin:0; color:var(--primary);">খেলা শেষ!</h2>
-                <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="font-weight:bold; color:var(--secondary);">0</span></p>
-                <p id="saveMsg">স্কোর সেভ হচ্ছে...</p>
-                <button id="closeModalBtn" onclick="window.gameFunctions.closeModal()" class="modal-btn">আবার খেলো</button>
+                <h2 id="modalTitle">সময় শেষ!</h2>
+                <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="color:var(--secondary);">0</span></p>
+                <p id="saveMsg">সেভ হচ্ছে...</p>
+                <button onclick="window.gameFunctions.closeModal()" class="modal-btn">আবার খেলো</button>
             </div>
         </div>
     </div>
@@ -155,16 +137,13 @@
         import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
         import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // Same Config for both (Different Collections)
         const firebaseConfig = {
           apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
           authDomain: "family-429c7.firebaseapp.com",
-          databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
           projectId: "family-429c7",
           storageBucket: "family-429c7.firebasestorage.app",
           messagingSenderId: "982876086618",
-          appId: "1:982876086618:web:97d56fd46148561cf2d363",
-          measurementId: "G-BSGEN1KEQR"
+          appId: "1:982876086618:web:97d56fd46148561cf2d363"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -175,19 +154,14 @@
         let currentUser = null;
         const allowedEmails = ["mashayekh.ahmed.archives@gmail.com", "mashayekh64@gmail.com", "shariatunnesa.madina@gmail.com", "abdulkhalequebaf@gmail.com", "lima.akter.1323@gmail.com", "lima.akter.0390@gmail.com", "ahmad.muttaqeen@gmail.com", "nusaiba.jannat.alifa@gmail.com", "afia.ahmed.adiba@gmail.com", "darulahmed467170@gmail.com", "madina.manjeel.tv@gmail.com"];
 
-        if (localStorage.getItem('isVerifiedUser') === 'true') {
-            document.getElementById('loading-message').style.display = 'none';
-            document.getElementById('content-wrapper').style.display = 'block';
-        }
-
         onAuthStateChanged(auth, (user) => {
             if (user && allowedEmails.includes(user.email)) {
                 currentUser = user;
                 localStorage.setItem('isVerifiedUser', 'true');
                 document.getElementById('loading-message').style.display = 'none';
                 document.getElementById('content-wrapper').style.display = 'block';
-                loadLeaderboard("scores", "onlineLeaderboard"); // Balloon
-                loadLeaderboard("snake_scores", "snakeLeaderboard"); // Snake
+                loadLeaderboard("scores", "onlineLeaderboard");
+                loadLeaderboard("snake_scores", "snakeLeaderboard");
             } else if (user) {
                 alert("অনুমতি নেই!");
                 window.location.href = "https://google.com";
@@ -196,256 +170,156 @@
             }
         });
 
-        // Universal Leaderboard Loader
-        function loadLeaderboard(collectionName, elementId) {
-            const q = query(collection(db, collectionName), orderBy("score", "desc"), limit(5));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById(elementId);
+        function loadLeaderboard(col, elId) {
+            const q = query(collection(db, col), orderBy("score", "desc"), limit(5));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById(elId);
                 list.innerHTML = "";
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span><img src="${data.photo || 'https://via.placeholder.com/30'}"> ${data.name}</span> <strong>${data.score}</strong>`;
-                    list.appendChild(li);
+                snap.forEach(d => {
+                    const data = d.data();
+                    list.innerHTML += `<li><span><img src="${data.photo || ''}"> ${data.name}</span> <strong>${data.score}</strong></li>`;
                 });
             });
         }
 
-        // ================= BALLOON GAME LOGIC =================
+        // ================= BALLOON LOGIC =================
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let currentSpawnRate = 500; 
-        let difficultyMultiplier = 1.0; 
         const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
 
         window.gameFunctions = {
             toggleGame: (type) => {
-                const balloonDiv = document.getElementById('gameContainer');
-                const snakeDiv = document.getElementById('snakeGameContainer');
-                
-                if (type === 'balloon') {
-                    snakeDiv.style.display = 'none';
-                    if(balloonDiv.style.display === 'block') balloonDiv.style.display = 'none';
-                    else {
-                        balloonDiv.style.display = 'block';
-                        scrollToElement(balloonDiv);
-                    }
-                } else if (type === 'snake') {
-                    balloonDiv.style.display = 'none';
-                    if(snakeDiv.style.display === 'block') snakeDiv.style.display = 'none';
-                    else {
-                        snakeDiv.style.display = 'block';
-                        scrollToElement(snakeDiv);
-                    }
-                }
+                document.getElementById('gameContainer').style.display = type === 'balloon' ? 'block' : 'none';
+                document.getElementById('snakeGameContainer').style.display = type === 'snake' ? 'block' : 'none';
+                if(type === 'snake') window.snakeFunctions.initCanvas();
             },
-            playVideo: (url) => {
-                document.getElementById('videoPlayer').src = url + "&autoplay=1";
-                document.querySelector('.tv-frame').scrollIntoView({behavior: 'smooth'});
-            },
+            playVideo: (url) => { document.getElementById('videoPlayer').src = url + "&autoplay=1"; },
             startGame: () => {
                 if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 500; difficultyMultiplier = 1.0;
-                document.getElementById('score').innerText = 0;
-                document.getElementById('timer').innerText = 30;
+                gameRunning = true; score = 0; timeLeft = 30;
                 document.getElementById('mainStartBtn').style.display = 'none';
-                startSpawning();
+                gameInterval = setInterval(createBalloon, 600);
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     document.getElementById('timer').innerText = timeLeft;
-                    if(timeLeft % 5 === 0 && timeLeft > 0) increaseDifficulty();
-                    if(timeLeft <= 0) endBalloonGame();
+                    if(timeLeft <= 0) endBalloon();
                 }, 1000);
             },
-            closeModal: () => {
+            closeModal: () => { 
                 document.getElementById('gameOverModal').style.display = 'none';
                 document.getElementById('mainStartBtn').style.display = 'block';
                 document.getElementById('snakeStartBtn').style.display = 'block';
             }
         };
 
-        function scrollToElement(el) {
-            setTimeout(() => {
-                const offset = 80;
-                const bodyRect = document.body.getBoundingClientRect().top;
-                const elementRect = el.getBoundingClientRect().top;
-                const offsetPosition = (elementRect - bodyRect) - offset;
-                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            }, 100);
-        }
-
-        function increaseDifficulty() {
-            currentSpawnRate = Math.max(180, currentSpawnRate - 70);
-            difficultyMultiplier += 0.2;
-            clearInterval(gameInterval);
-            startSpawning();
-        }
-
-        function startSpawning() { gameInterval = setInterval(createBalloon, currentSpawnRate); }
-
         function createBalloon() {
-            const types = [
-                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 20}, {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 25}, 
-                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 30}, {e:'💎', p:50, fs: 50, speed: 3.5, drift: 30}, 
-                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
-            ];
-            const rand = Math.random();
-            let type = rand < 0.25 ? types[4] : rand < 0.45 ? types[3] : rand < 0.65 ? types[2] : rand < 0.85 ? types[1] : types[0];
             const b = document.createElement('div');
-            b.className = 'balloon'; b.innerText = type.e;
-            const finalSpeed = Math.max(1.5, type.speed / difficultyMultiplier);
-            b.style.setProperty('--speed', finalSpeed + 's');
-            const areaWidth = document.getElementById('gameArea').clientWidth;
-            const maxDrift = type.drift;
-            const randomLeft = Math.random() * (areaWidth - (80 + maxDrift * 2)) + maxDrift;
-            b.style.left = randomLeft + 'px';
-            b.style.setProperty('--drift', (Math.random() > 0.5 ? maxDrift : -maxDrift) + 'px');
-            b.style.fontSize = type.fs + 'px';
-            const popAction = (e) => {
-                if(!gameRunning) return;
-                e.preventDefault(); 
-                score += type.p;
-                document.getElementById('score').innerText = score;
-                popSound.cloneNode().play();
-                showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
-                b.remove();
-            };
-            b.addEventListener('touchstart', popAction, {passive: false});
-            b.addEventListener('mousedown', popAction);
+            b.className = 'balloon'; b.innerText = "🎈";
+            b.style.left = Math.random() * 80 + "%";
+            b.style.setProperty('--speed', '4s');
+            b.style.position = 'absolute'; b.style.bottom = '-50px'; b.style.fontSize = '50px';
+            b.style.animation = "floatUp 4s linear forwards";
+            b.onclick = () => { score+=10; document.getElementById('score').innerText = score; popSound.play(); b.remove(); };
             document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => { if(b.parentNode) b.remove(); }, finalSpeed * 1000);
+            setTimeout(() => b.remove(), 4000);
         }
 
-        function showPointPopup(x, y, p) {
-            const popup = document.createElement('div');
-            popup.className = 'point-popup';
-            popup.innerText = (p > 0 ? "+" : "") + p;
-            popup.style.color = p > 0 ? "#28a745" : "#dc3545";
-            const rect = document.getElementById('gameArea').getBoundingClientRect();
-            popup.style.left = (x - rect.left) + 'px';
-            popup.style.top = (y - rect.top) + 'px';
-            document.getElementById('gameArea').appendChild(popup);
-            setTimeout(() => popup.remove(), 600);
-        }
-
-        async function endBalloonGame() {
+        async function endBalloon() {
             clearInterval(gameInterval); clearInterval(timerInterval);
             gameRunning = false;
-            document.querySelectorAll('.balloon').forEach(b => b.remove());
-            showGameOver(score, "scores");
+            saveScore(score, "scores", "সময় শেষ!");
         }
 
-        // ================= SNAKE GAME LOGIC =================
+        // ================= SNAKE LOGIC =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
-        let snake = [], food = {}, d, snakeGameLoop, snakeScore = 0;
-        const box = 15; // Grid size
-        let isSnakeRunning = false;
+        let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
+        const box = 20;
+
+        const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
+        const frogSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/frog.mp3');
+        const eatSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakeeating.mp3');
 
         window.snakeFunctions = {
+            initCanvas: () => {
+                ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
+            },
             startSnake: () => {
-                if(isSnakeRunning) return;
-                isSnakeRunning = true;
+                sScore = 0; snake = [{x: 5*box, y: 5*box}]; dir = "RIGHT";
+                document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
                 document.getElementById('snakeControls').style.display = 'grid';
-                snake = [{x: 9 * box, y: 10 * box}];
-                snakeScore = 0;
-                d = undefined; // Wait for input
-                document.getElementById('snakeScore').innerText = 0;
-                createFood();
-                if(snakeGameLoop) clearInterval(snakeGameLoop);
-                snakeGameLoop = setInterval(drawSnake, 130); // Game Speed
+                spawnFrog();
+                if(snakeLoop) clearInterval(snakeLoop);
+                snakeLoop = setInterval(drawSnake, 180); // Slower speed
             },
-            changeDir: (dir) => {
-                if(!isSnakeRunning) return;
-                if(dir === 'LEFT' && d !== 'RIGHT') d = 'LEFT';
-                else if(dir === 'UP' && d !== 'DOWN') d = 'UP';
-                else if(dir === 'RIGHT' && d !== 'LEFT') d = 'RIGHT';
-                else if(dir === 'DOWN' && d !== 'UP') d = 'DOWN';
+            changeDir: (newDir) => {
+                if(newDir=="UP" && dir!="DOWN") dir="UP";
+                if(newDir=="DOWN" && dir!="UP") dir="DOWN";
+                if(newDir=="LEFT" && dir!="RIGHT") dir="LEFT";
+                if(newDir=="RIGHT" && dir!="LEFT") dir="RIGHT";
+                hissSound.play();
             }
         };
 
-        // Keyboard Controls
-        document.addEventListener("keydown", direction);
-        function direction(event) {
-            if(!isSnakeRunning) return;
-            let key = event.keyCode;
-            if(key == 37 && d != "RIGHT") d = "LEFT";
-            else if(key == 38 && d != "DOWN") d = "UP";
-            else if(key == 39 && d != "LEFT") d = "RIGHT";
-            else if(key == 40 && d != "UP") d = "DOWN";
-        }
-
-        function createFood() {
-            food = {
-                x: Math.floor(Math.random() * (canvas.width/box)) * box,
-                y: Math.floor(Math.random() * (canvas.height/box)) * box
-            };
+        function spawnFrog() {
+            frog = { x: Math.floor(Math.random()*14+1)*box, y: Math.floor(Math.random()*14+1)*box };
+            frogSound.play();
         }
 
         function drawSnake() {
-            ctx.fillStyle = "#222";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
+            
+            // Draw Frog
+            ctx.font = "20px Arial"; ctx.fillText("🐸", frog.x, frog.y + 18);
 
-            for(let i=0; i < snake.length; i++) {
-                ctx.fillStyle = (i == 0) ? "#4CAF50" : "#81C784"; // Head green, body light green
-                ctx.fillRect(snake[i].x, snake[i].y, box, box);
-                ctx.strokeStyle = "#222";
-                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            for(let i=0; i<snake.length; i++){
+                ctx.fillStyle = i==0 ? "#2E7D32" : "#4CAF50";
+                ctx.beginPath();
+                ctx.roundRect(snake[i].x, snake[i].y, box-2, box-2, 5);
+                ctx.fill();
             }
 
-            ctx.fillStyle = "#FF5252"; // Food Red
-            ctx.fillRect(food.x, food.y, box, box);
+            let headX = snake[0].x; let headY = snake[0].y;
+            if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
+            if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
 
-            let snakeX = snake[0].x;
-            let snakeY = snake[0].y;
+            // Border Wrap-around
+            if(headX < 0) headX = 280; if(headX > 280) headX = 0;
+            if(headY < 0) headY = 280; if(headY > 280) headY = 0;
 
-            if(d == "LEFT") snakeX -= box;
-            if(d == "UP") snakeY -= box;
-            if(d == "RIGHT") snakeX += box;
-            if(d == "DOWN") snakeY += box;
-
-            // If eats food
-            if(snakeX == food.x && snakeY == food.y) {
-                snakeScore += 10;
-                document.getElementById('snakeScore').innerText = snakeScore;
-                createFood();
+            if(headX == frog.x && headY == frog.y) {
+                sScore += 10; document.getElementById('snakeScore').innerText = sScore;
+                eatSound.play(); spawnFrog();
             } else {
-                snake.pop(); // Remove tail
+                snake.pop();
             }
 
-            // Game Over conditions
-            if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(snakeX, snakeY, snake)) {
-                clearInterval(snakeGameLoop);
-                isSnakeRunning = false;
-                showGameOver(snakeScore, "snake_scores");
+            let newHead = {x: headX, y: headY};
+            if(collision(newHead, snake)) {
+                clearInterval(snakeLoop);
+                saveScore(sScore, "snake_scores", "সাপ নিজের গায়ে কামড় দিয়েছে!");
                 return;
             }
-
-            let newHead = {x: snakeX, y: snakeY};
             snake.unshift(newHead);
         }
 
-        function collision(x, y, array) {
-            for(let i = 0; i < array.length; i++) {
-                if(array[i].x == x && array[i].y == y) return true;
-            }
+        function collision(head, body) {
+            for(let i=0; i<body.length; i++) if(head.x == body[i].x && head.y == body[i].y) return true;
             return false;
         }
 
-        // ================= COMMON SAVE LOGIC =================
-        async function showGameOver(finalScore, collectionName) {
-            document.getElementById('finalScore').innerText = finalScore;
-            document.getElementById('modalTitle').innerText = collectionName === "snake_scores" ? "সাপ মরে গেছে! 🐍" : "সময় শেষ! 🎉";
+        async function saveScore(s, col, msg) {
+            document.getElementById('finalScore').innerText = s;
+            document.getElementById('modalTitle').innerText = msg;
             document.getElementById('gameOverModal').style.display = 'flex';
-            
-            if (currentUser) {
-                const userRef = doc(db, collectionName, currentUser.uid);
-                const docSnap = await getDoc(userRef);
-                if (!docSnap.exists() || finalScore > docSnap.data().score) {
-                    await setDoc(userRef, { name: currentUser.displayName, photo: currentUser.photoURL, score: finalScore });
-                    document.getElementById('saveMsg').innerText = "নতুন রেকর্ড! 🔥";
-                } else { document.getElementById('saveMsg').innerText = "রেকর্ড ভাঙা হলো না!"; }
+            if(currentUser) {
+                const ref = doc(db, col, currentUser.uid);
+                const snap = await getDoc(ref);
+                if(!snap.exists() || s > snap.data().score) {
+                    await setDoc(ref, {name: currentUser.displayName, photo: currentUser.photoURL, score: s});
+                }
             }
+            document.getElementById('saveMsg').innerText = "স্কোর সেভ হয়েছে!";
         }
     </script>
 </body>
