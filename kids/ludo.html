@@ -90,8 +90,8 @@
             background: var(--secondary); border: none; border-radius: 50%; 
             color: white; font-size: 1.8rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
-            user-select: none; -webkit-user-select: none; touch-action: none; 
-            -webkit-tap-highlight-color: transparent;
+            user-select: none; -webkit-user-select: none; touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent; position: relative;
         }
         .d-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a9d8f; background: #2a9d8f; }
 
@@ -388,12 +388,12 @@
             saveScore(score, "scores", "সময় শেষ! 🎉");
         }
 
-        // ================= SNAKE LOGIC (OPTIMIZED) =================
+        // ================= SNAKE LOGIC (OPTIMIZED & FIX LAGGING) =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
         let isPaused = false;
-        let changingDirection = false; 
+        let nextMoves = []; // BUFFER: Stores input commands instantly
         const box = 20;
 
         const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
@@ -408,7 +408,7 @@
             startSnake: () => {
                 sScore = 0; snake = [{x: 5*box, y: 5*box}]; dir = "RIGHT";
                 isPaused = false;
-                changingDirection = false;
+                nextMoves = []; // Clear buffer on start
                 document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
                 document.getElementById('snakeControls').style.display = 'grid'; 
@@ -420,21 +420,29 @@
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
                 
-                // === CHANGE: Speed set to 330ms (Smooth & Medium Pace) ===
-                snakeLoop = setInterval(drawSnake, 330); 
+                // === SPEED FIX: Reduced from 330ms to 160ms for snappy response ===
+                snakeLoop = setInterval(drawSnake, 160); 
             },
             togglePause: () => {
                 isPaused = !isPaused;
                 document.getElementById('snakePauseBtn').innerText = isPaused ? "▶️" : "⏸️";
             },
             handleInput: (e, newDir) => {
-                if(e.cancelable) e.preventDefault(); 
-                if(isPaused || changingDirection) return;
+                // Prevent default to stop scrolling or double-firing
+                if(e && e.cancelable) e.preventDefault(); 
+                if(isPaused) return;
 
-                if(newDir=="UP" && dir!="DOWN") { dir="UP"; changingDirection = true; }
-                else if(newDir=="DOWN" && dir!="UP") { dir="DOWN"; changingDirection = true; }
-                else if(newDir=="LEFT" && dir!="RIGHT") { dir="LEFT"; changingDirection = true; }
-                else if(newDir=="RIGHT" && dir!="LEFT") { dir="RIGHT"; changingDirection = true; }
+                // BUFFER LOGIC: Push valid moves to queue
+                // Limit queue to 2 to prevent crazy buffering
+                if(nextMoves.length < 2) {
+                    const lastMove = nextMoves.length > 0 ? nextMoves[nextMoves.length-1] : dir;
+                    
+                    // Logic to prevent 180 degree suicide in the buffer
+                    if(newDir === "UP" && lastMove !== "DOWN") nextMoves.push("UP");
+                    else if(newDir === "DOWN" && lastMove !== "UP") nextMoves.push("DOWN");
+                    else if(newDir === "LEFT" && lastMove !== "RIGHT") nextMoves.push("LEFT");
+                    else if(newDir === "RIGHT" && lastMove !== "LEFT") nextMoves.push("RIGHT");
+                }
             }
         };
 
@@ -457,7 +465,10 @@
         function drawSnake() {
             if(isPaused) return;
 
-            changingDirection = false; 
+            // CONSUME BUFFER: Determine true direction for this frame
+            if(nextMoves.length > 0) {
+                dir = nextMoves.shift();
+            }
 
             ctx.fillStyle = "#fff"; 
             ctx.fillRect(0,0,300,300);
@@ -473,7 +484,7 @@
 
             let headX = snake[0].x; let headY = snake[0].y;
             
-            if(Math.random() > 0.85) {
+            if(Math.random() > 0.9) { // Reduced hissing frequency slightly due to higher speed
                  hissSound.volume = 0.3;
                  hissSound.play().catch(e=>{});
             }
@@ -481,9 +492,11 @@
             if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
             if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
 
+            // Wrap around logic
             if(headX < 0) headX = 280; if(headX > 280) headX = 0;
             if(headY < 0) headY = 280; if(headY > 280) headY = 0;
 
+            // Frog sound logic
             let distBefore = Math.abs(snake[0].x - frog.x) + Math.abs(snake[0].y - frog.y);
             let distAfter = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
 
