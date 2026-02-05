@@ -388,7 +388,7 @@
             saveScore(score, "scores", "সময় শেষ! 🎉");
         }
 
-        // ================= SNAKE LOGIC (MODIFIED) =================
+        // ================= SNAKE LOGIC (OPTIMIZED) =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
@@ -420,8 +420,8 @@
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
                 
-                // === CHANGE: Speed made SLOWER (250 -> 450) ===
-                snakeLoop = setInterval(drawSnake, 450); 
+                // === CHANGE: Speed set to 330ms (Smooth & Medium Pace) ===
+                snakeLoop = setInterval(drawSnake, 330); 
             },
             togglePause: () => {
                 isPaused = !isPaused;
@@ -438,26 +438,19 @@
             }
         };
 
-        // === CHANGE: Frog will check collision with snake before spawning ===
         function spawnFrog() {
             let validPosition = false;
             while(!validPosition) {
-                // Generate random X, Y between 0 and 14 (for 15x15 grid)
                 let newX = Math.floor(Math.random() * 15) * box;
                 let newY = Math.floor(Math.random() * 15) * box;
-
                 validPosition = true;
-                // Check if this spot is occupied by the snake
                 for(let part of snake) {
                     if(part.x === newX && part.y === newY) {
                         validPosition = false;
                         break;
                     }
                 }
-                
-                if(validPosition) {
-                    frog = { x: newX, y: newY };
-                }
+                if(validPosition) frog = { x: newX, y: newY };
             }
         }
 
