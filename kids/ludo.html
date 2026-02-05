@@ -6,7 +6,7 @@
     <title>কিডস ফান জোন! 🎈</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; --snake-color: #4CAF50; }
+        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
         body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
@@ -20,30 +20,41 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        /* Unified Top Buttons */
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        /* Unified Top Buttons - Only 2 Games now */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .main-game-btn { 
             background: linear-gradient(45deg, #FF512F, #DD2476); color: white; 
-            border: none; border-radius: 15px; padding: 15px; text-align: center; 
+            border: none; border-radius: 15px; padding: 20px 10px; text-align: center; 
             text-decoration: none; box-shadow: 0 5px 0 #C44D4D; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 1.1rem; font-weight: bold;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 1.2rem; font-weight: bold;
         }
         .main-game-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #C44D4D; }
         .main-game-btn.snake { background: linear-gradient(45deg, #11998e, #38ef7d); box-shadow: 0 5px 0 #0e7a71; }
-        .main-game-btn.ludo { background: linear-gradient(45deg, #43a047, #1de9b6); box-shadow: 0 5px 0 #2e7d32; }
-        .main-game-btn.poki { background: linear-gradient(45deg, #FF9966, #FF5E62); box-shadow: 0 5px 0 #c0392b; }
 
+        /* Bottom Cards Grid */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 20px; }
-        .card { background: white; border-radius: 12px; padding: 12px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid #FF9F1C; cursor: pointer; }
+        .card { background: white; border-radius: 12px; padding: 10px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; border: 3px solid #FF9F1C; cursor: pointer; font-size: 0.95rem; font-weight: bold;}
+        .card-icon { font-size: 1.8rem; margin-bottom: 5px; }
         
-        #gameContainer, #snakeGameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; scroll-margin-top: 20px; }
+        #gameContainer, #snakeGameContainer { display: none; margin-bottom: 20px; animation: fadeIn 0.4s ease; scroll-margin-top: 20px; position: relative; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
         
-        /* Balloon Styles (Restored) */
-        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; }
-        .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
+        /* Close Button Style */
+        .close-btn {
+            position: absolute; top: 10px; right: 10px; 
+            width: 35px; height: 35px; 
+            background: #ff4757; color: white; 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.2rem; cursor: pointer; 
+            z-index: 50; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid white;
+        }
+
+        /* Balloon Styles */
+        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 3px 12px; border-radius: 15px; z-index: 10; font-size: 1.1rem; pointer-events: none; border: 2px solid #eee; }
+        .score-board { left: 10px; } .timer-board { right: 50px; color: var(--primary); }
         
         .balloon { 
             position: absolute; bottom: -95px; animation: floatUp var(--speed) linear forwards; 
@@ -60,14 +71,13 @@
         .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
         @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
-        /* Snake Styles */
-        .snake-canvas-wrapper { width: 100%; display: flex; justify-content: center; background: #222; padding: 10px 0; }
-        canvas { background: #000; border-radius: 5px; box-shadow: 0 0 10px rgba(0,255,0,0.2); }
+        /* Snake Styles - White Theme */
+        .snake-canvas-wrapper { width: 100%; display: flex; justify-content: center; background: #fff; padding: 10px 0; }
+        canvas { background: #f9f9f9; border-radius: 5px; border: 2px solid #ddd; }
         
-        /* Diamond Control Panel */
         .control-panel { 
-            background: rgba(0,0,0,0.05); border-radius: 30px; padding: 15px; margin: 10px auto; 
-            width: 200px; height: 180px;
+            background: rgba(0,0,0,0.05); border-radius: 30px; padding: 15px; margin: 5px auto; 
+            width: 200px; height: 170px;
             display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
             gap: 5px; align-items: center; justify-items: center;
         }
@@ -112,11 +122,10 @@
             <div class="grid-container">
                 <div onclick="window.gameFunctions.toggleGame('balloon')" class="main-game-btn"><div>🎈</div>বেলুন গেম</div>
                 <div onclick="window.gameFunctions.toggleGame('snake')" class="main-game-btn snake"><div>🐍</div>সাপের গেম</div>
-                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="main-game-btn ludo"><div>🎲</div>লুডু খেলো</a>
-                <a href="https://kids.poki.com" target="_blank" class="main-game-btn poki"><div>🕹️</div>পোকি গেমস</a>
             </div>
 
             <div id="gameContainer">
+                <div class="close-btn" onclick="window.gameFunctions.closeGame()">✖</div>
                 <div class="game-area" id="gameArea">
                     <div class="score-board">Score: <span id="score">0</span></div>
                     <div class="timer-board">সময়: <span id="timer">30</span>s</div>
@@ -129,8 +138,9 @@
             </div>
 
             <div id="snakeGameContainer">
-                <div class="game-area" style="height: auto; background: #333; border-color: #4CAF50;">
-                    <div class="score-board" style="position: relative; top: 0; left: 0; border-radius: 0; background: #eee; text-align: center;">Score: <span id="snakeScore">0</span></div>
+                <div class="close-btn" onclick="window.gameFunctions.closeGame()">✖</div>
+                <div class="game-area" style="height: auto; background: #fff; border-color: #4CAF50;">
+                    <div class="score-board" style="position: relative; top: 0; left: 0; border-radius: 0; background: #f0f0f0; text-align: center; width: 100%; box-sizing: border-box;">Score: <span id="snakeScore">0</span></div>
                     <div class="snake-canvas-wrapper">
                         <canvas id="snakeCanvas" width="300" height="300"></canvas>
                     </div>
@@ -150,6 +160,12 @@
             </div>
 
             <div class="card-grid">
+                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card" style="border-color: #43a047;">
+                    <div class="card-icon">🎲</div><div>লুডু খেলো</div>
+                </a>
+                <a href="https://kids.poki.com" target="_blank" class="card" style="border-color: #FF5E62;">
+                    <div class="card-icon">🕹️</div><div>পোকি গেমস</div>
+                </a>
                 <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card"><div class="card-icon">🐸</div><div>সিসিমপুর</div></div>
                 <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card"><div class="card-icon">🎶</div><div>বাংলা ছড়া</div></div>
                 <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card"><div class="card-icon">💁‍♀️</div><div>মিস মুন</div></div>
@@ -224,8 +240,9 @@
                 const otherId = type === 'balloon' ? 'snakeGameContainer' : 'gameContainer';
                 
                 document.getElementById(otherId).style.display = 'none';
+                window.gameFunctions.stopAllGames(); // Reset internals
+
                 const el = document.getElementById(targetId);
-                
                 if (el.style.display === 'block') {
                     el.style.display = 'none';
                 } else {
@@ -234,9 +251,25 @@
                     setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
                 }
             },
+            closeGame: () => {
+                document.getElementById('gameContainer').style.display = 'none';
+                document.getElementById('snakeGameContainer').style.display = 'none';
+                window.gameFunctions.stopAllGames();
+            },
+            stopAllGames: () => {
+                // Stop Balloon
+                clearInterval(gameInterval); clearInterval(timerInterval);
+                gameRunning = false;
+                document.querySelectorAll('.balloon').forEach(b => b.remove());
+                document.getElementById('mainStartBtn').style.display = 'block';
+                
+                // Stop Snake
+                clearInterval(snakeLoop);
+                document.getElementById('snakeStartBtn').style.display = 'block';
+                document.getElementById('snakeControls').style.display = 'none';
+            },
             playVideo: (url) => { document.getElementById('videoPlayer').src = url + "&autoplay=1"; },
             startGame: () => {
-                // Balloon Start Logic
                 if(gameRunning) return;
                 gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 500; difficultyMultiplier = 1.0;
                 document.getElementById('score').innerText = 0;
@@ -252,13 +285,11 @@
             },
             closeModal: () => { 
                 document.getElementById('gameOverModal').style.display = 'none';
-                document.getElementById('mainStartBtn').style.display = 'block';
-                document.getElementById('snakeStartBtn').style.display = 'block';
-                document.querySelectorAll('.balloon').forEach(b => b.remove());
+                window.gameFunctions.stopAllGames();
             }
         };
 
-        // ================= BALLOON LOGIC (RESTORED) =================
+        // ================= BALLOON LOGIC =================
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
         let currentSpawnRate = 500; 
         let difficultyMultiplier = 1.0; 
@@ -350,7 +381,8 @@
 
         window.snakeFunctions = {
             initCanvas: () => {
-                ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
+                // White Theme Reset
+                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,300,300);
             },
             startSnake: () => {
                 sScore = 0; snake = [{x: 5*box, y: 5*box}]; dir = "RIGHT";
@@ -359,8 +391,8 @@
                 document.getElementById('snakeControls').style.display = 'grid'; 
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
-                // Sensitivity Increased (Lower interval = faster response)
-                snakeLoop = setInterval(drawSnake, 160); 
+                // Speed slowed down to 220ms (Requested)
+                snakeLoop = setInterval(drawSnake, 220); 
             },
             changeDir: (newDir) => {
                 if(newDir=="UP" && dir!="DOWN") dir="UP";
@@ -375,12 +407,16 @@
         }
 
         function drawSnake() {
-            ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
+            // White Background for each frame
+            ctx.fillStyle = "#fff"; 
+            ctx.fillRect(0,0,300,300);
             
+            // Draw Frog
             ctx.font = "20px Arial"; ctx.fillText("🐸", frog.x, frog.y + 18);
 
+            // Draw Snake
             for(let i=0; i<snake.length; i++){
-                ctx.fillStyle = i==0 ? "#2E7D32" : "#4CAF50";
+                ctx.fillStyle = i==0 ? "#2E7D32" : "#4CAF50"; // Dark Green Head, Green Body
                 ctx.beginPath();
                 ctx.roundRect(snake[i].x, snake[i].y, box-2, box-2, 5);
                 ctx.fill();
@@ -388,25 +424,23 @@
 
             let headX = snake[0].x; let headY = snake[0].y;
             
-            // Random Hissing (20% chance per move)
-            if(Math.random() > 0.80) {
+            // Random Hissing
+            if(Math.random() > 0.85) {
                  hissSound.volume = 0.3;
                  hissSound.play().catch(e=>{});
             }
             
-            // Frog Sound Logic (Once every 10 sec if moving closer)
+            // Frog Sound Logic
             let distBefore = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
 
             if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
             if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
 
-            // Border Wrap
             if(headX < 0) headX = 280; if(headX > 280) headX = 0;
             if(headY < 0) headY = 280; if(headY > 280) headY = 0;
 
             let distAfter = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
 
-            // Play frog sound only if getting closer AND 10 seconds passed since last sound
             if (distAfter < distBefore) {
                 const now = Date.now();
                 if(now - lastFrogSoundTime > 10000) {
@@ -416,9 +450,11 @@
                 }
             }
 
+            // Eating Collision
             if(headX == frog.x && headY == frog.y) {
-                sScore += 10; document.getElementById('snakeScore').innerText = sScore;
-                eatSound.play(); 
+                sScore += 10; 
+                document.getElementById('snakeScore').innerText = sScore;
+                eatSound.play().catch(e=>{}); // Strict placement
                 spawnFrog();
             } else {
                 snake.pop();
