@@ -190,7 +190,7 @@
                 <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card" style="border-color: #3742fa;"><div class="card-icon">🐸</div><div>সিসিমপুর</div></div>
                 <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card" style="border-color: #3742fa;"><div class="card-icon">🎶</div><div>বাংলা ছড়া</div></div>
                 <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card" style="border-color: #3742fa;"><div class="card-icon">💁‍♀️</div><div>মিস মুন</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PL1B5C06F0090906F8')" class="card" style="border-color: #3742fa;"><div class="card-icon">🐱</div><div>টম এন্ড জেরি</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLZs0gQed9tMQcnKBoXtgJW7mq_LNtfB9g&si=cVHynu3juTfDa0MF')" class="card" style="border-color: #3742fa;"><div class="card-icon">🐱</div><div>টম এন্ড জেরি</div></div>
             </div>
         </div>
 
@@ -225,8 +225,7 @@
 
         let currentUser = null;
 
-        // --- INSTANT LOAD CHECK (OPTIMISTIC UI) ---
-        // যদি ব্রাউজার মনে রাখে যে ইউজার ভেরিফাইড, তাহলে সাথে সাথে লোডিং সরিয়ে কন্টেন্ট দেখাবে।
+        
         if (localStorage.getItem('isVerifiedUser') === 'true') {
             document.getElementById('loading-message').style.display = 'none';
             document.getElementById('content-wrapper').style.display = 'block';
