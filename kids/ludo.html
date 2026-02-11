@@ -6,7 +6,7 @@
     <title>কিডস ফান জোন! 🎈</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; --focus-color: #FFD700; }
+        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
         body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
@@ -15,7 +15,7 @@
 
         /* --- STICKY TOP CONTAINER STYLE --- */
         #sticky-top-container {
-            position: sticky; /* Changed to sticky for better TV scrolling flow */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -25,29 +25,28 @@
             transition: transform 0.3s ease;
         }
 
-        header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
-        h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
-        .container { max-width: 900px; margin: 0 auto; padding: 10px; }
-
-        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; box-shadow: 0 6px 0 #C44D4D; margin-bottom: 5px; transition: transform 0.2s; }
-        
-        /* Focus style for TV Remote on Video Section */
-        .tv-frame:focus-within {
-             outline: 5px solid var(--focus-color);
-             transform: scale(1.02);
+        /* --- SCROLLABLE CONTENT STYLE --- */
+        #scrollable-body {
+            /* Default padding, JS will adjust but we set a safe minimum */
+            padding-top: 320px; 
+            padding-bottom: 30px;
         }
 
+        header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
+        h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
+        .container { max-width: 800px; margin: 0 auto; padding: 10px; }
+
+        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; box-shadow: 0 6px 0 #C44D4D; margin-bottom: 5px; }
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
 
-        /* Unified Card Grid - Responsive for TV */
+        /* Unified Card Grid */
         .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         
-        /* TV Layout: 4 columns on larger screens/landscape */
+        /* Responsive for TV landscape */
         @media (min-width: 600px) {
             .card-grid { grid-template-columns: repeat(4, 1fr); }
-            h1 { font-size: 2.2rem; }
-            .card { height: 140px; font-size: 1.3rem; }
+            #scrollable-body { padding-top: 350px; } /* Adjust for TV landscape */
         }
 
         .card { 
@@ -56,20 +55,19 @@
             box-shadow: 0 5px 0 rgba(0,0,0,0.1); 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             border: 3px solid; cursor: pointer; font-size: 1.1rem; font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s, outline 0.1s; height: 100px;
+            transition: transform 0.1s; height: 100px;
             box-sizing: border-box;
-            outline: none; /* Remove default browser outline */
+            outline: none; /* Default outline off */
         }
-        
         .card:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.1); }
         
-        /* --- TV REMOTE FOCUS STYLE --- */
-        .card:focus, .start-btn:focus, .close-btn:focus, .modal-btn:focus {
-            transform: scale(1.08);
-            box-shadow: 0 0 15px var(--focus-color);
-            border-color: var(--focus-color) !important;
-            z-index: 10;
+        /* --- TV REMOTE FOCUS STYLE (CRITICAL) --- */
+        .card:focus, .close-btn:focus, .start-btn:focus, .modal-btn:focus, .pause-btn:focus {
+            transform: scale(1.1);
+            border-color: #FFD700 !important; /* Yellow border */
+            box-shadow: 0 0 15px #FFD700;
             background-color: #fffde7;
+            z-index: 50;
         }
 
         .card-icon { font-size: 2rem; margin-bottom: 5px; display: block; }
@@ -77,9 +75,13 @@
         /* Game Containers */
         #gameContainer, #snakeGameContainer { 
             display: none; 
+            margin-bottom: 20px; 
+            animation: fadeIn 0.4s ease; 
             position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
             background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); 
             z-index: 200; 
             padding: 20px 10px; 
@@ -87,7 +89,9 @@
             overflow-y: auto;
         }
 
-        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; margin-top: 40px; margin-left: auto; margin-right: auto; max-width: 600px; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; margin-top: 40px; margin-left: auto; margin-right: auto; max-width: 500px; }
         
         .close-btn {
             position: absolute; top: 15px; right: 15px; 
@@ -128,7 +132,6 @@
             display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
             gap: 8px; align-items: center; justify-items: center;
         }
-        /* Hide onscreen controls on TV if needed, or keep for visual reference */
         .btn-up { grid-column: 2; grid-row: 1; }
         .btn-left { grid-column: 1; grid-row: 2; }
         .btn-right { grid-column: 3; grid-row: 2; }
@@ -155,7 +158,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; outline: none; }
+        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; }
 
         .leaderboard { background: #fff; border-radius: 15px; padding: 10px; margin-top: 10px; border: 3px solid var(--secondary); max-width: 600px; margin-left: auto; margin-right: auto; }
         .leaderboard h3 { margin: 0 0 8px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
@@ -165,10 +168,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 300; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; outline: none; }
-        
-        /* Specific fix for TV to hide Balloon game */
-        .tv-hidden { display: none !important; }
+        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -191,10 +191,10 @@
         <div id="scrollable-body" class="container">
             
             <div class="card-grid">
-                <div id="balloonCard" onclick="window.gameFunctions.toggleGame('balloon')" class="card" style="border-color: #2ecc71;" tabindex="0">
+                <div id="balloon-card" onclick="window.gameFunctions.toggleGame('balloon')" class="card" style="border-color: #2ecc71;" tabindex="0" role="button">
                     <div class="card-icon">🎈</div><div>বেলুন গেম</div>
                 </div>
-                <div onclick="window.gameFunctions.toggleGame('snake')" class="card" style="border-color: #2ecc71;" tabindex="0">
+                <div onclick="window.gameFunctions.toggleGame('snake')" class="card" style="border-color: #2ecc71;" tabindex="0" role="button">
                     <div class="card-icon">🐍</div><div>সাপের গেম</div>
                 </div>
 
@@ -205,19 +205,19 @@
                     <div class="card-icon">🕹️</div><div>পোকি গেমস</div>
                 </a>
 
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card" style="border-color: #3742fa;" tabindex="0"><div class="card-icon">🐸</div><div>সিসিমপুর</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card" style="border-color: #3742fa;" tabindex="0"><div class="card-icon">🎶</div><div>বাংলা ছড়া</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card" style="border-color: #3742fa;" tabindex="0"><div class="card-icon">💁‍♀️</div><div>মিস মুন</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLZs0gQed9tMQcnKBoXtgJW7mq_LNtfB9g&si=cVHynu3juTfDa0MF')" class="card" style="border-color: #3742fa;" tabindex="0"><div class="card-icon">🐱</div><div>টম এন্ড জেরি</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card" style="border-color: #3742fa;" tabindex="0" role="button"><div class="card-icon">🐸</div><div>সিসিমপুর</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card" style="border-color: #3742fa;" tabindex="0" role="button"><div class="card-icon">🎶</div><div>বাংলা ছড়া</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card" style="border-color: #3742fa;" tabindex="0" role="button"><div class="card-icon">💁‍♀️</div><div>মিস মুন</div></div>
+                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLZs0gQed9tMQcnKBoXtgJW7mq_LNtfB9g&si=cVHynu3juTfDa0MF')" class="card" style="border-color: #3742fa;" tabindex="0" role="button"><div class="card-icon">🐱</div><div>টম এন্ড জেরি</div></div>
             </div>
         </div>
 
         <div id="gameContainer">
-            <div class="close-btn" onclick="window.gameFunctions.closeGame()" tabindex="0">✖</div>
+            <div class="close-btn" onclick="window.gameFunctions.closeGame()" tabindex="0" role="button">✖</div>
             <div class="game-area" id="gameArea">
                 <div class="score-board">Score: <span id="score">0</span></div>
                 <div class="timer-board">সময়: <span id="timer">30</span>s</div>
-                <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()" tabindex="0">খেলতে ট্যাপ করো!</button>
+                <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()">খেলতে ট্যাপ করো!</button>
             </div>
             <div class="leaderboard">
                 <h3>🏆 বেলুন মাস্টার (সেরা ৫) 🏆</h3>
@@ -226,8 +226,8 @@
         </div>
 
         <div id="snakeGameContainer">
-            <div class="close-btn" onclick="window.gameFunctions.closeGame()" tabindex="0">✖</div>
-            <div class="pause-btn" id="snakePauseBtn" onclick="window.snakeFunctions.togglePause()" tabindex="0">⏸️</div>
+            <div class="close-btn" onclick="window.gameFunctions.closeGame()" tabindex="0" role="button">✖</div>
+            <div class="pause-btn" id="snakePauseBtn" onclick="window.snakeFunctions.togglePause()" tabindex="0" role="button">⏸️</div>
             
             <div class="game-area" style="height: auto; background: #fff; border-color: #2ecc71;">
                 <div class="score-board" style="position: relative; top: 0; left: 0; border-radius: 0; background: #f0f0f0; text-align: center; width: 100%; box-sizing: border-box;">Score: <span id="snakeScore">0</span></div>
@@ -242,7 +242,7 @@
                     <button class="d-btn btn-right" onpointerdown="window.snakeFunctions.handleInput(event, 'RIGHT')">➡️</button>
                     <button class="d-btn btn-down" onpointerdown="window.snakeFunctions.handleInput(event, 'DOWN')">⬇️</button>
                 </div>
-                <div id="tv-hint" style="text-align:center; display:none; font-size: 0.9rem; color: #666; margin-top:5px;">রিমোটের অ্যারো বাটন ব্যবহার করো</div>
+                <div id="tv-controls-hint" style="display:none; text-align:center; padding:5px; color:#555; font-weight:bold;">রিমোটের অ্যারো বাটন ব্যবহার করো</div>
             </div>
             <div class="leaderboard" style="border-color: #2ecc71;">
                 <h3>🐍 স্ন্যাক চ্যাম্পিয়ন (সেরা ৫) 🐍</h3>
@@ -280,24 +280,36 @@
         const provider = new GoogleAuthProvider();
 
         let currentUser = null;
-        
-        // --- TV DETECTION LOGIC ---
-        function isTV() {
-            const ua = navigator.userAgent.toLowerCase();
-            return ua.includes('tv') || ua.includes('smart') || ua.includes('android tv') || window.innerWidth > 900; 
-            // Simple check: User Agent has TV OR screen is very wide (likely landscape TV)
-        }
+        let isTV = false;
 
-        // Apply TV specific tweaks
-        if (isTV()) {
-            document.getElementById('balloonCard').classList.add('tv-hidden');
-            document.getElementById('tv-hint').style.display = 'block';
+        // --- DETECT TV ---
+        function detectTV() {
+            const ua = navigator.userAgent.toLowerCase();
+            if(ua.includes('tv') || ua.includes('smart') || ua.includes('android tv') || window.innerWidth > 900) {
+                isTV = true;
+                // Hide Balloon Game on TV
+                const bCard = document.getElementById('balloon-card');
+                if(bCard) bCard.style.display = 'none';
+                // Show Snake Hint
+                document.getElementById('tv-controls-hint').style.display = 'block';
+            }
         }
+        detectTV();
 
         if (localStorage.getItem('isVerifiedUser') === 'true') {
             document.getElementById('loading-message').style.display = 'none';
             document.getElementById('content-wrapper').style.display = 'block';
+            adjustScrollPadding(); 
         }
+
+        function adjustScrollPadding() {
+            const headerHeight = document.getElementById('sticky-top-container').offsetHeight;
+            // Set minimal padding for TV if JS fails, but try to be accurate
+            document.getElementById('scrollable-body').style.paddingTop = (headerHeight + 20) + 'px';
+        }
+        window.addEventListener('resize', adjustScrollPadding);
+        // Force check shortly after load
+        setTimeout(adjustScrollPadding, 1000);
 
         // AUTHENTICATION LOGIC
         onAuthStateChanged(auth, (user) => {
@@ -307,6 +319,8 @@
                 
                 document.getElementById('loading-message').style.display = 'none';
                 document.getElementById('content-wrapper').style.display = 'block';
+                
+                setTimeout(adjustScrollPadding, 500); 
                 
                 loadLeaderboard("scores", "onlineLeaderboard");
                 loadLeaderboard("snake_scores", "snakeLeaderboard");
@@ -330,17 +344,46 @@
             });
         }
 
+        // ================= KEYBOARD & REMOTE HANDLING =================
+        // This is the magic part for TV Remote
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            const code = e.keyCode;
+
+            // 1. Handle ENTER key on focused Elements
+            if (key === 'Enter' || code === 13) {
+                const active = document.activeElement;
+                if (active && (active.getAttribute('role') === 'button' || active.classList.contains('card'))) {
+                    active.click();
+                }
+            }
+            
+            // 2. Handle BACK key (Escape or TV Back)
+            if (key === 'Escape' || key === 'Back' || code === 27 || code === 10009) {
+                if (document.getElementById('gameContainer').style.display === 'block' || 
+                    document.getElementById('snakeGameContainer').style.display === 'block') {
+                    window.gameFunctions.closeGame();
+                }
+            }
+
+            // 3. Handle Snake Game Movement with Remote
+            if (document.getElementById('snakeGameContainer').style.display === 'block') {
+                if (key === 'ArrowUp') window.snakeFunctions.handleInput(e, 'UP');
+                if (key === 'ArrowDown') window.snakeFunctions.handleInput(e, 'DOWN');
+                if (key === 'ArrowLeft') window.snakeFunctions.handleInput(e, 'LEFT');
+                if (key === 'ArrowRight') window.snakeFunctions.handleInput(e, 'RIGHT');
+            }
+        });
+
         // ================= GLOBAL GAME UTILS =================
         const gameOverSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/gameover.mp3');
-        let snakeIsRunning = false;
 
         window.gameFunctions = {
             toggleGame: (type) => {
                 const targetId = type === 'balloon' ? 'gameContainer' : 'snakeGameContainer';
                 const otherId = type === 'balloon' ? 'snakeGameContainer' : 'gameContainer';
                 
-                // Keep sticky top visible on TV/Mobile for context, or hide? 
-                // Currently hiding to give full screen focus
+                // Keep sticky visible
                 document.getElementById('sticky-top-container').style.display = 'none';
                 document.getElementById('scrollable-body').style.display = 'none';
 
@@ -349,13 +392,12 @@
 
                 const el = document.getElementById(targetId);
                 el.style.display = 'block';
-                
-                // Auto-focus the start button for remote users
                 if(type === 'snake') {
                     window.snakeFunctions.initCanvas();
+                    // Auto Focus Start Button for Remote
                     setTimeout(() => document.getElementById('snakeStartBtn').focus(), 100);
                 } else {
-                    setTimeout(() => document.getElementById('mainStartBtn').focus(), 100);
+                     setTimeout(() => document.getElementById('mainStartBtn').focus(), 100);
                 }
             },
             closeGame: () => {
@@ -364,14 +406,13 @@
                 
                 document.getElementById('sticky-top-container').style.display = 'block';
                 document.getElementById('scrollable-body').style.display = 'block';
+                adjustScrollPadding();
 
                 window.gameFunctions.stopAllGames();
                 
-                // Return focus to first card
-                setTimeout(() => {
-                    const firstCard = document.querySelector('.card:not(.tv-hidden)');
-                    if(firstCard) firstCard.focus();
-                }, 100);
+                // Return focus to grid
+                const cards = document.querySelectorAll('.card');
+                if(cards.length > 0) cards[0].focus();
             },
             stopAllGames: () => {
                 // Stop Balloon
@@ -381,15 +422,16 @@
                 document.getElementById('mainStartBtn').style.display = 'block';
                 
                 // Stop Snake
-                snakeIsRunning = false;
                 clearInterval(snakeLoop);
                 document.getElementById('snakeStartBtn').style.display = 'block';
-                document.getElementById('snakeControls').style.display = 'none';
+                if(!isTV) document.getElementById('snakeControls').style.display = 'none';
                 document.getElementById('snakePauseBtn').style.display = 'none';
             },
             playVideo: (url) => { 
                 document.getElementById('videoPlayer').src = url + "&autoplay=1";
                 window.scrollTo({top: 0, behavior: 'smooth'});
+                // Focus iframe for pause/play if supported
+                setTimeout(() => document.getElementById('videoPlayer').focus(), 500);
             },
             startGame: () => {
                 if(gameRunning) return;
@@ -407,41 +449,9 @@
             },
             closeModal: () => { 
                 document.getElementById('gameOverModal').style.display = 'none';
-                window.gameFunctions.stopAllGames();
-                // Return focus to start button
-                const activeContainer = document.getElementById('snakeGameContainer').style.display === 'block' ? 'snakeStartBtn' : 'mainStartBtn';
-                setTimeout(() => document.getElementById(activeContainer).focus(), 100);
+                window.gameFunctions.closeGame(); // Return to main menu
             }
         };
-
-        // ================= REMOTE CONTROL / KEYBOARD LISTENER =================
-        document.addEventListener('keydown', (e) => {
-            // HANDLE SNAKE MOVEMENT (Only if Snake is running)
-            if (snakeIsRunning && !isPaused) {
-                switch(e.key) {
-                    case 'ArrowUp': window.snakeFunctions.handleInput(e, 'UP'); break;
-                    case 'ArrowDown': window.snakeFunctions.handleInput(e, 'DOWN'); break;
-                    case 'ArrowLeft': window.snakeFunctions.handleInput(e, 'LEFT'); break;
-                    case 'ArrowRight': window.snakeFunctions.handleInput(e, 'RIGHT'); break;
-                }
-            }
-
-            // HANDLE REMOTE 'OK' / 'ENTER'
-            // Some browsers don't automatically trigger 'click' on div elements when Enter is pressed
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                const active = document.activeElement;
-                if (active && (active.classList.contains('card') || active.classList.contains('close-btn') || active.classList.contains('pause-btn'))) {
-                    active.click();
-                }
-            }
-
-            // HANDLE BACK BUTTON (Escape/Back) to close game
-            if (e.key === 'Escape' || e.key === 'Back') {
-                 if (document.getElementById('gameContainer').style.display === 'block' || document.getElementById('snakeGameContainer').style.display === 'block') {
-                     window.gameFunctions.closeGame();
-                 }
-            }
-        });
 
         // ================= BALLOON LOGIC =================
         let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
@@ -487,7 +497,7 @@
 
             const popAction = (e) => {
                 if(!gameRunning) return;
-                // e.preventDefault(); // Removed to allow click propagation on some devices
+                e.preventDefault(); 
                 score += type.p;
                 document.getElementById('score').innerText = score;
                 popSound.cloneNode().play();
@@ -519,10 +529,10 @@
             gameRunning = false;
             gameOverSound.play();
             saveScore(score, "scores", "সময় শেষ! 🎉");
-            setTimeout(() => document.querySelector('.modal-btn').focus(), 500); // Focus Play Again
+            setTimeout(() => document.querySelector('.modal-btn').focus(), 100);
         }
 
-        // ================= SNAKE LOGIC (OPTIMIZED & TV READY) =================
+        // ================= SNAKE LOGIC =================
         const canvas = document.getElementById("snakeCanvas");
         const ctx = canvas.getContext("2d");
         let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
@@ -545,11 +555,10 @@
                 dir = "RIGHT";
                 inputQueue = []; 
                 isPaused = false;
-                snakeIsRunning = true;
                 
                 document.getElementById('snakeScore').innerText = 0;
                 document.getElementById('snakeStartBtn').style.display = 'none';
-                document.getElementById('snakeControls').style.display = isTV() ? 'none' : 'grid'; // Hide controls on TV
+                if(!isTV) document.getElementById('snakeControls').style.display = 'grid'; 
                 
                 const pBtn = document.getElementById('snakePauseBtn');
                 pBtn.style.display = 'flex';
@@ -558,6 +567,7 @@
                 spawnFrog();
                 if(snakeLoop) clearInterval(snakeLoop);
                 
+                // Speed maintained at 330ms
                 snakeLoop = setInterval(drawSnake, 330); 
             },
             togglePause: () => {
@@ -565,7 +575,11 @@
                 document.getElementById('snakePauseBtn').innerText = isPaused ? "▶️" : "⏸️";
             },
             handleInput: (e, newDir) => {
-                // if(e.cancelable) e.preventDefault(); // Prevent scrolling on TV
+                // TV Remote Scrolling prevention
+                if(e.type === 'keydown' && (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key))) {
+                     e.preventDefault();
+                }
+
                 if(isPaused) return;
 
                 const lastPlannedDir = inputQueue.length > 0 ? inputQueue[inputQueue.length - 1] : dir;
@@ -663,9 +677,8 @@
             if(collision(newHead, snake)) {
                 clearInterval(snakeLoop);
                 gameOverSound.play();
-                snakeIsRunning = false;
                 saveScore(sScore, "snake_scores", "সাপ নিজের গায়ে কামড় দিয়েছে!");
-                setTimeout(() => document.querySelector('.modal-btn').focus(), 500);
+                setTimeout(() => document.querySelector('.modal-btn').focus(), 100);
                 return;
             }
             snake.unshift(newHead);
