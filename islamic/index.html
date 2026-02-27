@@ -1,135 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Islamic</title>
+    <title>Islamic - Compass & Ramadan 2026</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            background-color: #f4f4f4;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; box-sizing: border-box; background-color: #f4f4f4; }
 
-        .compass-container {
-            margin-top: 20px;
-            position: relative;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: auto;
-            margin-right: auto;
-        }
+        /* Compass Style */
+        .compass-container { margin-top: 20px; position: relative; width: 200px; height: 200px; border-radius: 50%; background-color: #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; margin-left: auto; margin-right: auto; }
+        .compass-needle { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 60px solid red; position: absolute; top: 50%; left: 50%; transform-origin: 50% 50%; transform: translate(-50%, -100%); z-index: 1; }
+        .qibla-indicator { position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; transform: translate(-50%, -50%); background-image: url('kaaba_icon.png'); background-size: contain; background-repeat: no-repeat; background-position: center; }
+        .error-message { margin-top: 10px; color: red; text-align: center; }
 
-        .compass-needle {
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 60px solid red;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: 50% 50%;
-            transform: translate(-50%, -100%);
-            z-index: 1;
-        }
+        /* Ramadan Widget Style */
+        #ramadan-widget { width: 92%; margin: 20px auto; background: linear-gradient(135deg, #004422, #006633); color: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative; box-sizing: border-box;}
+        #live-clock { position: absolute; top: 10px; right: 15px; font-size: 11px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 20px; font-family: monospace; }
+        .district-select { margin-bottom: 10px; padding: 6px; border-radius: 5px; width: 150px; cursor: pointer; border: none; font-weight: bold; background: #fff; margin-top: 10px; }
+        #countdown-container { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        #timer-label { font-size: 13px; opacity: 0.9; }
+        #timer-clock { font-size: 28px; font-weight: bold; color: #ffeb3b; margin: 2px 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .timer-row { display: flex; justify-content: space-around; margin-top: 10px; font-weight: bold; }
+        .time-box { display: flex; flex-direction: column; background: rgba(255,255,255,0.15); padding: 8px; border-radius: 10px; min-width: 85px; }
+        .time-label { font-size: 10px; opacity: 0.9; margin-bottom: 3px; }
+        .time-val { font-size: 16px; }
+        .view-btn { margin-top: 15px; font-size: 13px; text-decoration: underline; cursor: pointer; color: #fff; display: block; opacity: 0.8; }
+        
+        /* Modal Style */
+        #calendar-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        .modal-content { background: #fff; margin: 5% auto; padding: 15px; width: 95%; border-radius: 10px; color: #333; position: relative; box-sizing: border-box; }
+        .close-btn { position: absolute; right: 15px; top: 10px; font-size: 30px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+        th, td { border: 1px solid #ddd; padding: 6px 1px; text-align: center; }
+        th { background-color: #004422; color: white; position: sticky; top: 0; }
+        .today-highlight { background-color: #ffeb3b !important; font-weight: bold; }
 
-        .qibla-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 40px;
-            height: 40px;
-            transform: translate(-50%, -50%);
-            background-image: url('kaaba_icon.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .error-message {
-            margin-top: 10px;
-            color: red;
-            text-align: center;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            width: 90%;
-            margin: 20px auto 0;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        /* Banner Style for Hanafi Fiqh */
-        .banner-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0 15px 0;
-        }
-        .banner-container a {
-            width: 80%;
-            display: block;
-            text-decoration: none;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-        .banner-container a:hover {
-            transform: scale(1.02);
-        }
-        .banner-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Button Links Style */
-        .newspaper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        .newspaper a {
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-            padding: 10px;
-            background-color: #003366;
-            border: 1px solid #002244;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #FFFFFF;
-            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            background-image: linear-gradient(135deg, #003366, #002244);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .newspaper a:hover {
-            background-color: #002244;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
-        }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 90%; margin: 20px auto 0; background: #000; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .banner-container { display: flex; justify-content: center; margin: 20px 0 15px 0; }
+        .banner-container a { width: 80%; display: block; text-decoration: none; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+        .banner-container img { width: 100%; height: auto; display: block; }
+        .newspaper { display: flex; justify-content: center; margin-bottom: 15px; }
+        .newspaper a { display: inline-block; width: 80%; text-align: center; padding: 10px; background-color: #003366; border-radius: 10px; text-decoration: none; font-size: 18px; color: #FFFFFF; background-image: linear-gradient(135deg, #003366, #002244); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body>
@@ -138,111 +51,176 @@
     <div class="compass-needle" id="needle"></div>
     <div class="qibla-indicator"></div>
 </div>
-
 <div class="error-message" id="error" style="display: none;"></div>
 
-<div class="video-container">
-    <iframe 
-        src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-    </iframe>
+<div id="ramadan-widget">
+    <div id="live-clock">00:00:00</div>
+    <select id="district-picker" class="district-select" onchange="updateView()">
+        <option value="dhaka">ঢাকা জেলা</option>
+        <option value="barishal">বরিশাল জেলা</option>
+        <option value="patuakhali">পটুয়াখালী জেলা</option>
+    </select>
+    <div id="display-date" style="font-size: 14px; margin-bottom: 8px; font-weight: bold;">লোড হচ্ছে...</div>
+    <div id="countdown-container">
+        <div id="timer-label">বাকি সময়</div>
+        <div id="timer-clock">00:00:00</div>
+    </div>
+    <div class="timer-row">
+        <div class="time-box"><span class="time-label">সেহরী শেষ</span><span id="today-sehri" class="time-val">--:--</span></div>
+        <div class="time-box"><span class="time-label">ফজর আজান</span><span id="today-fajr" class="time-val">--:--</span></div>
+        <div class="time-box"><span class="time-label">ইফতার</span><span id="today-iftar" class="time-val">--:--</span></div>
+    </div>
+    <span class="view-btn" onclick="showCalendar()">পুরো মাসের ক্যালেন্ডার</span>
 </div>
 
-<p></p>
+<audio id="sehri-pre-timer" src="sehritimer.mp3" preload="auto"></audio>
+<audio id="sehri-siren" src="sehrisiren.mp3" preload="auto"></audio>
+<audio id="iftar-sound" src="iftar.mp3" preload="auto"></audio>
+
+<div class="video-container">
+    <iframe src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 
 <div class="banner-container">
-    <a href="https://hanafifiqh.net/">
-        <img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh">
-    </a>
+    <a href="https://hanafifiqh.net/"><img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh"></a>
 </div>
 
-<div class="newspaper">
-    <a href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w&feature=shared">Al Quran</a>
-</div>
+<div class="newspaper"><a href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w">Al Quran</a></div>
+<div class="newspaper"><a href="https://youtube.com/@baseeramedia/videos">Baseera</a></div>
+<div class="newspaper"><a href="https://youtube.com/@sheikhahmadullahofficial/videos">Ahmadullah</a></div>
+<div class="newspaper"><a href="https://youtube.com/@drmizanurrahmanazharichannel/videos">Mizanur Rahman Azhari</a></div>
+<div class="newspaper"><a href="https://youtube.com/@tawhaatv/videos">Abu Tawha Adnan</a></div>
+<div class="newspaper"><a href="https://youtube.com/@ridjaalahmedofficial/videos">Ridjaal Ahmed</a></div>
 
-<div class="newspaper">
-    <a href="https://youtube.com/@baseeramedia/videos">Baseera</a>
-</div>
-
-<div class="newspaper">
-    <a href="https://youtube.com/@sheikhahmadullahofficial/videos">Ahmadullah</a>
-</div>
-
-<div class="newspaper">
-    <a href="https://youtube.com/@drmizanurrahmanazharichannel/videos">Mizanur Rahman Azhari</a>
-</div>
-
-<div class="newspaper">
-    <a href="https://youtube.com/@tawhaatv/videos">Abu Tawha Adnan</a>
-</div>
-
-<div class="newspaper">
-    <a href="https://youtube.com/@ridjaalahmedofficial/videos">Ridjaal Ahmed</a>
+<div id="calendar-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeCalendar()">&times;</span>
+        <h3 style="text-align: center; margin: 0;">রমাদান ক্যালেন্ডার ২০২৬</h3>
+        <div id="calendar-table-container"></div>
+    </div>
 </div>
 
 <script>
+/* ---------------- Ramadan Data & Logic ---------------- */
+const ramadanData = {
+    dhaka: [{r:1, d:"11 Feb", bn:"২৮ মাঘ", s:"5:12", f:"5:15", i:"5:58"},{r:2, d:"12 Feb", bn:"২৯ মাঘ", s:"5:11", f:"5:14", i:"5:58"},{r:3, d:"13 Feb", bn:"৩০ মাঘ", s:"5:11", f:"5:14", i:"5:59"},{r:4, d:"14 Feb", bn:"১ ফাল্গুন", s:"5:10", f:"5:13", i:"5:59"},{r:5, d:"15 Feb", bn:"২ ফাল্গুন", s:"5:09", f:"5:12", i:"6:00"},{r:6, d:"16 Feb", bn:"৩ ফাল্গুন", s:"5:08", f:"5:11", i:"6:00"},{r:7, d:"17 Feb", bn:"৪ ফাল্গুন", s:"5:08", f:"5:11", i:"6:01"},{r:8, d:"18 Feb", bn:"৫ ফাল্গুন", s:"5:07", f:"5:10", i:"6:01"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:06", f:"5:09", i:"6:02"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:05", f:"5:08", i:"6:02"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:05", f:"5:08", i:"6:03"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:04", f:"5:07", i:"6:03"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:03", f:"5:06", i:"6:04"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:02", f:"5:05", i:"6:04"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"5:00", f:"5:03", i:"6:05"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:06"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:00", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:57", f:"4:59", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:56", f:"4:58", i:"6:07"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:55", f:"4:57", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:54", f:"4:57", i:"6:08"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:53", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"৩০ ফাল্গুন", s:"4:52", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"১ চৈত্র", s:"4:51", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"২ চৈত্র", s:"4:50", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"৩ চৈত্র", s:"4:49", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"৪ চৈত্র", s:"4:48", f:"4:50", i:"6:11"},{r:30, d:"20 Mar", bn:"৫ চৈত্র", s:"4:47", f:"4:49", i:"6:11"}],
+    barishal: [{r:1, d:"11 Feb", bn:"২৮ মাঘ", s:"5:11", f:"5:15", i:"5:59"},{r:2, d:"12 Feb", bn:"২৯ মাঘ", s:"5:10", f:"5:14", i:"5:59"},{r:3, d:"13 Feb", bn:"৩০ মাঘ", s:"5:09", f:"5:13", i:"6:00"},{r:4, d:"14 Feb", bn:"১ ফাল্গুন", s:"5:09", f:"5:13", i:"6:00"},{r:5, d:"15 Feb", bn:"২ ফাল্গুন", s:"5:08", f:"5:12", i:"6:01"},{r:6, d:"16 Feb", bn:"৩ ফাল্গুন", s:"5:07", f:"5:11", i:"6:01"},{r:7, d:"17 Feb", bn:"৪ ফাল্গুন", s:"5:07", f:"5:10", i:"6:02"},{r:8, d:"18 Feb", bn:"৫ ফাল্গুন", s:"5:06", f:"5:10", i:"6:02"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:05", f:"5:09", i:"6:03"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:04", f:"5:08", i:"6:03"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:04", f:"5:07", i:"6:03"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:03", f:"5:07", i:"6:03"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:02", f:"5:06", i:"6:04"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:01", f:"5:05", i:"6:05"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:00", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"4:59", f:"5:03", i:"6:06"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:07"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:01", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:56", f:"5:00", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:55", f:"4:59", i:"6:08"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:54", f:"4:58", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:53", f:"4:57", i:"6:09"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:52", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"৩০ ফাল্গুন", s:"4:51", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"১ চৈত্র", s:"4:50", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"২ চৈত্র", s:"4:49", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"৩ চৈত্র", s:"4:48", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"৪ চৈত্র", s:"4:47", f:"4:51", i:"6:11"},{r:30, d:"20 Mar", bn:"৫ চৈত্র", s:"4:46", f:"4:50", i:"6:11"}],
+    patuakhali: [{r:1, d:"11 Feb", bn:"২৮ মাঘ", s:"5:11", f:"5:14", i:"5:59"},{r:2, d:"12 Feb", bn:"২৯ মাঘ", s:"5:10", f:"5:13", i:"6:00"},{r:3, d:"13 Feb", bn:"৩০ মাঘ", s:"5:10", f:"5:13", i:"6:00"},{r:4, d:"14 Feb", bn:"১ ফাল্গুন", s:"5:09", f:"5:12", i:"6:01"},{r:5, d:"15 Feb", bn:"২ ফাল্গুন", s:"5:08", f:"5:11", i:"6:01"},{r:6, d:"16 Feb", bn:"৩ ফাল্গুন", s:"5:08", f:"5:11", i:"6:02"},{r:7, d:"17 Feb", bn:"৪ ফাল্গুন", s:"5:07", f:"5:10", i:"6:02"},{r:8, d:"18 Feb", bn:"৫ ফাল্গুন", s:"5:06", f:"5:09", i:"6:03"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:05", f:"5:09", i:"6:03"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:05", f:"5:08", i:"6:03"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:04", f:"5:07", i:"6:04"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:03", f:"5:06", i:"6:04"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:02", f:"5:05", i:"6:05"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"5:00", f:"5:03", i:"6:06"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:07"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:00", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:56", f:"5:00", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:55", f:"4:59", i:"6:08"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:54", f:"4:58", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:53", f:"4:57", i:"6:08"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:53", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"৩০ ফাল্গুন", s:"4:52", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"১ চৈত্র", s:"4:51", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"২ চৈত্র", s:"4:50", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"৩ চৈত্র", s:"4:49", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"৪ চৈত্র", s:"4:48", f:"4:51", i:"6:11"},{r:30, d:"20 Mar", bn:"৫ চৈত্র", s:"4:47", f:"4:50", i:"6:11"}]
+};
+
+let ramadanInterval;
+let isPreSehriPlayed = false;
+let isSirenPlayed = false;
+let isIftarPlayed = false;
+
+const preSehriAudio = document.getElementById('sehri-pre-timer');
+const sirenAudio = document.getElementById('sehri-siren');
+const iftarAudio = document.getElementById('iftar-sound');
+
+function updateView() {
+    const district = document.getElementById('district-picker').value;
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.toLocaleString('en-GB', { month: 'short' });
+    const todayStr = `${day} ${month}`;
+
+    let todayData = ramadanData[district].find(item => item.d === todayStr) || ramadanData[district][8];
+    
+    document.getElementById('today-sehri').innerText = todayData.s;
+    document.getElementById('today-fajr').innerText = todayData.f;
+    document.getElementById('today-iftar').innerText = todayData.i;
+    document.getElementById('display-date').innerText = `${todayData.r} রমজান | ${todayData.d} | ${todayData.bn}`;
+
+    startRamadanLogic(todayData.s, todayData.i);
+}
+
+function startRamadanLogic(sehri, iftar) {
+    if (ramadanInterval) clearInterval(ramadanInterval);
+    ramadanInterval = setInterval(() => {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-GB');
+        const sTime = new Date(); sTime.setHours(sehri.split(':')[0], sehri.split(':')[1], 0);
+        const iTime = new Date(); iTime.setHours(parseInt(iftar.split(':')[0]) + 12, iftar.split(':')[1], 0);
+
+        let target, label;
+        if (now < sTime) { target = sTime; label = "সেহরীর বাকি"; }
+        else if (now < iTime) { target = iTime; label = "ইফতারের বাকি"; }
+        else { label = "ইফতার সম্পন্ন"; document.getElementById('timer-clock').innerText = "00:00:00"; return; }
+
+        const diff = target - now;
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('timer-label').innerText = label;
+        document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        // --- সাউন্ড কন্ট্রোল লজিক ---
+
+        // ১. সেহরীর ১ মিনিট (৬০ সেকেন্ড) আগে টাইমার শুরু
+        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 1000 && !isPreSehriPlayed) {
+            preSehriAudio.play().catch(e => console.log("Interaction needed for audio"));
+            isPreSehriPlayed = true;
+        }
+
+        // ২. সেহরী শেষ হওয়ার সাথে সাথে টাইমার বন্ধ এবং সাইরেন শুরু
+        if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
+            preSehriAudio.pause(); // টাইমার বন্ধ
+            preSehriAudio.currentTime = 0; 
+            sirenAudio.play().catch(e => console.log("Audio play error"));
+            isSirenPlayed = true;
+        }
+
+        // ৩. ইফতারের সময়
+        if (label === "ইফতারের বাকি" && diff <= 1000 && !isIftarPlayed) {
+            iftarAudio.play().catch(e => console.log("Audio play error"));
+            isIftarPlayed = true;
+        }
+
+        // নতুন দিন ফ্ল্যাগ রিসেট
+        if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+            isPreSehriPlayed = isSirenPlayed = isIftarPlayed = false;
+        }
+    }, 1000);
+}
+
+function showCalendar() {
+    const district = document.getElementById('district-picker').value;
+    const now = new Date(); const todayStr = `${now.getDate()} ${now.toLocaleString('en-GB', { month: 'short' })}`;
+    let table = `<table><tr><th>রমজান</th><th>ইংলিশ</th><th>বাংলা</th><th>সেহরী</th><th>ফজর</th><th>ইফতার</th></tr>`;
+    ramadanData[district].forEach(d => {
+        const isToday = (d.d === todayStr) ? 'class="today-highlight"' : '';
+        table += `<tr ${isToday}><td>${d.r}</td><td>${d.d}</td><td>${d.bn}</td><td>${d.s}</td><td>${d.f}</td><td>${d.i}</td></tr>`;
+    });
+    table += `</table>`;
+    document.getElementById('calendar-table-container').innerHTML = table;
+    document.getElementById('calendar-modal').style.display = 'block';
+}
+function closeCalendar() { document.getElementById('calendar-modal').style.display = 'none'; }
+
+/* ---------------- Compass Logic ---------------- */
 const needle = document.getElementById('needle');
 const errorDiv = document.getElementById('error');
-const qiblaLat = 21.4225;
-const qiblaLng = 39.8262;
-
-function getQiblaAngle(latitude, longitude) {
-    const phiK = toRadians(qiblaLat);
-    const lambdaK = toRadians(qiblaLng);
-    const phi = toRadians(latitude);
-    const lambda = toRadians(longitude);
-    const deltaLambda = lambdaK - lambda;
-
-    const y = Math.sin(deltaLambda) * Math.cos(phiK);
-    const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(deltaLambda);
-    let angle = Math.atan2(y, x);
-    return toDegrees(angle);
-}
-
-function toRadians(degrees) {
-    return degrees * Math.PI / 180;
-}
-function toDegrees(radians) {
-    return radians * 180 / Math.PI;
-}
+const qiblaLat = 21.4225, qiblaLng = 39.8262;
+let latitude, longitude;
 
 function updateCompass(heading) {
-    const qiblaAngle = getQiblaAngle(latitude, longitude);
-    const rotation = heading + qiblaAngle;
-    needle.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
+    if(!latitude) return;
+    const phiK = qiblaLat * Math.PI / 180, lambdaK = qiblaLng * Math.PI / 180;
+    const phi = latitude * Math.PI / 180, lambda = longitude * Math.PI / 180;
+    const y = Math.sin(lambdaK - lambda) * Math.cos(phiK);
+    const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(lambdaK - lambda);
+    const qiblaAngle = Math.atan2(y, x) * 180 / Math.PI;
+    needle.style.transform = `translate(-50%, -100%) rotate(${heading + qiblaAngle}deg)`;
 }
-
-let latitude, longitude;
 
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-
-        if ('ondeviceorientationabsolute' in window) {
-            window.addEventListener('deviceorientationabsolute', e => {
-                if (e.alpha !== null) updateCompass(360 - e.alpha);
-            });
-        } else if ('ondeviceorientation' in window) {
-            window.addEventListener('deviceorientation', e => {
-                if (e.webkitCompassHeading) updateCompass(e.webkitCompassHeading);
-                else if (e.alpha !== null) updateCompass(360 - e.alpha);
-            });
-        } else {
-            errorDiv.textContent = 'আপনার ডিভাইস কম্পাস সেন্সর সমর্থন করে না।';
-            errorDiv.style.display = 'block';
-        }
-
-    }, err => {
-        errorDiv.textContent = 'অবস্থান নির্ণয় করতে সমস্যা হয়েছে: ' + err.message;
-        errorDiv.style.display = 'block';
-    });
-} else {
-    errorDiv.textContent = 'আপনার ব্রাউজার জিওলোকেশন সমর্থন করে না।';
-    errorDiv.style.display = 'block';
+        latitude = position.coords.latitude; longitude = position.coords.longitude;
+        window.addEventListener('deviceorientationabsolute', e => { if (e.alpha !== null) updateCompass(360 - e.alpha); }, true);
+    }, err => { errorDiv.style.display = 'block'; errorDiv.textContent = "Location Error: " + err.message; });
 }
-</script>
 
+updateView();
+</script>
 </body>
 </html>
