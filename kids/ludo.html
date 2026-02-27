@@ -3,184 +3,1169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>কিডস ফান জোন - টিভি ভার্সন</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&display=swap" rel="stylesheet">
+    <title>Islamic Page</title>
+
     <style>
-        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; }
-        
-        body { 
-            font-family: 'Baloo Da 2', sans-serif; 
-            margin: 0; padding: 0; 
-            background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);
-            color: #2F2F2F;
+        /* Base Styles & Islamic Theme */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f9f4; /* Soft greenish-white background */
+            color: #333;
         }
 
-        /* হেডার এবং ভিডিও সেকশন - এখন আর স্টিকি নয় */
-        header { background: #FF9A9E; padding: 15px; text-align: center; }
-        h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
-
-        .video-section {
-            background: #fff;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
             padding: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .tv-frame { 
-            background: #333; 
-            padding: 10px; 
-            border-radius: 15px; 
-            max-width: 800px; 
-            margin: 0 auto; 
-        }
-
-        .video-wrapper { 
-            position: relative; 
-            padding-bottom: 56.25%; 
-            height: 0; 
-            overflow: hidden; 
-            border-radius: 8px; 
-        }
-
-        .video-wrapper iframe { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; 
-        }
-
-        /* গেম এবং মেনু গ্রিড */
-        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
-
-        .card-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 20px; 
-            padding-bottom: 50px;
-        }
-
-        @media (min-width: 768px) {
-            .card-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        /* রিমোট ফ্রেন্ডলি কার্ড */
-        .card { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 20px 10px; 
-            text-align: center; 
-            text-decoration: none; 
-            color: #333; 
-            border: 4px solid transparent; /* ডিফল্ট বর্ডার খালি */
-            transition: all 0.2s ease;
-            cursor: pointer;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        /* Compass Section */
+        .compass-container {
+            margin-top: 20px;
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(10, 92, 54, 0.2);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            border: 4px solid #0A5C36; /* Islamic Green */
+        }
+
+        .compass-needle {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 60px solid #D4AF37; /* Gold */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 50% 50%;
+            transform: translate(-50%, -100%);
+            z-index: 1;
+            transition: transform 0.2s ease-out;
+        }
+
+        .qibla-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 45px;
+            height: 45px;
+            transform: translate(-50%, -50%);
+            background-image: url('kaaba_icon.png'); /* Ensure you have this image */
+            background-color: #0A5C36;
+            border-radius: 50%;
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        .error-message {
+            margin-top: 10px;
+            color: #d32f2f;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Date Section */
+        .date-section {
+            background: linear-gradient(135deg, #0A5C36, #063d23);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin: 25px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            width: 85%;
+            border-bottom: 3px solid #D4AF37;
+        }
+        .date-section p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .date-arabic {
+            font-size: 20px !important;
+            font-weight: bold;
+            color: #F1C40F;
+        }
+
+        /* Ramadan Section */
+        .ramadan-container {
+            display: none; /* Hidden by default, shown via JS during Ramadan */
+            background-color: #fff;
+            margin: 20px auto;
+            width: 85%;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(10, 92, 54, 0.15);
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #D4AF37;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .ramadan-container:hover {
+            transform: scale(1.02);
+        }
+        .ramadan-header {
+            color: #0A5C36;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .district-select {
+            padding: 8px;
+            font-size: 15px;
+            border-radius: 5px;
+            border: 1px solid #0A5C36;
+            margin-bottom: 15px;
+            width: 80%;
             outline: none;
+            background-color: #f4f9f4;
+        }
+        .countdown-box {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 10px 0;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #555;
+            padding: 0 10px;
+        }
+        .click-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
         }
 
-        /* রিমোট ফোকাস স্টাইল - খুবই গুরুত্বপূর্ণ */
-        .card:focus {
-            border-color: #FFD700 !important; /* উজ্জ্বল হলুদ বর্ডার */
-            transform: scale(1.1); /* সাইজ একটু বাড়বে */
-            background-color: #fffde7;
-            box-shadow: 0 0 20px #FFD700;
-            z-index: 10;
-        }
-
-        .card-icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .card-title { font-weight: bold; font-size: 1.2rem; }
-
-        /* গেম কন্টেইনার ফিক্স */
-        #gameContainer, #snakeGameContainer {
+        /* Modal for Timetable */
+        .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            z-index: 1000;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
         }
-
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
         .close-btn {
-            position: absolute; top: 20px; right: 20px;
-            background: #ff4757; color: white; padding: 10px 20px;
-            border-radius: 30px; cursor: pointer; font-weight: bold;
-            border: 3px solid transparent;
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
         }
-        .close-btn:focus { border-color: yellow; transform: scale(1.1); }
+        .close-btn:hover { color: red; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+        }
+        th { background-color: #0A5C36; color: white; position: sticky; top: 0;}
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .today-row { background-color: #d1ffd1 !important; font-weight: bold; }
 
+        /* Video Section */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            width: 90%;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 3px solid #0A5C36;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Banner & Links */
+        .banner-container {
+            display: flex;
+            justify-content: center;
+            margin: 25px 0 15px 0;
+        }
+        .banner-container a {
+            width: 85%;
+            display: block;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            border: 2px solid #D4AF37;
+        }
+        .banner-container a:hover { transform: scale(1.02); }
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .newspaper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .newspaper a {
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            padding: 12px;
+            background-image: linear-gradient(135deg, #0A5C36, #063d23);
+            border: 1px solid #D4AF37;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #FFFFFF;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .newspaper a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
+        }
     </style>
 </head>
 <body>
 
-<header><h1>🎈 কিডস ফান জোন! 🎈</h1></header>
+<div class="container">
 
-<div class="video-section">
-    <div class="tv-frame">
-        <div class="video-wrapper">
-            <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE" allowfullscreen></iframe>
+    <div class="compass-container">
+        <div class="compass-needle" id="needle"></div>
+        <div class="qibla-indicator"></div>
+    </div>
+    <div class="error-message" id="error" style="display: none;"></div>
+
+    <div class="date-section">
+        <p class="date-arabic" id="hijri-date">লোড হচ্ছে...</p>
+        <p id="bangla-date">লোড হচ্ছে...</p>
+        <p id="english-date">লোড হচ্ছে...</p>
+    </div>
+
+    <div class="ramadan-container" id="ramadan-section">
+        <div class="ramadan-header">পবিত্র মাহে রমজান ২০২৬</div>
+        
+        <select id="district-select" class="district-select" onclick="event.stopPropagation();">
+            <option value="Dhaka">ঢাকা</option>
+            <option value="Barishal">বরিশাল</option>
+            <option value="Patuakhali">পটুয়াখালী</option>
+            <option value="Chattogram">চট্টগ্রাম</option>
+            <option value="Sylhet">সিলেট</option>
+            <option value="Rajshahi">রাজশাহী</option>
+            <option value="Khulna">খুলনা</option>
+        </select>
+
+        <div id="countdown-title" style="font-weight: bold; color: #0A5C36;">পরবর্তী ওয়াক্ত:</div>
+        <div class="countdown-box" id="countdown-timer">00:00:00</div>
+        
+        <div class="time-info">
+            <span id="today-sehri">সাহরী: --:--</span>
+            <span id="today-iftar">ইফতার: --:--</span>
+        </div>
+        <div class="click-hint">সম্পূর্ণ সময়সূচি দেখতে ক্লিক করুন</div>
+    </div>
+
+    <div id="timetable-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <h3 style="text-align: center; color: #0A5C36;" id="modal-title">রমজানের সময়সূচি</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>রমজান</th>
+                        <th>তারিখ</th>
+                        <th>সাহরী শেষ</th>
+                        <th>ইফতার</th>
+                    </tr>
+                </thead>
+                <tbody id="timetable-body">
+                    </tbody>
+            </table>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <div class="card-grid">
-        <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card" tabindex="0">
-            <div class="card-icon">🐸</div><div class="card-title">সিসিমপুর</div>
-        </div>
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
 
-        <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card" tabindex="0">
-            <div class="card-icon">🎶</div><div class="card-title">বাংলা ছড়া</div>
-        </div>
-
-        <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card" tabindex="0">
-            <div class="card-icon">💁‍♀️</div><div class="card-title">মিস মুন</div>
-        </div>
-
-        <div onclick="playVideo('https://www.youtube.com/embed/videoseries?list=PLZs0gQed9tMQcnKBoXtgJW7mq_LNtfB9g')" class="card" tabindex="0">
-            <div class="card-icon">🐱</div><div class="card-title">টম এন্ড জেরি</div>
-        </div>
-
-        <div onclick="openSnake()" class="card" tabindex="0">
-            <div class="card-icon">🐍</div><div class="card-title">সাপের গেম</div>
-        </div>
-
-        <a href="https://kids.poki.com" target="_blank" class="card" tabindex="0">
-            <div class="card-icon">🕹️</div><div class="card-title">আরো গেমস</div>
+    <div class="banner-container">
+        <a href="https://hanafifiqh.net/">
+            <img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh">
         </a>
     </div>
+
+    <div class="newspaper"><a href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w&feature=shared">Al Quran</a></div>
+    <div class="newspaper"><a href="https://youtube.com/@baseeramedia/videos">Baseera</a></div>
+    <div class="newspaper"><a href="https://youtube.com/@sheikhahmadullahofficial/videos">Ahmadullah</a></div>
+    <div class="newspaper"><a href="https://youtube.com/@drmizanurrahmanazharichannel/videos">Mizanur Rahman Azhari</a></div>
+    <div class="newspaper"><a href="https://youtube.com/@tawhaatv/videos">Abu Tawha Adnan</a></div>
+    <div class="newspaper"><a href="https://youtube.com/@ridjaalahmedofficial/videos">Ridjaal Ahmed</a></div>
+
 </div>
 
 <script>
-    // ভিডিও প্লে করার ফাংশন
-    function playVideo(url) {
-        document.getElementById('videoPlayer').src = url + "?autoplay=1";
-        // ভিডিও প্লে হলে পেজ অটোমেটিক উপরে উঠে যাবে
-        window.scrollTo({top: 0, behavior: 'smooth'});
+/* =========================================
+   COMPASS LOGIC
+   ========================================= */
+const needle = document.getElementById('needle');
+const errorDiv = document.getElementById('error');
+const qiblaLat = 21.4225;
+const qiblaLng = 39.8262;
+
+function getQiblaAngle(latitude, longitude) {
+    const phiK = toRadians(qiblaLat);
+    const lambdaK = toRadians(qiblaLng);
+    const phi = toRadians(latitude);
+    const lambda = toRadians(longitude);
+    const deltaLambda = lambdaK - lambda;
+    const y = Math.sin(deltaLambda) * Math.cos(phiK);
+    const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(deltaLambda);
+    let angle = Math.atan2(y, x);
+    return toDegrees(angle);
+}
+function toRadians(degrees) { return degrees * Math.PI / 180; }
+function toDegrees(radians) { return radians * 180 / Math.PI; }
+function updateCompass(heading) {
+    const qiblaAngle = getQiblaAngle(latitude, longitude);
+    const rotation = heading + qiblaAngle;
+    needle.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
+}
+let latitude, longitude;
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+        if ('ondeviceorientationabsolute' in window) {
+            window.addEventListener('deviceorientationabsolute', e => {
+                if (e.alpha !== null) updateCompass(360 - e.alpha);
+            });
+        } else if ('ondeviceorientation' in window) {
+            window.addEventListener('deviceorientation', e => {
+                if (e.webkitCompassHeading) updateCompass(e.webkitCompassHeading);
+                else if (e.alpha !== null) updateCompass(360 - e.alpha);
+            });
+        } else {
+            errorDiv.textContent = 'আপনার ডিভাইস কম্পাস সেন্সর সমর্থন করে না।';
+            errorDiv.style.display = 'block';
+        }
+    }, err => {
+        errorDiv.textContent = 'অবস্থান নির্ণয় করতে সমস্যা হয়েছে: ' + err.message;
+        errorDiv.style.display = 'block';
+    });
+} else {
+    errorDiv.textContent = 'আপনার ব্রাউজার জিওলোকেশন সমর্থন করে না।';
+    errorDiv.style.display = 'block';
+}
+
+/* =========================================
+   DATE LOGIC
+   ========================================= */
+function updateDates() {
+    const now = new Date();
+    
+    // English Date
+    const engOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('english-date').innerText = now.toLocaleDateString('en-US', engOptions);
+
+    // Bangla Date
+    const bnOptions = { day: 'numeric', month: 'long', year: 'numeric', calendar: 'bengali' };
+    document.getElementById('bangla-date').innerText = now.toLocaleDateString('bn-BD-u-ca-bengali', bnOptions);
+
+    // Hijri Date (Moon based client computation)
+    const hijriOptions = { day: 'numeric', month: 'long', year: 'numeric', calendar: 'islamic' };
+    document.getElementById('hijri-date').innerText = now.toLocaleDateString('bn-BD-u-ca-islamic', hijriOptions);
+}
+updateDates();
+
+/* =========================================
+   RAMADAN COUNTDOWN & TIMETABLE LOGIC
+   ========================================= */
+// 2026 Dhaka Schedule based on Islamic Foundation (Feb 19 - Mar 20)
+const ramadanSchedule2026 = [
+    { day: 1, date: "2026-02-19", sehri: "05:12", iftar: "17:58", bnDate: "১৯ ফেব্রুয়ারি" },
+    { day: 2, date: "2026-02-20", sehri: "05:11", iftar: "17:58", bnDate: "২০ ফেব্রুয়ারি" },
+    { day: 3, date: "2026-02-21", sehri: "05:11", iftar: "17:59", bnDate: "২১ ফেব্রুয়ারি" },
+    { day: 4, date: "2026-02-22", sehri: "05:10", iftar: "17:59", bnDate: "২২ ফেব্রুয়ারি" },
+    { day: 5, date: "2026-02-23", sehri: "05:09", iftar: "18:00", bnDate: "২৩ ফেব্রুয়ারি" },
+    { day: 6, date: "2026-02-24", sehri: "05:08", iftar: "18:00", bnDate: "২৪ ফেব্রুয়ারি" },
+    { day: 7, date: "2026-02-25", sehri: "05:08", iftar: "18:01", bnDate: "২৫ ফেব্রুয়ারি" },
+    { day: 8, date: "2026-02-26", sehri: "05:07", iftar: "18:01", bnDate: "২৬ ফেব্রুয়ারি" },
+    { day: 9, date: "2026-02-27", sehri: "05:06", iftar: "18:02", bnDate: "২৭ ফেব্রুয়ারি" },
+    { day: 10, date: "2026-02-28", sehri: "05:05", iftar: "18:02", bnDate: "২৮ ফেব্রুয়ারি" },
+    { day: 11, date: "2026-03-01", sehri: "05:05", iftar: "18:03", bnDate: "০১ মার্চ" },
+    { day: 12, date: "2026-03-02", sehri: "05:04", iftar: "18:03", bnDate: "০২ মার্চ" },
+    { day: 13, date: "2026-03-03", sehri: "05:03", iftar: "18:04", bnDate: "০৩ মার্চ" },
+    { day: 14, date: "2026-03-04", sehri: "05:02", iftar: "18:04", bnDate: "০৪ মার্চ" },
+    { day: 15, date: "2026-03-05", sehri: "05:01", iftar: "18:05", bnDate: "০৫ মার্চ" },
+    { day: 16, date: "2026-03-06", sehri: "05:00", iftar: "18:05", bnDate: "০৬ মার্চ" },
+    { day: 17, date: "2026-03-07", sehri: "04:59", iftar: "18:06", bnDate: "০৭ মার্চ" },
+    { day: 18, date: "2026-03-08", sehri: "04:58", iftar: "18:06", bnDate: "০৮ মার্চ" },
+    { day: 19, date: "2026-03-09", sehri: "04:57", iftar: "18:07", bnDate: "০৯ মার্চ" },
+    { day: 20, date: "2026-03-10", sehri: "04:57", iftar: "18:07", bnDate: "১০ মার্চ" },
+    { day: 21, date: "2026-03-11", sehri: "04:56", iftar: "18:07", bnDate: "১১ মার্চ" },
+    { day: 22, date: "2026-03-12", sehri: "04:55", iftar: "18:08", bnDate: "১২ মার্চ" },
+    { day: 23, date: "2026-03-13", sehri: "04:54", iftar: "18:08", bnDate: "১৩ মার্চ" },
+    { day: 24, date: "2026-03-14", sehri: "04:53", iftar: "18:09", bnDate: "১৪ মার্চ" },
+    { day: 25, date: "2026-03-15", sehri: "04:52", iftar: "18:09", bnDate: "১৫ মার্চ" },
+    { day: 26, date: "2026-03-16", sehri: "04:51", iftar: "18:10", bnDate: "১৬ মার্চ" },
+    { day: 27, date: "2026-03-17", sehri: "04:50", iftar: "18:10", bnDate: "১৭ মার্চ" },
+    { day: 28, date: "2026-03-18", sehri: "04:49", iftar: "18:10", bnDate: "১৮ মার্চ" },
+    { day: 29, date: "2026-03-19", sehri: "04:48", iftar: "18:11", bnDate: "১৯ মার্চ" },
+    { day: 30, date: "2026-03-20", sehri: "04:47", iftar: "18:11", bnDate: "২০ মার্চ" }
+];
+
+const districtOffsets = {
+    "Dhaka": { sehri: 0, iftar: 0 },
+    "Barishal": { sehri: -1, iftar: 1 },
+    "Patuakhali": { sehri: -1, iftar: 1 },
+    "Chattogram": { sehri: -5, iftar: -5 },
+    "Sylhet": { sehri: -6, iftar: -6 },
+    "Rajshahi": { sehri: 6, iftar: 5 },
+    "Khulna": { sehri: 2, iftar: 2 }
+};
+
+const engToBnNum = (num) => num.toString().replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+
+function parseTimeStr(dateStr, timeStr, offsetMins) {
+    let [hours, minutes] = timeStr.split(':').map(Number);
+    let dt = new Date(`${dateStr}T00:00:00`);
+    dt.setHours(hours);
+    dt.setMinutes(minutes + offsetMins);
+    return dt;
+}
+
+function formatAMPM(date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; 
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return engToBnNum(hours) + ':' + engToBnNum(minutes) + ' ' + (ampm === 'PM' ? 'পিএম' : 'এএম');
+}
+
+function updateRamadanUI() {
+    const now = new Date();
+    const startDate = new Date("2026-02-19T00:00:00");
+    const endDate = new Date("2026-03-21T00:00:00"); // Day after last iftar
+
+    // Visibility Check
+    if (now >= startDate && now <= endDate) {
+        document.getElementById('ramadan-section').style.display = 'block';
+    } else {
+        document.getElementById('ramadan-section').style.display = 'none';
+        return; // Exit if not Ramadan
     }
 
-    // সাপের গেম ওপেন (আপনার আগের লজিক অনুযায়ী)
-    function openSnake() {
-        alert("সাপের গেম লোড হচ্ছে... (রিমোটের অ্যারো বাটন কাজ করবে)");
-        // এখানে আপনার আগের স্নেক গেমের কন্টেইনার শো করার কোড বসবে
+    const todayStr = now.toISOString().split('T')[0];
+    let todayDataIndex = ramadanSchedule2026.findIndex(d => d.date === todayStr);
+    
+    if (todayDataIndex === -1 && now < startDate) todayDataIndex = 0; // Show first day if just before
+    if (todayDataIndex === -1) return;
+
+    let todayData = ramadanSchedule2026[todayDataIndex];
+    let selectedDistrict = document.getElementById('district-select').value;
+    let offsets = districtOffsets[selectedDistrict];
+
+    let sehriTime = parseTimeStr(todayData.date, todayData.sehri, offsets.sehri);
+    let iftarTime = parseTimeStr(todayData.date, todayData.iftar, offsets.iftar);
+
+    document.getElementById('today-sehri').innerText = `সাহরী: ${formatAMPM(sehriTime)}`;
+    document.getElementById('today-iftar').innerText = `ইফতার: ${formatAMPM(iftarTime)}`;
+
+    let targetTime, titleText;
+    if (now < sehriTime) {
+        targetTime = sehriTime;
+        titleText = "সাহরীর সময় শেষ হতে বাকি:";
+    } else if (now < iftarTime) {
+        targetTime = iftarTime;
+        titleText = "ইফতারের সময় হতে বাকি:";
+    } else {
+        // Next day sehri
+        let nextDayData = ramadanSchedule2026[todayDataIndex + 1];
+        if (nextDayData) {
+            targetTime = parseTimeStr(nextDayData.date, nextDayData.sehri, offsets.sehri);
+            titleText = "আগামীকাল সাহরীর সময় শেষ হতে বাকি:";
+        } else {
+            document.getElementById('countdown-timer').innerText = "ঈদ মোবারক!";
+            document.getElementById('countdown-title').innerText = "";
+            return;
+        }
     }
 
-    // রিমোট কন্ট্রোল হ্যান্ডলিং (Enter Key)
-    document.addEventListener('keydown', function(e) {
-        if (e.key === "Enter") {
-            const activeEl = document.activeElement;
-            if (activeEl && activeEl.classList.contains('card')) {
-                activeEl.click();
-            }
+    document.getElementById('countdown-title').innerText = titleText;
+
+    // Calculate diff
+    let diff = targetTime - now;
+    if (diff > 0) {
+        let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        let s = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById('countdown-timer').innerText = 
+            `${engToBnNum(h)} ঘণ্টা ${engToBnNum(m)} মিনিট ${engToBnNum(s)} সেকেন্ড`;
+    }
+}
+
+// Update timer every second
+setInterval(updateRamadanUI, 1000);
+document.getElementById('district-select').addEventListener('change', () => {
+    updateRamadanUI();
+    generateTimetable(); // Update modal if open
+});
+
+/* =========================================
+   MODAL LOGIC
+   ========================================= */
+const modal = document.getElementById("timetable-modal");
+const ramadanSection = document.getElementById("ramadan-section");
+const closeModal = document.getElementById("close-modal");
+
+function generateTimetable() {
+    const tbody = document.getElementById("timetable-body");
+    tbody.innerHTML = "";
+    const selectedDistrict = document.getElementById('district-select').value;
+    const distName = document.getElementById('district-select').options[document.getElementById('district-select').selectedIndex].text;
+    const offsets = districtOffsets[selectedDistrict];
+    
+    document.getElementById("modal-title").innerText = `রমজানের সময়সূচি - ${distName}`;
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    ramadanSchedule2026.forEach(day => {
+        let sTime = parseTimeStr(day.date, day.sehri, offsets.sehri);
+        let iTime = parseTimeStr(day.date, day.iftar, offsets.iftar);
+        
+        let row = document.createElement("tr");
+        if (day.date === todayStr) row.className = "today-row";
+
+        row.innerHTML = `
+            <td>${engToBnNum(day.day)}</td>
+            <td>${day.bnDate}</td>
+            <td>${formatAMPM(sTime)}</td>
+            <td>${formatAMPM(iTime)}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+ramadanSection.addEventListener("click", () => {
+    generateTimetable();
+    modal.style.display = "block";
+});
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+
+        .compass-container {
+            margin-top: 20px;
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .compass-needle {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 60px solid red;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 50% 50%;
+            transform: translate(-50%, -100%);
+            z-index: 1;
+        }
+
+        .qibla-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            transform: translate(-50%, -50%);
+            background-image: url('kaaba_icon.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .error-message {
+            margin-top: 10px;
+            color: red;
+            text-align: center;
+        }
+
+        /* --- NEW STYLES FOR DATE & RAMADAN SECTION --- */
+        .date-container {
+            width: 90%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+        }
+        .date-item {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .ar-date { color: #006600; }
+        .bn-date { color: #b30000; }
+        .en-date { color: #003366; }
+
+        .ramadan-container {
+            width: 90%;
+            margin: 15px auto;
+            background: linear-gradient(135deg, #004d00, #008000);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            display: none; /* Hidden by default */
+            cursor: pointer;
+            position: relative;
+        }
+        .ramadan-container h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .countdown-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .district-select {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
         }
         
-        // রিমোট দিয়ে মুভ করলে অটো স্ক্রল হবে যাতে নিচের কার্ডগুলো দেখা যায়
-        setTimeout(() => {
-            document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
-    });
+        /* Modal Styles for Time Chart */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 10; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.6); 
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus { color: black; }
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .timetable th, .timetable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .timetable th { background-color: #004d00; color: white; }
+        .timetable tr:nth-child(even){background-color: #f2f2f2;}
+        /* ------------------------------------------- */
 
-    // শুরুতে প্রথম কার্ডে ফোকাস সেট করা (টিভির জন্য সুবিধাজনক)
-    window.onload = function() {
-        document.querySelector('.card').focus();
-    };
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            width: 90%;
+            margin: 20px auto 0;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Banner Style for Hanafi Fiqh */
+        .banner-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 15px 0;
+        }
+        .banner-container a {
+            width: 80%;
+            display: block;
+            text-decoration: none;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .banner-container a:hover {
+            transform: scale(1.02);
+        }
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Button Links Style */
+        .newspaper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .newspaper a {
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            padding: 10px;
+            background-color: #003366;
+            border: 1px solid #002244;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #FFFFFF;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            background-image: linear-gradient(135deg, #003366, #002244);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .newspaper a:hover {
+            background-color: #002244;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="compass-container">
+    <div class="compass-needle" id="needle"></div>
+    <div class="qibla-indicator"></div>
+</div>
+<div class="error-message" id="error" style="display: none;"></div>
+
+<div class="date-container">
+    <div class="date-item ar-date" id="ar-date">Loading...</div>
+    <div class="date-item bn-date" id="bn-date">Loading...</div>
+    <div class="date-item en-date" id="en-date">Loading...</div>
+</div>
+
+<div class="ramadan-container" id="ramadan-section" onclick="openModal()">
+    <select id="district-select" class="district-select" onclick="event.stopPropagation();" onchange="initRamadan()">
+        <option value="Dhaka">ঢাকা</option>
+        <option value="Barishal">বরিশাল</option>
+        <option value="Patuakhali">পটুয়াখালী</option>
+    </select>
+    <h3 id="ramadan-day-text">পবিত্র রমযান</h3>
+    <div style="font-size: 14px;">পরবর্তী ওয়াক্ত: <span id="next-wakt-name"></span></div>
+    <div class="countdown-text" id="countdown-timer">00:00:00</div>
+    <div style="font-size: 12px; margin-top: 5px;">পুরো সময়সূচি দেখতে এখানে ক্লিক করুন</div>
+</div>
+
+<div id="ramadanModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 style="text-align:center; margin-top:0; color:#004d00;">রমযান সময়সূচি - <span id="modal-district-name">ঢাকা</span></h3>
+        <table class="timetable">
+            <thead>
+                <tr>
+                    <th>রমযান</th>
+                    <th>তারিখ</th>
+                    <th>সাহরী</th>
+                    <th>ইফতার</th>
+                </tr>
+            </thead>
+            <tbody id="timetable-body">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="video-container">
+    <iframe 
+        src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+    </iframe>
+</div>
+
+<p></p>
+
+<div class="banner-container">
+    <a href="https://hanafifiqh.net/">
+        <img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh">
+    </a>
+</div>
+
+<div class="newspaper">
+    <a href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w&feature=shared">Al Quran</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://youtube.com/@baseeramedia/videos">Baseera</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://youtube.com/@sheikhahmadullahofficial/videos">Ahmadullah</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://youtube.com/@drmizanurrahmanazharichannel/videos">Mizanur Rahman Azhari</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://youtube.com/@tawhaatv/videos">Abu Tawha Adnan</a>
+</div>
+
+<div class="newspaper">
+    <a href="https://youtube.com/@ridjaalahmedofficial/videos">Ridjaal Ahmed</a>
+</div>
+
+<script>
+// --- COMPASS SCRIPT (UNTOUCHED) ---
+const needle = document.getElementById('needle');
+const errorDiv = document.getElementById('error');
+const qiblaLat = 21.4225;
+const qiblaLng = 39.8262;
+
+function getQiblaAngle(latitude, longitude) {
+    const phiK = toRadians(qiblaLat);
+    const lambdaK = toRadians(qiblaLng);
+    const phi = toRadians(latitude);
+    const lambda = toRadians(longitude);
+    const deltaLambda = lambdaK - lambda;
+
+    const y = Math.sin(deltaLambda) * Math.cos(phiK);
+    const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(deltaLambda);
+    let angle = Math.atan2(y, x);
+    return toDegrees(angle);
+}
+
+function toRadians(degrees) { return degrees * Math.PI / 180; }
+function toDegrees(radians) { return radians * 180 / Math.PI; }
+
+function updateCompass(heading) {
+    const qiblaAngle = getQiblaAngle(latitude, longitude);
+    const rotation = heading + qiblaAngle;
+    needle.style.transform = `translate(-50%, -100%) rotate(${rotation}deg)`;
+}
+
+let latitude, longitude;
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+
+        if ('ondeviceorientationabsolute' in window) {
+            window.addEventListener('deviceorientationabsolute', e => {
+                if (e.alpha !== null) updateCompass(360 - e.alpha);
+            });
+        } else if ('ondeviceorientation' in window) {
+            window.addEventListener('deviceorientation', e => {
+                if (e.webkitCompassHeading) updateCompass(e.webkitCompassHeading);
+                else if (e.alpha !== null) updateCompass(360 - e.alpha);
+            });
+        } else {
+            errorDiv.textContent = 'আপনার ডিভাইস কম্পাস সেন্সর সমর্থন করে না।';
+            errorDiv.style.display = 'block';
+        }
+
+    }, err => {
+        errorDiv.textContent = 'অবস্থান নির্ণয় করতে সমস্যা হয়েছে: ' + err.message;
+        errorDiv.style.display = 'block';
+    });
+} else {
+    errorDiv.textContent = 'আপনার ব্রাউজার জিওলোকেশন সমর্থন করে না।';
+    errorDiv.style.display = 'block';
+}
+
+
+// --- NEW: DATE & RAMADAN SCRIPT ---
+
+// 1. Date Format Logic
+function updateDates() {
+    const today = new Date();
+    
+    // English Date
+    const optionsEn = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('en-date').innerText = today.toLocaleDateString('en-GB', optionsEn);
+
+    // Bangla Date (Using Browser Intl API)
+    try {
+        const bnDate = new Intl.DateTimeFormat('bn-BD-u-ca-beng', {day: 'numeric', month: 'long', year: 'numeric'}).format(today);
+        document.getElementById('bn-date').innerText = bnDate + ' বঙ্গাব্দ';
+    } catch(e) { document.getElementById('bn-date').style.display = 'none'; }
+
+    // Arabic Date (Hijri)
+    try {
+        const arDate = new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura', {day: 'numeric', month: 'long', year: 'numeric'}).format(today);
+        document.getElementById('ar-date').innerText = arDate + ' হিজরি';
+    } catch(e) { document.getElementById('ar-date').style.display = 'none'; }
+}
+
+// 2. Ramadan Database (2026/1447 AH) - Update here yearly!
+// Format: YYYY-MM-DD
+const ramadanData = {
+    "Dhaka": {
+        "2026-02-19": { ramadan: "০১", displayDate: "১৯ ফেব্রুয়ারি", sehri: "05:12", iftar: "17:58" },
+        "2026-02-20": { ramadan: "০২", displayDate: "২০ ফেব্রুয়ারি", sehri: "05:11", iftar: "17:58" },
+        "2026-02-21": { ramadan: "০৩", displayDate: "২১ ফেব্রুয়ারি", sehri: "05:11", iftar: "17:59" },
+        "2026-02-22": { ramadan: "০৪", displayDate: "২২ ফেব্রুয়ারি", sehri: "05:10", iftar: "17:59" },
+        "2026-02-23": { ramadan: "০৫", displayDate: "২৩ ফেব্রুয়ারি", sehri: "05:09", iftar: "18:00" },
+        // এখানে ঢাকার বাকি দিনগুলো ইসলামিক ফাউন্ডেশনের ক্যালেন্ডার দেখে যুক্ত করবেন...
+    },
+    "Barishal": {
+        "2026-02-19": { ramadan: "০১", displayDate: "১৯ ফেব্রুয়ারি", sehri: "05:11", iftar: "17:59" },
+        "2026-02-20": { ramadan: "০২", displayDate: "২০ ফেব্রুয়ারি", sehri: "05:10", iftar: "17:59" },
+        "2026-02-21": { ramadan: "০৩", displayDate: "২১ ফেব্রুয়ারি", sehri: "05:09", iftar: "18:00" },
+        "2026-02-22": { ramadan: "০৪", displayDate: "২২ ফেব্রুয়ারি", sehri: "05:09", iftar: "18:00" },
+        "2026-02-23": { ramadan: "০৫", displayDate: "২৩ ফেব্রুয়ারি", sehri: "05:08", iftar: "18:01" },
+        // এখানে বরিশালের বাকি দিনগুলো যুক্ত করবেন...
+    },
+    "Patuakhali": {
+        "2026-02-19": { ramadan: "০১", displayDate: "১৯ ফেব্রুয়ারি", sehri: "05:11", iftar: "17:59" },
+        "2026-02-20": { ramadan: "০২", displayDate: "২০ ফেব্রুয়ারি", sehri: "05:10", iftar: "18:00" },
+        "2026-02-21": { ramadan: "০৩", displayDate: "২১ ফেব্রুয়ারি", sehri: "05:10", iftar: "18:00" },
+        "2026-02-22": { ramadan: "০৪", displayDate: "২২ ফেব্রুয়ারি", sehri: "05:09", iftar: "18:01" },
+        "2026-02-23": { ramadan: "০৫", displayDate: "২৩ ফেব্রুয়ারি", sehri: "05:08", iftar: "18:01" },
+        // এখানে পটুয়াখালীর বাকি দিনগুলো যুক্ত করবেন...
+    }
+};
+
+let countdownInterval;
+
+function initRamadan() {
+    clearInterval(countdownInterval);
+    const district = document.getElementById('district-select').value;
+    const now = new Date();
+    
+    // Format today as YYYY-MM-DD
+    const todayStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0') + "-" + String(now.getDate()).padStart(2, '0');
+    
+    // Check if today exists in our Ramadan Database
+    if (ramadanData[district][todayStr]) {
+        document.getElementById('ramadan-section').style.display = 'block';
+        document.getElementById('ramadan-day-text').innerText = `${ramadanData[district][todayStr].ramadan} রমযান`;
+        startCountdown(district, todayStr);
+    } else {
+        // Not Ramadan (or data not entered)
+        document.getElementById('ramadan-section').style.display = 'none';
+    }
+    populateModalTable(district);
+}
+
+function startCountdown(district, todayStr) {
+    countdownInterval = setInterval(() => {
+        const now = new Date();
+        const todayData = ramadanData[district][todayStr];
+        
+        if(!todayData) return;
+
+        // Parse Sehri Time
+        let sehriTime = new Date();
+        const [sH, sM] = todayData.sehri.split(':');
+        sehriTime.setHours(parseInt(sH), parseInt(sM), 0);
+
+        // Parse Iftar Time
+        let iftarTime = new Date();
+        const [iH, iM] = todayData.iftar.split(':');
+        iftarTime.setHours(parseInt(iH), parseInt(iM), 0);
+
+        let targetTime, nextWaktName;
+
+        if (now < sehriTime) {
+            targetTime = sehriTime;
+            nextWaktName = "সাহরী শেষ";
+        } else if (now >= sehriTime && now < iftarTime) {
+            targetTime = iftarTime;
+            nextWaktName = "ইফতার শুরু";
+        } else {
+            // After Iftar, look for tomorrow's Sehri
+            let tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            let tomorrowStr = tomorrow.getFullYear() + "-" + String(tomorrow.getMonth() + 1).padStart(2, '0') + "-" + String(tomorrow.getDate()).padStart(2, '0');
+            
+            if(ramadanData[district][tomorrowStr]) {
+                const [tsH, tsM] = ramadanData[district][tomorrowStr].sehri.split(':');
+                targetTime = new Date(tomorrow);
+                targetTime.setHours(parseInt(tsH), parseInt(tsM), 0);
+                nextWaktName = "আগামীকালের সাহরী শেষ";
+            } else {
+                document.getElementById('countdown-timer').innerText = "রমযান শেষ!";
+                document.getElementById('next-wakt-name').innerText = "";
+                return;
+            }
+        }
+
+        document.getElementById('next-wakt-name').innerText = nextWaktName;
+
+        let diff = targetTime - now;
+        let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('countdown-timer').innerText = 
+            String(hours).padStart(2, '0') + ":" + 
+            String(minutes).padStart(2, '0') + ":" + 
+            String(seconds).padStart(2, '0');
+
+    }, 1000);
+}
+
+// Modal Functions
+const modal = document.getElementById("ramadanModal");
+function openModal() { modal.style.display = "block"; }
+function closeModal() { modal.style.display = "none"; }
+window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; } }
+
+function populateModalTable(district) {
+    const selectElem = document.getElementById("district-select");
+    document.getElementById("modal-district-name").innerText = selectElem.options[selectElem.selectedIndex].text;
+    
+    const tbody = document.getElementById("timetable-body");
+    tbody.innerHTML = ""; // Clear existing
+
+    const data = ramadanData[district];
+    for (const dateKey in data) {
+        const row = document.createElement("tr");
+        const isToday = new Date().toISOString().split('T')[0] === dateKey;
+        if(isToday) row.style.backgroundColor = "#c6ecc6"; // Highlight today
+        
+        // Convert 24hr Iftar to 12hr for display
+        let ifH = parseInt(data[dateKey].iftar.split(':')[0]);
+        let ifM = data[dateKey].iftar.split(':')[1];
+        let iftar12 = (ifH > 12 ? ifH - 12 : ifH) + ":" + ifM;
+
+        // Note: For Sehri and Iftar format, you can adjust as per image logic
+        let sehH = parseInt(data[dateKey].sehri.split(':')[0]);
+        let sehM = data[dateKey].sehri.split(':')[1];
+        let sehri12 = sehH + ":" + sehM;
+
+        row.innerHTML = `
+            <td>${data[dateKey].ramadan}</td>
+            <td>${data[dateKey].displayDate}</td>
+            <td>${sehri12}</td>
+            <td>${iftar12}</td>
+        `;
+        tbody.appendChild(row);
+    }
+}
+
+// Initialize functions on load
+updateDates();
+initRamadan();
+// Update date texts every 1 hour to keep it fresh
+setInterval(updateDates, 3600000);
+
+</script>
+</body>
+</html>
+ = function() { modal.style.display = "none"; }
+window.onclick = function(event) {
+    if (event.target == modal) { modal.style.display = "none"; }
+}
 </script>
 
 </body>
