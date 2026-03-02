@@ -48,6 +48,9 @@
         .banner-container img { width: 100%; height: auto; display: block; }
         .newspaper { display: flex; justify-content: center; margin-bottom: 15px; }
         .newspaper a { display: inline-block; width: 80%; text-align: center; padding: 10px; background-color: #003366; border-radius: 10px; text-decoration: none; font-size: 18px; color: #FFFFFF; background-image: linear-gradient(135deg, #003366, #002244); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        
+        /* ব্যাকগ্রাউন্ড অডিওর জন্য ওয়েকलॉক বাটন */
+        .wake-lock-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -59,7 +62,7 @@
 <div class="error-message" id="error" style="display: none;"></div>
 
 <div id="ramadan-widget">
-    <div id="live-clock">00:00:00</div>
+    <div id="live-clock">00:00:00 <button class="wake-lock-btn" onclick="toggleWakeLock()" id="wakeLockBtn">⚡ লক রাখুন</button></div>
     <select id="district-picker" class="district-select" onchange="updateView()">
         <option value="dhaka">ঢাকা জেলা</option>
         <option value="barishal">বরিশাল জেলা</option>
@@ -78,15 +81,20 @@
     <span class="view-btn" onclick="showCalendar()">পুরো মাসের ক্যালেন্ডার</span>
 </div>
 
-<!-- অডিও এলিমেন্টগুলো আপডেটেড -->
-<audio id="sehri-pre-timer" preload="auto">
+<!-- অডিও এলিমেন্ট - লুপ করার জন্য -->
+<audio id="sehri-pre-timer" preload="auto" loop>
     <source src="sehritimer.mp3" type="audio/mpeg">
 </audio>
-<audio id="sehri-siren" preload="auto">
+<audio id="sehri-siren" preload="auto" loop>
     <source src="sehrisiren.mp3" type="audio/mpeg">
 </audio>
-<audio id="iftar-sound" preload="auto">
+<audio id="iftar-sound" preload="auto" loop>
     <source src="iftar.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ব্যাকগ্রাউন্ড অডিওর জন্য সাইলেন্ট অডিও -->
+<audio id="silent-audio" preload="auto" loop>
+    <source src="data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mp3">
 </audio>
 
 <div class="video-container">
@@ -129,10 +137,47 @@ let resetInterval;
 let isPreSehriPlayed = false;
 let isSirenPlayed = false;
 let isIftarPlayed = false;
+let wakeLock = null;
+let silentAudio = document.getElementById('silent-audio');
 
 const preSehriAudio = document.getElementById('sehri-pre-timer');
 const sirenAudio = document.getElementById('sehri-siren');
 const iftarAudio = document.getElementById('iftar-sound');
+
+// ওয়েক লক ফাংশন
+async function toggleWakeLock() {
+    const btn = document.getElementById('wakeLockBtn');
+    if (wakeLock === null) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            btn.textContent = '⚡ লক করা আছে';
+            btn.style.background = '#ffeb3b';
+            btn.style.color = '#004422';
+            
+            // সাইলেন্ট অডিও চালান (ব্যাকগ্রাউন্ড রানিং এর জন্য)
+            silentAudio.volume = 0.01; // খুবই নিচু ভলিউম
+            silentAudio.play().catch(e => console.log("Silent audio play failed:", e));
+            
+            wakeLock.addEventListener('release', () => {
+                wakeLock = null;
+                btn.textContent = '⚡ লক রাখুন';
+                btn.style.background = 'rgba(255,255,255,0.2)';
+                btn.style.color = 'white';
+                silentAudio.pause();
+            });
+        } catch (err) {
+            console.log('Wake Lock error:', err);
+            alert('আপনার ডিভাইস ওয়েক লক সাপোর্ট করে না');
+        }
+    } else {
+        await wakeLock.release();
+        wakeLock = null;
+        btn.textContent = '⚡ লক রাখুন';
+        btn.style.background = 'rgba(255,255,255,0.2)';
+        btn.style.color = 'white';
+        silentAudio.pause();
+    }
+}
 
 function stopAllAudio() {
     preSehriAudio.pause();
@@ -172,7 +217,6 @@ function startRamadanLogic(sehri, iftar) {
     // প্রতি মিনিটে ফ্ল্যাগ রিসেট চেক
     resetInterval = setInterval(() => {
         const now = new Date();
-        // রাত ১২টায় ফ্ল্যাগ রিসেট
         if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
             isPreSehriPlayed = false;
             isSirenPlayed = false;
@@ -184,7 +228,6 @@ function startRamadanLogic(sehri, iftar) {
         const now = new Date();
         document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-GB');
         
-        // সেহরী ও ইফতার টাইম পার্স করা
         const sehriParts = sehri.split(':');
         const iftarParts = iftar.split(':');
         
@@ -203,19 +246,13 @@ function startRamadanLogic(sehri, iftar) {
             target = iTime; 
             label = "ইফতারের বাকি"; 
             
-            // সেহরী পার হয়ে গেছে, তাই সেহরী সংক্রান্ত অডিও বন্ধ করুন
             if (isPreSehriPlayed || isSirenPlayed) {
-                preSehriAudio.pause();
-                preSehriAudio.currentTime = 0;
-                sirenAudio.pause();
-                sirenAudio.currentTime = 0;
+                stopAllAudio();
             }
         }
         else { 
             label = "ইফতার সম্পন্ন"; 
             document.getElementById('timer-clock').innerText = "00:00:00";
-            
-            // সকল অডিও বন্ধ করুন
             stopAllAudio();
             return; 
         }
@@ -229,9 +266,13 @@ function startRamadanLogic(sehri, iftar) {
         document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
         // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকলে)
-        if (label === "সেহরীর বাকی" && diff <= 60000 && diff > 1000 && !isPreSehriPlayed) {
-            // আগের কোন অডিও বন্ধ করুন
+        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 1000 && !isPreSehriPlayed) {
             stopAllAudio();
+            
+            // ওয়েক লক না থাকলে অটো ওয়েক লক
+            if (wakeLock === null && 'wakeLock' in navigator) {
+                toggleWakeLock();
+            }
             
             preSehriAudio.play().catch(e => console.log("Pre-sehri audio play failed:", e));
             isPreSehriPlayed = true;
@@ -240,24 +281,22 @@ function startRamadanLogic(sehri, iftar) {
 
         // সেহরী শেষ হওয়ার মুহূর্তে (১ সেকেন্ডের মধ্যে)
         if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
-            // প্রি-টাইমার বন্ধ করুন
             preSehriAudio.pause();
             preSehriAudio.currentTime = 0;
             
-            // সাইরেন বাজান
             sirenAudio.play().catch(e => console.log("Siren play failed:", e));
             isSirenPlayed = true;
             console.log("Siren played at sehri end:", new Date().toLocaleTimeString());
         }
 
-        // ইফতার টাইমার (ঠিক ইফতারের সময়)
+        // ইফতার টাইমার
         if (label === "ইফতারের বাকি" && diff <= 1000 && !isIftarPlayed) {
             iftarAudio.play().catch(e => console.log("Iftar audio failed:", e));
             isIftarPlayed = true;
             console.log("Iftar time at:", new Date().toLocaleTimeString());
         }
 
-        // সেহরী টাইম পার হয়ে গেলে অডিও বন্ধ করুন
+        // সেহরী টাইম পার হয়ে গেলে অডিও বন্ধ
         if (now > sTime && (isPreSehriPlayed || isSirenPlayed)) {
             stopAllAudio();
         }
@@ -312,16 +351,20 @@ if (navigator.geolocation) {
     });
 }
 
-// পৃষ্ঠা লোড হওয়ার সাথে সাথে আপডেট করুন
+// পৃষ্ঠা লোড হওয়ার সাথে সাথে আপডেট
 window.onload = function() {
     updateView();
 };
 
-// পৃষ্ঠা ছেড়ে যাওয়ার সময় ইন্টারভাল ক্লিয়ার করুন
+// পৃষ্ঠা ছেড়ে যাওয়ার সময় ইন্টারভাল ক্লিয়ার
 window.onbeforeunload = function() {
     if (ramadanInterval) clearInterval(ramadanInterval);
     if (resetInterval) clearInterval(resetInterval);
     stopAllAudio();
+    if (wakeLock) {
+        wakeLock.release();
+    }
+    silentAudio.pause();
 };
 </script>
 </body>
