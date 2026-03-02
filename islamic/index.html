@@ -21,8 +21,7 @@
            ========================================================================================= */
         #ramadan-widget { display: block; width: 92%; margin: 20px auto; background: linear-gradient(135deg, #004422, #006633); color: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative; box-sizing: border-box;}
         
-        #live-clock { position: absolute; top: 10px; right: 15px; font-size: 11px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 20px; font-family: monospace; display: flex; align-items: center; gap: 5px; }
-        .wake-lock-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 2px 6px; border-radius: 12px; font-size: 9px; cursor: pointer; white-space: nowrap; }
+        #live-clock { position: absolute; top: 10px; right: 15px; font-size: 11px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 20px; font-family: monospace; }
         .district-select { margin-bottom: 10px; padding: 6px; border-radius: 5px; width: 150px; cursor: pointer; border: none; font-weight: bold; background: #fff; margin-top: 10px; }
         #countdown-container { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
         #timer-label { font-size: 13px; opacity: 0.9; }
@@ -42,20 +41,16 @@
         th { background-color: #004422; color: white; position: sticky; top: 0; }
         .today-highlight { background-color: #ffeb3b !important; font-weight: bold; }
 
-        /* ভিডিও কন্টেইনার - অটোপ্লে বন্ধ */
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 90%; margin: 20px auto 0; background: #000; cursor: pointer; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
-        .video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; z-index: 10; }
-        .video-overlay span { background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 30px; border: 2px solid white; }
-        
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 90%; margin: 20px auto 0; background: #000; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
         .banner-container { display: flex; justify-content: center; margin: 20px 0 15px 0; }
         .banner-container a { width: 80%; display: block; text-decoration: none; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
         .banner-container img { width: 100%; height: auto; display: block; }
         .newspaper { display: flex; justify-content: center; margin-bottom: 15px; }
         .newspaper a { display: inline-block; width: 80%; text-align: center; padding: 10px; background-color: #003366; border-radius: 10px; text-decoration: none; font-size: 18px; color: #FFFFFF; background-image: linear-gradient(135deg, #003366, #002244); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
         
-        /* নোটিফিকেশন স্টাইল */
-        #audio-notification { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 10px 20px; border-radius: 30px; font-size: 14px; z-index: 10000; border: 2px solid #ffeb3b; white-space: nowrap; }
+        /* ব্যাকগ্রাউন্ড অডিওর জন্য ওয়েকलॉক বাটন */
+        .wake-lock-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -67,7 +62,7 @@
 <div class="error-message" id="error" style="display: none;"></div>
 
 <div id="ramadan-widget">
-    <div id="live-clock">00:00:00 <button class="wake-lock-btn" onclick="toggleWakeLock()" id="wakeLockBtn">⚡ সক্রিয় রাখুন</button></div>
+    <div id="live-clock">00:00:00 <button class="wake-lock-btn" onclick="toggleWakeLock()" id="wakeLockBtn">⚡ লক রাখুন</button></div>
     <select id="district-picker" class="district-select" onchange="updateView()">
         <option value="dhaka">ঢাকা জেলা</option>
         <option value="barishal">বরিশাল জেলা</option>
@@ -86,32 +81,25 @@
     <span class="view-btn" onclick="showCalendar()">পুরো মাসের ক্যালেন্ডার</span>
 </div>
 
-<!-- অডিও এলিমেন্ট - লুপ বন্ধ (একবার বাজবে) -->
-<audio id="sehri-pre-timer" preload="auto">
+<!-- অডিও এলিমেন্ট - লুপ করার জন্য -->
+<audio id="sehri-pre-timer" preload="auto" loop>
     <source src="sehritimer.mp3" type="audio/mpeg">
 </audio>
-<audio id="sehri-siren" preload="auto">
+<audio id="sehri-siren" preload="auto" loop>
     <source src="sehrisiren.mp3" type="audio/mpeg">
 </audio>
-<audio id="iftar-sound" preload="auto">
+<audio id="iftar-sound" preload="auto" loop>
     <source src="iftar.mp3" type="audio/mpeg">
 </audio>
 
-<!-- সাইলেন্ট অডিও - ব্যাকগ্রাউন্ড রানিং এর জন্য -->
+<!-- ব্যাকগ্রাউন্ড অডিওর জন্য সাইলেন্ট অডিও -->
 <audio id="silent-audio" preload="auto" loop>
-    <source src="data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mp3">
+    <source src="data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mp3">
 </audio>
 
-<!-- ভিডিও সেকশন - অটোপ্লে বন্ধ -->
-<div class="video-container" id="videoContainer">
-    <div class="video-overlay" id="videoOverlay">
-        <span>▶ ভিডিও দেখতে ক্লিক করুন</span>
-    </div>
-    <iframe id="youtubeVideo" src="https://www.youtube.com/embed/eIrRj6vDddU?enablejsapi=1" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="video-container">
+    <iframe src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
-
-<!-- নোটিফিকেশন ডিভি -->
-<div id="audio-notification"></div>
 
 <div class="banner-container">
     <a href="https://hanafifiqh.net/"><img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh"></a>
@@ -135,6 +123,9 @@
 <script>
 /* ---------------- Ramadan Data & Logic ---------------- */
 
+/* =========================================================================================
+   নোট ৩: পরের বছর (২০২৭) ব্যবহারের জন্য নিচের ramadanData লিস্টের তারিখ (d) এবং সময় (s, i) পরিবর্তন করুন 
+   ========================================================================================= */
 const ramadanData = {
     dhaka: [{r:1, d:"19 Feb", bn:"০৬ ফাল্গুন", s:"5:12", f:"5:15", i:"5:58"},{r:2, d:"20 Feb", bn:"০৭ ফাল্গুন", s:"5:11", f:"5:14", i:"5:58"},{r:3, d:"21 Feb", bn:"০৮ ফাল্গুন", s:"5:11", f:"5:14", i:"5:59"},{r:4, d:"22 Feb", bn:"০৯ ফাল্গুন", s:"5:10", f:"5:13", i:"5:59"},{r:5, d:"23 Feb", bn:"১০ ফাল্গুন", s:"5:09", f:"5:12", i:"6:00"},{r:6, d:"24 Feb", bn:"১১ ফাল্গুন", s:"5:08", f:"5:11", i:"6:00"},{r:7, d:"25 Feb", bn:"১২ ফাল্গুন", s:"5:08", f:"5:11", i:"6:01"},{r:8, d:"26 Feb", bn:"১৩ ফাল্গুন", s:"5:07", f:"5:10", i:"6:01"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:06", f:"5:09", i:"6:02"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:05", f:"5:08", i:"6:02"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:05", f:"5:08", i:"6:03"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:04", f:"5:07", i:"6:03"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:03", f:"5:06", i:"6:04"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:02", f:"5:05", i:"6:04"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"5:00", f:"5:03", i:"6:05"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:06"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:00", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:57", f:"4:59", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:56", f:"4:58", i:"6:07"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:54", f:"4:57", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:54", f:"4:57", i:"6:08"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:53", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"০১ চৈত্র", s:"4:52", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"০২ চৈত্র", s:"4:51", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"০৩ চৈত্র", s:"4:50", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"০৪ চৈত্র", s:"4:49", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"০৫ চৈত্র", s:"4:48", f:"4:50", i:"6:11"},{r:30, d:"20 Mar", bn:"০৬ চৈত্র", s:"4:47", f:"4:49", i:"6:11"}],
     barishal: [{r:1, d:"19 Feb", bn:"০৬ ফাল্গুন", s:"5:11", f:"5:15", i:"5:59"},{r:2, d:"20 Feb", bn:"০৭ ফাল্গুন", s:"5:10", f:"5:14", i:"5:59"},{r:3, d:"21 Feb", bn:"০৮ ফাল্গুন", s:"5:09", f:"5:13", i:"6:00"},{r:4, d:"22 Feb", bn:"০৯ ফাল্গুন", s:"5:09", f:"5:13", i:"6:00"},{r:5, d:"23 Feb", bn:"১০ ফাল্গুন", s:"5:08", f:"5:12", i:"6:01"},{r:6, d:"24 Feb", bn:"১১ ফাল্গুন", s:"5:07", f:"5:11", i:"6:01"},{r:7, d:"25 Feb", bn:"১২ ফাল্গুন", s:"5:07", f:"5:10", i:"6:02"},{r:8, d:"26 Feb", bn:"১৩ ফাল্গুন", s:"5:06", f:"5:10", i:"6:02"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:05", f:"5:09", i:"6:03"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:04", f:"5:08", i:"6:03"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:04", f:"5:07", i:"6:03"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:03", f:"5:07", i:"6:03"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:02", f:"5:06", i:"6:04"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:01", f:"5:05", i:"6:05"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:00", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"4:59", f:"5:03", i:"6:06"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:07"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:01", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:56", f:"5:00", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:55", f:"4:59", i:"6:08"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:54", f:"4:58", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:53", f:"4:57", i:"6:09"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:52", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"০১ চৈত্র", s:"4:51", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"০২ চৈত্র", s:"4:50", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"০৩ চৈত্র", s:"4:49", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"০৪ চৈত্র", s:"4:48", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"০৫ চৈত্র", s:"4:47", f:"4:51", i:"6:11"},{r:30, d:"20 Mar", bn:"০৬ চৈত্র", s:"4:46", f:"4:50", i:"6:11"}],
@@ -148,64 +139,43 @@ let isSirenPlayed = false;
 let isIftarPlayed = false;
 let wakeLock = null;
 let silentAudio = document.getElementById('silent-audio');
-let notificationTimeout;
 
 const preSehriAudio = document.getElementById('sehri-pre-timer');
 const sirenAudio = document.getElementById('sehri-siren');
 const iftarAudio = document.getElementById('iftar-sound');
 
-// নোটিফিকেশন দেখানোর ফাংশন
-function showNotification(message, duration = 3000) {
-    const notif = document.getElementById('audio-notification');
-    notif.textContent = message;
-    notif.style.display = 'block';
-    
-    if (notificationTimeout) clearTimeout(notificationTimeout);
-    notificationTimeout = setTimeout(() => {
-        notif.style.display = 'none';
-    }, duration);
-}
-
-// ওয়েক লক ফাংশন - এলার্ট ছাড়া
+// ওয়েক লক ফাংশন
 async function toggleWakeLock() {
     const btn = document.getElementById('wakeLockBtn');
     if (wakeLock === null) {
         try {
-            if ('wakeLock' in navigator) {
-                wakeLock = await navigator.wakeLock.request('screen');
-                btn.textContent = '⚡ সক্রিয় আছে';
-                btn.style.background = '#ffeb3b';
-                btn.style.color = '#004422';
-                
-                // সাইলেন্ট অডিও চালান
-                silentAudio.volume = 0.01;
-                silentAudio.play().catch(e => console.log("Silent audio play failed:", e));
-                
-                wakeLock.addEventListener('release', () => {
-                    wakeLock = null;
-                    btn.textContent = '⚡ সক্রিয় রাখুন';
-                    btn.style.background = 'rgba(255,255,255,0.2)';
-                    btn.style.color = 'white';
-                    silentAudio.pause();
-                });
-                
-                showNotification('✅ অ্যাপ সক্রিয় রাখা হবে');
-            } else {
-                showNotification('⚠️ আপনার ডিভাইস এই সুবিধা সাপোর্ট করে না');
-                btn.style.opacity = '0.5';
-            }
+            wakeLock = await navigator.wakeLock.request('screen');
+            btn.textContent = '⚡ লক করা আছে';
+            btn.style.background = '#ffeb3b';
+            btn.style.color = '#004422';
+            
+            // সাইলেন্ট অডিও চালান (ব্যাকগ্রাউন্ড রানিং এর জন্য)
+            silentAudio.volume = 0.01; // খুবই নিচু ভলিউম
+            silentAudio.play().catch(e => console.log("Silent audio play failed:", e));
+            
+            wakeLock.addEventListener('release', () => {
+                wakeLock = null;
+                btn.textContent = '⚡ লক রাখুন';
+                btn.style.background = 'rgba(255,255,255,0.2)';
+                btn.style.color = 'white';
+                silentAudio.pause();
+            });
         } catch (err) {
             console.log('Wake Lock error:', err);
-            showNotification('⚠️ ওয়েক লক সক্রিয় করা যায়নি');
+            alert('আপনার ডিভাইস ওয়েক লক সাপোর্ট করে না');
         }
     } else {
         await wakeLock.release();
         wakeLock = null;
-        btn.textContent = '⚡ সক্রিয় রাখুন';
+        btn.textContent = '⚡ লক রাখুন';
         btn.style.background = 'rgba(255,255,255,0.2)';
         btn.style.color = 'white';
         silentAudio.pause();
-        showNotification('⏸️ অ্যাপ নিষ্ক্রিয় মোডে');
     }
 }
 
@@ -244,6 +214,7 @@ function startRamadanLogic(sehri, iftar) {
     if (ramadanInterval) clearInterval(ramadanInterval);
     if (resetInterval) clearInterval(resetInterval);
     
+    // প্রতি মিনিটে ফ্ল্যাগ রিসেট চেক
     resetInterval = setInterval(() => {
         const now = new Date();
         if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
@@ -255,8 +226,7 @@ function startRamadanLogic(sehri, iftar) {
     
     ramadanInterval = setInterval(() => {
         const now = new Date();
-        document.getElementById('live-clock').innerHTML = now.toLocaleTimeString('en-GB') + ' <button class="wake-lock-btn" onclick="toggleWakeLock()" id="wakeLockBtn">' + 
-            (wakeLock ? '⚡ সক্রিয় আছে' : '⚡ সক্রিয় রাখুন') + '</button>';
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-GB');
         
         const sehriParts = sehri.split(':');
         const iftarParts = iftar.split(':');
@@ -275,6 +245,7 @@ function startRamadanLogic(sehri, iftar) {
         else if (now < iTime) { 
             target = iTime; 
             label = "ইফতারের বাকি"; 
+            
             if (isPreSehriPlayed || isSirenPlayed) {
                 stopAllAudio();
             }
@@ -294,40 +265,35 @@ function startRamadanLogic(sehri, iftar) {
         document.getElementById('timer-label').innerText = label;
         document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-        // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকলে) - একবার বাজবে
-        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 2000 && !isPreSehriPlayed) {
+        // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকলে)
+        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 1000 && !isPreSehriPlayed) {
             stopAllAudio();
+            
+            // ওয়েক লক না থাকলে অটো ওয়েক লক
+            if (wakeLock === null && 'wakeLock' in navigator) {
+                toggleWakeLock();
+            }
             
             preSehriAudio.play().catch(e => console.log("Pre-sehri audio play failed:", e));
             isPreSehriPlayed = true;
             console.log("Pre-sehri timer started at:", new Date().toLocaleTimeString());
-            
-            // নোটিফিকেশন দেখান
-            showNotification('🔔 সেহরীর ১ মিনিট বাকি');
         }
 
-        // সেহরী শেষ হওয়ার মুহূর্তে (ঠিক ১ সেকেন্ডে)
-        if (label === "সেহরীর বাকি" && diff <= 1000 && diff > 0 && !isSirenPlayed) {
+        // সেহরী শেষ হওয়ার মুহূর্তে (১ সেকেন্ডের মধ্যে)
+        if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
             preSehriAudio.pause();
             preSehriAudio.currentTime = 0;
             
-            // সামান্য বিলম্বে সাইরেন বাজান (ক্রসফেইড ইফেক্ট এড়াতে)
-            setTimeout(() => {
-                if (!isSirenPlayed) {
-                    sirenAudio.play().catch(e => console.log("Siren play failed:", e));
-                    isSirenPlayed = true;
-                    console.log("Siren played at sehri end:", new Date().toLocaleTimeString());
-                    showNotification('⚠️ সেহরীর সময় শেষ');
-                }
-            }, 50);
+            sirenAudio.play().catch(e => console.log("Siren play failed:", e));
+            isSirenPlayed = true;
+            console.log("Siren played at sehri end:", new Date().toLocaleTimeString());
         }
 
         // ইফতার টাইমার
-        if (label === "ইফতারের বাকি" && diff <= 1000 && diff > 0 && !isIftarPlayed) {
+        if (label === "ইফতারের বাকি" && diff <= 1000 && !isIftarPlayed) {
             iftarAudio.play().catch(e => console.log("Iftar audio failed:", e));
             isIftarPlayed = true;
             console.log("Iftar time at:", new Date().toLocaleTimeString());
-            showNotification('🍴 ইফতারের সময় হয়েছে');
         }
 
         // সেহরী টাইম পার হয়ে গেলে অডিও বন্ধ
@@ -385,22 +351,12 @@ if (navigator.geolocation) {
     });
 }
 
-// ভিডিও ক্লিক ইভেন্ট
-document.getElementById('videoContainer').addEventListener('click', function() {
-    const iframe = document.getElementById('youtubeVideo');
-    const overlay = document.getElementById('videoOverlay');
-    
-    // iframe সোর্স আপডেট করে অটোপ্লে সহ
-    iframe.src = 'https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1&enablejsapi=1';
-    overlay.style.display = 'none';
-});
-
-// পৃষ্ঠা লোড
+// পৃষ্ঠা লোড হওয়ার সাথে সাথে আপডেট
 window.onload = function() {
     updateView();
 };
 
-// পৃষ্ঠা ছেড়ে যাওয়ার সময়
+// পৃষ্ঠা ছেড়ে যাওয়ার সময় ইন্টারভাল ক্লিয়ার
 window.onbeforeunload = function() {
     if (ramadanInterval) clearInterval(ramadanInterval);
     if (resetInterval) clearInterval(resetInterval);
