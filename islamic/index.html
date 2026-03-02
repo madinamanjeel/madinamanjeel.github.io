@@ -78,9 +78,16 @@
     <span class="view-btn" onclick="showCalendar()">পুরো মাসের ক্যালেন্ডার</span>
 </div>
 
-<audio id="sehri-pre-timer" src="sehritimer.mp3" preload="auto"></audio>
-<audio id="sehri-siren" src="sehrisiren.mp3" preload="auto"></audio>
-<audio id="iftar-sound" src="iftar.mp3" preload="auto"></audio>
+<!-- অডিও এলিমেন্টগুলো আপডেটেড -->
+<audio id="sehri-pre-timer" preload="auto">
+    <source src="sehritimer.mp3" type="audio/mpeg">
+</audio>
+<audio id="sehri-siren" preload="auto">
+    <source src="sehrisiren.mp3" type="audio/mpeg">
+</audio>
+<audio id="iftar-sound" preload="auto">
+    <source src="iftar.mp3" type="audio/mpeg">
+</audio>
 
 <div class="video-container">
     <iframe src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -118,6 +125,7 @@ const ramadanData = {
 };
 
 let ramadanInterval;
+let resetInterval;
 let isPreSehriPlayed = false;
 let isSirenPlayed = false;
 let isIftarPlayed = false;
@@ -125,6 +133,15 @@ let isIftarPlayed = false;
 const preSehriAudio = document.getElementById('sehri-pre-timer');
 const sirenAudio = document.getElementById('sehri-siren');
 const iftarAudio = document.getElementById('iftar-sound');
+
+function stopAllAudio() {
+    preSehriAudio.pause();
+    preSehriAudio.currentTime = 0;
+    sirenAudio.pause();
+    sirenAudio.currentTime = 0;
+    iftarAudio.pause();
+    iftarAudio.currentTime = 0;
+}
 
 function updateView() {
     const district = document.getElementById('district-picker').value;
@@ -140,55 +157,118 @@ function updateView() {
     document.getElementById('today-iftar').innerText = todayData.i;
     document.getElementById('display-date').innerText = `${todayData.r} রমজান | ${todayData.d} | ${todayData.bn}`;
 
+    stopAllAudio();
+    isPreSehriPlayed = false;
+    isSirenPlayed = false;
+    isIftarPlayed = false;
+    
     startRamadanLogic(todayData.s, todayData.i);
 }
 
 function startRamadanLogic(sehri, iftar) {
     if (ramadanInterval) clearInterval(ramadanInterval);
+    if (resetInterval) clearInterval(resetInterval);
+    
+    // প্রতি মিনিটে ফ্ল্যাগ রিসেট চেক
+    resetInterval = setInterval(() => {
+        const now = new Date();
+        // রাত ১২টায় ফ্ল্যাগ রিসেট
+        if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+            isPreSehriPlayed = false;
+            isSirenPlayed = false;
+            isIftarPlayed = false;
+        }
+    }, 1000);
+    
     ramadanInterval = setInterval(() => {
         const now = new Date();
         document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-GB');
-        const sTime = new Date(); sTime.setHours(sehri.split(':')[0], sehri.split(':')[1], 0);
-        const iTime = new Date(); iTime.setHours(parseInt(iftar.split(':')[0]) + 12, iftar.split(':')[1], 0);
+        
+        // সেহরী ও ইফতার টাইম পার্স করা
+        const sehriParts = sehri.split(':');
+        const iftarParts = iftar.split(':');
+        
+        const sTime = new Date(); 
+        sTime.setHours(parseInt(sehriParts[0]), parseInt(sehriParts[1]), 0);
+        
+        const iTime = new Date(); 
+        iTime.setHours(parseInt(iftarParts[0]) + 12, parseInt(iftarParts[1]), 0);
 
         let target, label;
-        if (now < sTime) { target = sTime; label = "সেহরীর বাকি"; }
-        else if (now < iTime) { target = iTime; label = "ইফতারের বাকি"; }
-        else { label = "ইফতার সম্পন্ন"; document.getElementById('timer-clock').innerText = "00:00:00"; return; }
+        if (now < sTime) { 
+            target = sTime; 
+            label = "সেহরীর বাকি"; 
+        }
+        else if (now < iTime) { 
+            target = iTime; 
+            label = "ইফতারের বাকি"; 
+            
+            // সেহরী পার হয়ে গেছে, তাই সেহরী সংক্রান্ত অডিও বন্ধ করুন
+            if (isPreSehriPlayed || isSirenPlayed) {
+                preSehriAudio.pause();
+                preSehriAudio.currentTime = 0;
+                sirenAudio.pause();
+                sirenAudio.currentTime = 0;
+            }
+        }
+        else { 
+            label = "ইফতার সম্পন্ন"; 
+            document.getElementById('timer-clock').innerText = "00:00:00";
+            
+            // সকল অডিও বন্ধ করুন
+            stopAllAudio();
+            return; 
+        }
 
         const diff = target - now;
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
+        
         document.getElementById('timer-label').innerText = label;
         document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 1000 && !isPreSehriPlayed) {
-            preSehriAudio.play().catch(e => console.log("Interaction needed"));
+        // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকলে)
+        if (label === "সেহরীর বাকی" && diff <= 60000 && diff > 1000 && !isPreSehriPlayed) {
+            // আগের কোন অডিও বন্ধ করুন
+            stopAllAudio();
+            
+            preSehriAudio.play().catch(e => console.log("Pre-sehri audio play failed:", e));
             isPreSehriPlayed = true;
+            console.log("Pre-sehri timer started at:", new Date().toLocaleTimeString());
         }
 
+        // সেহরী শেষ হওয়ার মুহূর্তে (১ সেকেন্ডের মধ্যে)
         if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
+            // প্রি-টাইমার বন্ধ করুন
             preSehriAudio.pause();
-            preSehriAudio.currentTime = 0; 
-            sirenAudio.play().catch(e => console.log("Audio error"));
+            preSehriAudio.currentTime = 0;
+            
+            // সাইরেন বাজান
+            sirenAudio.play().catch(e => console.log("Siren play failed:", e));
             isSirenPlayed = true;
+            console.log("Siren played at sehri end:", new Date().toLocaleTimeString());
         }
 
+        // ইফতার টাইমার (ঠিক ইফতারের সময়)
         if (label === "ইফতারের বাকি" && diff <= 1000 && !isIftarPlayed) {
-            iftarAudio.play().catch(e => console.log("Audio error"));
+            iftarAudio.play().catch(e => console.log("Iftar audio failed:", e));
             isIftarPlayed = true;
+            console.log("Iftar time at:", new Date().toLocaleTimeString());
         }
 
-        if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
-            isPreSehriPlayed = isSirenPlayed = isIftarPlayed = false;
+        // সেহরী টাইম পার হয়ে গেলে অডিও বন্ধ করুন
+        if (now > sTime && (isPreSehriPlayed || isSirenPlayed)) {
+            stopAllAudio();
         }
+
     }, 1000);
 }
 
 function showCalendar() {
     const district = document.getElementById('district-picker').value;
-    const now = new Date(); const todayStr = `${now.getDate()} ${now.toLocaleString('en-GB', { month: 'short' })}`;
+    const now = new Date(); 
+    const todayStr = `${now.getDate()} ${now.toLocaleString('en-GB', { month: 'short' })}`;
     let table = `<table><tr><th>রমজান</th><th>ইংলিশ</th><th>বাংলা</th><th>সেহরী</th><th>ফজর</th><th>ইফতার</th></tr>`;
     ramadanData[district].forEach(d => {
         const isToday = (d.d === todayStr) ? 'class="today-highlight"' : '';
@@ -198,7 +278,10 @@ function showCalendar() {
     document.getElementById('calendar-table-container').innerHTML = table;
     document.getElementById('calendar-modal').style.display = 'block';
 }
-function closeCalendar() { document.getElementById('calendar-modal').style.display = 'none'; }
+
+function closeCalendar() { 
+    document.getElementById('calendar-modal').style.display = 'none'; 
+}
 
 /* ---------------- Compass Logic ---------------- */
 const needle = document.getElementById('needle');
@@ -218,12 +301,28 @@ function updateCompass(heading) {
 
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
-        latitude = position.coords.latitude; longitude = position.coords.longitude;
-        window.addEventListener('deviceorientationabsolute', e => { if (e.alpha !== null) updateCompass(360 - e.alpha); }, true);
-    }, err => { errorDiv.style.display = 'block'; errorDiv.textContent = "Location Error: " + err.message; });
+        latitude = position.coords.latitude; 
+        longitude = position.coords.longitude;
+        window.addEventListener('deviceorientationabsolute', e => { 
+            if (e.alpha !== null) updateCompass(360 - e.alpha); 
+        }, true);
+    }, err => { 
+        errorDiv.style.display = 'block'; 
+        errorDiv.textContent = "Location Error: " + err.message; 
+    });
 }
 
-updateView();
+// পৃষ্ঠা লোড হওয়ার সাথে সাথে আপডেট করুন
+window.onload = function() {
+    updateView();
+};
+
+// পৃষ্ঠা ছেড়ে যাওয়ার সময় ইন্টারভাল ক্লিয়ার করুন
+window.onbeforeunload = function() {
+    if (ramadanInterval) clearInterval(ramadanInterval);
+    if (resetInterval) clearInterval(resetInterval);
+    stopAllAudio();
+};
 </script>
 </body>
 </html>
