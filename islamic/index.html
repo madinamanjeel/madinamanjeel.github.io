@@ -221,16 +221,20 @@ function startRamadanLogic(sehri, iftar) {
         document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
         // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকতে)
-        if (label === "সেহরীর বাকi" && diff <= 60000 && diff > 2000 && !isPreSehriPlayed) {
+        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 2000 && !isPreSehriPlayed) {
+            console.log("Playing pre-sehri timer");
             stopAllAudioExcept(preSehriAudio);
-            preSehriAudio.play().catch(e => console.log("User interaction required for audio"));
+            preSehriAudio.currentTime = 0;
+            preSehriAudio.play().catch(e => console.log("Pre-sehri audio error:", e));
             isPreSehriPlayed = true;
         }
 
         // সাইরেন লজিক (ঠিক সেহরি শেষ হওয়ার সময়)
         if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
+            console.log("Playing sehri siren");
             stopAllAudioExcept(sirenAudio);
-            sirenAudio.play().catch(e => console.log("Siren error"));
+            sirenAudio.currentTime = 0;
+            sirenAudio.play().catch(e => console.log("Siren error:", e));
             isSirenPlayed = true;
             
             // অডিও শেষ হলে নিজে নিজেই থামবে (loop নেই বলে)
@@ -241,7 +245,9 @@ function startRamadanLogic(sehri, iftar) {
 
         // ইফতার লজিক
         if (label === "ইফতারের বাকি" && diff <= 1000 && !isIftarPlayed) {
+            console.log("Playing iftar audio");
             stopAllAudioExcept(iftarAudio);
+            iftarAudio.currentTime = 0;
             iftarAudio.play();
             isIftarPlayed = true;
             
