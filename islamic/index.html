@@ -77,8 +77,8 @@
 </div>
 
 <audio id="sehri-pre-timer" preload="auto" loop><source src="sehritimer.mp3" type="audio/mpeg"></audio>
-<audio id="sehri-siren" preload="auto" loop><source src="sehrisiren.mp3" type="audio/mpeg"></audio>
-<audio id="iftar-sound" preload="auto" loop><source src="iftar.mp3" type="audio/mpeg"></audio>
+<audio id="sehri-siren" preload="auto"><source src="sehrisiren.mp3" type="audio/mpeg"></audio>
+<audio id="iftar-sound" preload="auto"><source src="iftar.mp3" type="audio/mpeg"></audio>
 <audio id="silent-audio" preload="auto" loop><source src="data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mp3"></audio>
 
 <div class="video-container">
@@ -200,10 +200,11 @@ function startRamadanLogic(sehri, iftar) {
         } else if (now < iTime) { 
             target = iTime; 
             label = "ইফতারের বাকি"; 
-            // সেহরি শেষ হলে যদি প্রিটtimer চলতে থাকে তবে বন্ধ করো, কিন্তু সাইরেন চলতে দাও
-            if (isPreSehriPlayed && !isSirenPlayed) {
+            // সেহরি শেষ হলে প্রি-টাইমার বন্ধ করুন
+            if (isPreSehriPlayed) {
                 preSehriAudio.pause();
                 preSehriAudio.currentTime = 0;
+                isPreSehriPlayed = false;
             }
         } else { 
             label = "ইফতার সম্পন্ন"; 
@@ -220,18 +221,22 @@ function startRamadanLogic(sehri, iftar) {
         document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
         // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকতে)
-        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 2000 && !isPreSehriPlayed) {
+        if (label === "সেহরীর বাকi" && diff <= 60000 && diff > 2000 && !isPreSehriPlayed) {
+            stopAllAudioExcept(preSehriAudio);
             preSehriAudio.play().catch(e => console.log("User interaction required for audio"));
             isPreSehriPlayed = true;
         }
 
-        // সাইরেন লজিক (ঠিক সেহরি শেষ হওয়ার ১ সেকেন্ড আগে থেকে শুরু)
-        if (label === "সেহরীর বাকি" && diff <= 1500 && !isSirenPlayed) {
+        // সাইরেন লজিক (ঠিক সেহরি শেষ হওয়ার সময়)
+        if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
             stopAllAudioExcept(sirenAudio);
             sirenAudio.play().catch(e => console.log("Siren error"));
             isSirenPlayed = true;
-            // সাইরেন ৩০ সেকেন্ড পর অটো বন্ধ হবে
-            setTimeout(() => { sirenAudio.pause(); sirenAudio.currentTime = 0; }, 30000);
+            
+            // অডিও শেষ হলে নিজে নিজেই থামবে (loop নেই বলে)
+            sirenAudio.onended = function() {
+                sirenAudio.currentTime = 0;
+            };
         }
 
         // ইফতার লজিক
@@ -239,7 +244,11 @@ function startRamadanLogic(sehri, iftar) {
             stopAllAudioExcept(iftarAudio);
             iftarAudio.play();
             isIftarPlayed = true;
-            setTimeout(() => { iftarAudio.pause(); iftarAudio.currentTime = 0; }, 60000);
+            
+            // অডিও শেষ হলে নিজে নিজেই থামবে (loop নেই বলে)
+            iftarAudio.onended = function() {
+                iftarAudio.currentTime = 0;
+            };
         }
 
     }, 1000);
