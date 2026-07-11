@@ -118,6 +118,35 @@
         .button-group .btn {
             margin: 5px; /* Adds spacing between buttons */
         }
+
+        /* ঔষধ বক্সের নতুন সুন্দর ডিজাইন */
+        .medicine-tracker {
+            background: linear-gradient(135deg, #fff5f5, #ffeaea);
+            border: 2px dashed #ba4141;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 5px;
+            box-shadow: 0 4px 6px rgba(186, 65, 65, 0.05);
+        }
+
+        .medicine-tracker p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .medicine-number {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ba4141;
+            background-color: #fff;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -133,8 +162,12 @@
         <div class="button-group">
             <a href="https://drive.google.com/drive/folders/1XucwNNAN-_LJN0n6R-_mkkIVkDTxHtGO" class="btn"  >Documents</a>
             <a href="https://drive.google.com/drive/folders/1P5K-8B0tOZ6atYHW1xNsMpqk2XYEVKU0" class="btn"  >Medical</a><a href="https://docs.google.com/document/d/1Rq1eMJqcd_CzhX4VKYTmkumwV7o6XeQy8SBKQpEgPJE/edit?usp=drivesdk" class="btn"  >Personal Data</a>
-            
-            
+        </div>
+
+        <!-- ঔষধ দেখানোর নতুন বক্সটি ঠিক পারসনাল ডাটার নিচে যুক্ত করা হলো -->
+        <div class="medicine-tracker" id="medicineBox" style="display: none;">
+            <p>🗓️ আজ <span id="currentDateText"></span> (<span id="currentDayText"></span>)</p>
+            <div class="medicine-number">💊 <span id="medicineNo"></span> নম্বর ঔষধ</div>
         </div>
     </div>
 
@@ -237,6 +270,49 @@ BR: 19797821609019078
     </div>
 
 </div>
+
+<!-- অটোমেটিক ঔষধ ট্র্যাকিং করার জাভাস্ক্রিপ্ট কোড -->
+<script>
+    function updateMedicineTracker() {
+        const today = new Date();
+        
+        // ক্যালেন্ডারের সময়সীমা সেট করা (৮ জুলাই ২০২৬ থেকে ৮ আগস্ট ২০২৬)
+        const startDate = new Date(2026, 6, 8); // Month is 0-indexed (6 = July)
+        const endDate = new Date(2026, 7, 8);   // 7 = August
+        
+        // শুধু মাত্র নির্ধারিত ডেট রেঞ্জের মধ্যে থাকলে বক্সটি শো করবে
+        if (today >= startDate && today <= endDate) {
+            
+            // দিন দুটির মধ্যকার পার্থক্য বের করা
+            const diffTime = Math.abs(today - startDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            // যদি পার্থক্য জোড় সংখ্যা হয় তবে ১ নম্বর, বিজোড় হলে ২ নম্বর ঔষধ
+            const medicineNo = (diffDays % 2 === 0) ? "১" : "২";
+            
+            // বাংলা বার এবং মাসের নাম
+            const bnDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+            const bnMonths = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+            
+            // সংখ্যা বাংলায় রূপান্তর
+            function toBanglaNum(num) {
+                const bnDigits = {'0':'০', '1':'১', '2':'২', '3':'৩', '4':'৪', '5':'৫', '6':'৬', '7':'৭', '8':'৮', '9':'৯'};
+                return num.toString().split('').map(digit => bnDigits[digit] || digit).join('');
+            }
+            
+            // পেইজে ডেটা বসানো
+            document.getElementById('currentDateText').innerText = toBanglaNum(today.getDate()) + ' ' + bnMonths[today.getMonth()] + ' ' + toBanglaNum(today.getFullYear());
+            document.getElementById('currentDayText').innerText = bnDays[today.getDay()];
+            document.getElementById('medicineNo').innerText = medicineNo;
+            
+            // বক্সটি দৃশ্যমান করা
+            document.getElementById('medicineBox').style.display = 'block';
+        }
+    }
+
+    // পেজ লোড হওয়ার সাথে সাথে রান হবে
+    window.onload = updateMedicineTracker;
+</script>
 
 </body>
 </html>
