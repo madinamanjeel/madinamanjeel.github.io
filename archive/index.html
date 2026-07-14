@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Archive</title>
   <style>
+    /* ভেরিফিকেশন না হওয়া পর্যন্ত বডি হাইড থাকবে */
     body {
+      display: none;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
@@ -15,7 +17,6 @@
     }
 
     #content-wrapper {
-      display: none;
       max-width: 800px;
       margin: 0 auto;
       background: #fff;
@@ -25,20 +26,18 @@
     }
 
     h1 {
-      /* Changes as per your request */
-      text-align: left; /* Left-aligned */
-      font-size: 16px; /* Same size as links */
-      font-weight: bold; /* Making it bold to stand out a bit */
+      text-align: left;
+      font-size: 16px;
+      font-weight: bold;
       color: #333;
       border-bottom: 1px solid #e0e0e0;
       padding-bottom: 10px;
       margin-bottom: 20px;
     }
 
-    /* Changes for the list */
     .archive-index {
-      list-style-type: none; /* Removes numbers/bullets */
-      padding-left: 0; /* Aligns list to the very left */
+      list-style-type: none;
+      padding-left: 0;
       margin: 0;
     }
 
@@ -66,19 +65,9 @@
       margin-top: 20px;
       border-top: 1px solid #eee;
     }
-
-    #loading-message {
-      text-align: center;
-      padding-top: 50px;
-      font-size: 1.2em;
-      color: #555;
-    }
   </style>
 </head>
 <body>
-  <div id="loading-message">
-    Verifying user... Please wait.
-  </div>
 
   <div id="content-wrapper">
     <h1>Index</h1>
@@ -90,12 +79,10 @@
       <li><a href="https://drive.google.com/drive/folders/1mdXiSbBc7CQ_WJ35Q0yc2QllQdtallab">2016 Sylhet Visit</a></li>
       <li><a href="https://drive.google.com/drive/folders/1vVYB7EoDI6753EdNvp4rWgD3yhYNMn5d">2016 Memories</a></li>
       <li><a href="https://drive.google.com/drive/folders/14igyRla6ruep8CGiFDzR-snf-EDZJLiz">2017 Memories</a></li>
-
-<li><a href="https://drive.google.com/drive/folders/1sZwJJNxnEaiYgl_63hgy5mg39lcQfDGV">2019 Adiba's 3rd Birthday</a></li>
-
+      <li><a href="https://drive.google.com/drive/folders/1sZwJJNxnEaiYgl_63hgy5mg39lcQfDGV">2019 Adiba's 3rd Birthday</a></li>
       <li><a href="https://drive.google.com/drive/folders/1htLz_ZJxEdzlOYNshQD7phUMTveJHLWs">2022 Wedding: Mashayekh & Lima</a></li>
       <li><a href="https://drive.google.com/drive/folders/1kYhtam-dcrkRZmLkj1Up1V0l8hs8aQMj">2022 Umrah visit</a></li>
-     <li><a href="https://drive.google.com/drive/folders/1O8yWIHSXllRCPp_5vdWTxzihBaymLBqX">2024 Char Algi</a></li>
+      <li><a href="https://drive.google.com/drive/folders/1O8yWIHSXllRCPp_5vdWTxzihBaymLBqX">2024 Char Algi</a></li>
       <li><a href="https://drive.google.com/drive/folders/1Bp8tYna0cNPmrrEy_G49EAKKgjrDb902">Timeline</a></li>
     </ul>
 
@@ -104,68 +91,42 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithRedirect,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
       authDomain: "family-429c7.firebaseapp.com",
-      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "family-429c7",
       storageBucket: "family-429c7.firebasestorage.app",
       messagingSenderId: "982876086618",
-      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-      measurementId: "G-R7NLCB1B92"
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363"
     };
-
-    const allowedEmails = [
-      "mashayekh.ahmed.archives@gmail.com",
-      "mashayekh64@gmail.com",
-      "shariatunnesa.madina@gmail.com",
-      "abdulkhalequebaf@gmail.com",
-      "lima.akter.1323@gmail.com",
-      "ahmad.muttaqeen@gmail.com",
-      "nusaiba.jannat.alifa@gmail.com",
-      "afia.ahmed.adiba@gmail.com",
-      "darulahmed467170@gmail.com",
-      "madina.manjeel.tv@gmail.com"
-    ];
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
-
-    const contentWrapper = document.getElementById('content-wrapper');
-    const loadingMessage = document.getElementById('loading-message');
     const userInfo = document.getElementById('user-info');
 
-    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
-
-    if (hasLoggedInBefore === 'true') {
-      loadingMessage.style.display = 'none';
-      contentWrapper.style.display = 'block';
-    }
-
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const email = user.email;
-        if (allowedEmails.includes(email)) {
-          loadingMessage.style.display = 'none';
-          contentWrapper.style.display = 'block';
-          userInfo.innerHTML = `Logged in as:<br>${email}`;
-          localStorage.setItem('hasLoggedIn', 'true');
-        } else {
-          alert("Access denied for: " + email);
-          window.location.href = "https://google.com";
+        try {
+          // সেন্ট্রাল JSON লিঙ্ক থেকে ইমেইল ভেরিফাই করা হচ্ছে
+          const response = await fetch('https://raw.githubusercontent.com/madinamanjeel/madinamanjeel.github.io/refs/heads/main/allowed_emails.json');
+          const allowedEmails = await response.json();
+          
+          if (allowedEmails.includes(user.email)) {
+            // ভেরিফিকেশন সফল হলে বডি দেখানো হবে
+            document.body.style.display = 'block';
+            userInfo.innerHTML = `Logged in as:<br>${user.email}`;
+          } else {
+            alert("Access denied for: " + user.email);
+            window.location.href = "https://google.com";
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Verification system busy. Please try again.");
         }
       } else {
-        if (hasLoggedInBefore !== 'true') {
-          loadingMessage.style.display = 'block';
-        }
         signInWithRedirect(auth, provider);
       }
     });
