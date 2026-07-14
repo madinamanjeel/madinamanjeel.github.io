@@ -133,22 +133,23 @@
         .charge-state-box { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; }
         .mosfet-box { display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
 
+        /* ৮টি ট্যাবের জন্য ৪ কলামের গ্রিড */
         .data-grid-pc {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             margin-bottom: 15px;
         }
         .pc-card {
             background: white;
-            padding: 12px 8px;
-            border-radius: 10px;
+            padding: 10px 5px;
+            border-radius: 8px;
             border: 1px solid #eef2f5;
             text-align: center;
             border-bottom: 3px solid #e0e0e0;
         }
-        .card-val { font-size: 18px; font-weight: bold; color: #00bcd4; margin-bottom: 3px; }
-        .card-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        .card-val { font-size: 15px; font-weight: bold; color: #00bcd4; margin-bottom: 2px; }
+        .card-lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
 
         .bottom-layout {
             display: grid;
@@ -198,7 +199,6 @@
             .right-panel { padding: 12px; }
             .status-header-bar { grid-template-columns: 1fr; gap: 10px; }
             .mosfet-box { justify-content: flex-start; }
-            .data-grid-pc { grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .bottom-layout { grid-template-columns: 1fr; gap: 12px; }
         }
     </style>
@@ -321,7 +321,7 @@
     function updateUI(data) {
         if (!data) return;
 
-        // সেন্ডার থেকে আসা টাইম সরাসরি সেট করা হচ্ছে
+        // টাইম শুধু তখনই আপডেট হবে যখন সেন্ডার থেকে ডেটা আসবে
         safeGet('liveTimestamp').innerText = data.time || "--:--:--";
 
         safeGet('totalVolt').innerText = `${data.voltage || "0.00"} V`;
