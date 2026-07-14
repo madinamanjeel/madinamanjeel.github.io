@@ -23,7 +23,6 @@
             min-height: 95vh;
         }
         
-        /* 🖥️ মেইন কন্টেইনার */
         .dashboard-container {
             width: 100%;
             max-width: 1100px;
@@ -36,7 +35,6 @@
             border: 1px solid #e3e8ee;
         }
 
-        /* বাম প্যানেল */
         .left-panel {
             background: var(--primary-bg);
             color: white;
@@ -50,7 +48,6 @@
         .device-mac { font-size: 13px; opacity: 0.8; letter-spacing: 1px; }
         .device-name { font-size: 19px; font-weight: bold; margin-top: 5px; }
 
-        /* গোল প্রোগ্রেস রিং */
         .circle-container {
             position: relative;
             width: 160px;
@@ -95,7 +92,6 @@
         .dot.on { background-color: #a7ffeb; box-shadow: 0 0 6px #a7ffeb; }
         .status-tag { font-weight: bold; display: inline-flex; align-items: center; }
 
-        /* ডান প্যানেল */
         .right-panel {
             padding: 20px;
             background: #fafbfc;
@@ -104,7 +100,6 @@
             justify-content: space-between;
         }
 
-        /* চার্জিং স্ট্যাটাস বার */
         .status-header-bar {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -118,7 +113,6 @@
         .charge-state-box { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; }
         .mosfet-box { display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
 
-        /* ডাটা গ্রিড */
         .data-grid-pc {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -136,7 +130,6 @@
         .card-val { font-size: 18px; font-weight: bold; color: #00bcd4; margin-bottom: 3px; }
         .card-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
 
-        /* সেল এরিয়া */
         .bottom-layout {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
@@ -191,13 +184,9 @@
         }
         .connect-btn:active { background: #e0f7fa; }
 
-        /* 📱 রেসপনসিভ মিডিয়া কোয়েরি */
         @media (max-width: 768px) {
             body { padding: 5px; }
-            .dashboard-container {
-                grid-template-columns: 1fr;
-                border-radius: 8px;
-            }
+            .dashboard-container { grid-template-columns: 1fr; border-radius: 8px; }
             .left-panel { padding: 20px 15px; }
             .connect-btn { width: 100%; }
             .right-panel { padding: 12px; }
@@ -211,7 +200,6 @@
 <body>
 
 <div class="dashboard-container">
-    <!-- বাম সাইড -->
     <div class="left-panel">
         <div>
             <div class="device-mac">A5:C2:39:3F:07:72</div>
@@ -229,7 +217,6 @@
             </div>
         </div>
 
-        <!-- 🎯 লাল বৃত্তের ৪টি সেটিংস এখানে যুক্ত করা হয়েছে -->
         <div class="side-stats">
             <div class="side-row"><span>BattType:</span> <span style="font-weight:bold;">LFP</span></div>
             <div class="side-row"><span>BattSwitch:</span> <span class="status-tag" id="battSwitch">OFF<span class="dot" id="switchDot"></span></span></div>
@@ -241,7 +228,6 @@
         <button class="connect-btn" id="connectBtn">CONNECT BMS</button>
     </div>
 
-    <!-- ডান সাইড -->
     <div class="right-panel">
         <div class="status-header-bar">
             <div class="charge-state-box">
@@ -292,6 +278,11 @@
 
     const connectBtn = document.getElementById('connectBtn');
     const progressRing = document.getElementById('progressRing');
+    
+    let bmsDevice = null;
+    let bmsServer = null;
+    let txCharacteristic = null;
+    let queryInterval = null;
 
     function setProgress(percent) {
         if (!progressRing) return;
@@ -301,64 +292,117 @@
         progressRing.style.strokeDashoffset = offset;
     }
 
-    if (connectBtn) {
-        connectBtn.addEventListener('click', async () => {
+    // প্যানেলে ডেটা রিকোয়েস্ট পাঠানোর কোর ফাংশন
+    async function sendDataRequest() {
+        if (bmsServer && bmsServer.connected && txCharacteristic) {
             try {
-                safeGet('bmsStatus').innerText = "Searching...";
-                const device = await navigator.bluetooth.requestDevice({
+                await txCharacteristic.writeValue(new Uint8Array([0xDD, 0xA5, 0x03, 0x00, 0xFF, 0xFD, 0x77]));
+                await txCharacteristic.writeValue(new Uint8Array([0xDD, 0xA5, 0x04, 0x00, 0xFF, 0xFC, 0x77]));
+            } catch (e) {
+                console.log("Request transmission failed:", e);
+            }
+        }
+    }
+
+    async function connectToBms(deviceInstance = null) {
+        try {
+            safeGet('bmsStatus').innerText = "Connecting...";
+            
+            if (!deviceInstance) {
+                bmsDevice = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
                     optionalServices: ['0000ff00-0000-1000-8000-00805f9b34fb', 0xff00] 
                 });
-
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('0000ff00-0000-1000-8000-00805f9b34fb');
-                const rxChar = await service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
-                const txChar = await service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb');
-
-                safeGet('bmsStatus').innerText = "Normal Operation";
-
-                await rxChar.startNotifications();
-                rxChar.addEventListener('characteristicvaluechanged', handleBmsData);
-
-                setInterval(async () => {
-                    try {
-                        await txChar.writeValue(new Uint8Array([0xDD, 0xA5, 0x03, 0x00, 0xFF, 0xFD, 0x77]));
-                        await txChar.writeValue(new Uint8Array([0xDD, 0xA5, 0x04, 0x00, 0xFF, 0xFC, 0x77]));
-                    } catch (e) {}
-                }, 2000);
-
-            } catch (error) {
-                safeGet('bmsStatus').innerText = "Error Connected";
+            } else {
+                bmsDevice = deviceInstance;
             }
-        });
+
+            bmsDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+            bmsServer = await bmsDevice.gatt.connect();
+            const service = await bmsServer.getPrimaryService('0000ff00-0000-1000-8000-00805f9b34fb');
+            const rxChar = await service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
+            txCharacteristic = await service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb');
+
+            safeGet('bmsStatus').innerText = "Normal Operation";
+            if(connectBtn) connectBtn.innerText = "BMS CONNECTED";
+
+            await rxChar.startNotifications();
+            rxChar.addEventListener('characteristicvaluechanged', handleBmsData);
+
+            // কানেক্ট হওয়ার সাথে সাথে প্রথম রিকোয়েস্ট ফায়ার করবে
+            sendDataRequest();
+
+            if(queryInterval) clearInterval(queryInterval);
+            queryInterval = setInterval(sendDataRequest, 2000);
+
+        } catch (error) {
+            console.log(error);
+            safeGet('bmsStatus').innerText = "Disconnected";
+            if(connectBtn) connectBtn.innerText = "CONNECT BMS";
+        }
     }
+
+    if (connectBtn) {
+        connectBtn.addEventListener('click', () => connectToBms());
+    }
+
+    function onDisconnected() {
+        safeGet('bmsStatus').innerText = "Disconnected";
+        if(connectBtn) connectBtn.innerText = "CONNECT BMS";
+        setTimeout(attemptAutoReconnect, 2000);
+    }
+
+    async function attemptAutoReconnect() {
+        if (navigator.bluetooth && navigator.bluetooth.getDevices) {
+            try {
+                const devices = await navigator.bluetooth.getDevices();
+                if (devices.length > 0) {
+                    console.log("Auto-connecting to saved device...");
+                    await connectToBms(devices[0]);
+                }
+            } catch (err) {
+                console.log("Auto-reconnect failed:", err);
+            }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', attemptAutoReconnect);
+
+    // 🎯 ল্যাপটপ লিড ওপেন করার সাথে সাথে কোনো ল্যাগ ছাড়া ইনস্ট্যান্ট আপডেট ট্রিম করার লজিক
+    document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible') {
+            console.log("Lid opened / Tab active - refreshing data instantly");
+            if (bmsServer && bmsServer.connected) {
+                // ২ সেকেন্ডের টাইমারের জন্য বসে না থেকে সাথে সাথে ডেটা রিড করবে
+                sendDataRequest();
+            } else {
+                // যদি ব্যাকগ্রাউন্ডে ব্রাউজার ভুল করে ডিসকানেক্ট করে দেয়, তবে আবার অটো রিকানেক্ট করবে
+                await attemptAutoReconnect();
+            }
+        }
+    });
 
     function handleBmsData(event) {
         const data = new Uint8Array(event.target.value.buffer);
         
-        // 0x03 - বেসিক ইনফো রেসপন্স
         if (data[1] === 0x03 && data.length >= 15) {
             safeGet('bmsStatus').innerText = "Normal Operation";
 
-            // ভোল্টেজ
             const voltRaw = (data[4] << 8) | data[5];
             const totalVolt = (voltRaw / 100).toFixed(2);
             safeGet('totalVolt').innerText = `${totalVolt} V`;
 
-            // কারেন্ট
             let currentRaw = (data[6] << 8) | data[7];
             if (currentRaw & 0x8000) currentRaw = currentRaw - 0x10000;
             const current = (currentRaw / 100).toFixed(2);
             safeGet('currentVal').innerText = `${current} A`;
 
-            // পাওয়ার
             const power = (totalVolt * current).toFixed(1);
             safeGet('powerVal').innerText = `${Math.abs(power)} W`;
 
-            // রিমেইনিং ক্যাপাসিটি
             const remainAh = ((data[8] << 8) | data[9]) / 100;
             
-            // পারসেন্টেজ নির্ধারণ (বাইট ২৩ ফলব্যাক লজিক)
             let soc = 0;
             if (data.length >= 24) {
                 soc = data[23];
@@ -371,43 +415,31 @@
             safeGet('socVal').innerText = soc;
             setProgress(soc);
 
-            // 🎯 মোসফেট এবং প্রোটোকল স্ট্যাটাস পার্সিং লজিক (বাইট ১০ এবং ১১)
             if (data.length >= 12) {
                 const statusByte = data[10]; 
-                
-                // বিট ক্যালকুলেশন
-                const chgMosOn = (statusByte & 0x01) !== 0;  // Bit 0: Charge MOS
-                const disMosOn = (statusByte & 0x02) !== 0;  // Bit 1: Discharge MOS
-                
-                // বাকি স্ট্যাটাস ফ্ল্যাগস (বাইট ১১ এর বিট অনুযায়ী জেবিডি স্ট্যান্ডার্ড)
-                const balOn = data.length >= 14 ? ((data[13] << 8) | data[14]) > 0 : false; // ব্যালেন্সিং এক্টিভ কিনা চেক
+                const chgMosOn = (statusByte & 0x01) !== 0;  
+                const disMosOn = (statusByte & 0x02) !== 0;  
+                const balOn = data.length >= 14 ? ((data[13] << 8) | data[14]) > 0 : false; 
 
-                // ChgMos UI আপডেট
                 const chgEl = safeGet('chgMos');
                 chgEl.innerText = chgMosOn ? "ON" : "OFF";
                 chgEl.style.color = chgMosOn ? "#00bcd4" : "#e91e63";
 
-                // DisMos UI আপডেট
                 const disEl = safeGet('disMos');
                 disEl.innerText = disMosOn ? "ON" : "OFF";
                 disEl.style.color = disMosOn ? "#00bcd4" : "#e91e63";
 
-                // BalState UI ও ডট আপডেট
                 const balText = safeGet('balState');
-                const balDot = document.getElementById('balDot');
                 balText.innerHTML = balOn ? `ON<span class="dot on" id="balDot"></span>` : `OFF<span class="dot" id="balDot"></span>`;
 
-                // BattSwitch (নরমাল অপারেশনে মোসফেট অন থাকলে সুইচ অন ধর্তব্য)
                 const swText = safeGet('battSwitch');
                 const swOn = chgMosOn || disMosOn;
                 swText.innerHTML = swOn ? `ON<span class="dot on" id="switchDot"></span>` : `OFF<span class="dot" id="switchDot"></span>`;
 
-                // HeatState (ডিফল্ট অফ, প্রোটেকশন চেক)
                 const heatText = safeGet('heatState');
                 heatText.innerHTML = `OFF<span class="dot" id="heatDot"></span>`;
             }
 
-            // চার্জ/ডিসচার্জ Est Time ক্যালকুলেশন
             const currentAbs = Math.abs(parseFloat(current));
             if (currentAbs > 0.15) {
                 if (current > 0) {
@@ -427,7 +459,6 @@
                 safeGet('estTime').innerText = "Standby";
             }
 
-            // সাইকেল ও টেম্পারেচার
             safeGet('cycles').innerText = ((data[12] << 8) | data[13]) || 5;
             if (data.length >= 29) {
                 const tempRaw = (data[27] << 8) | data[28];
@@ -438,7 +469,6 @@
             }
         }
         
-        // 0x04 - সেল ভোল্টেজ রেসপন্স
         if (data[1] === 0x04 && data.length >= 12) {
             const c1 = ((data[4] << 8) | data[5]) / 1000;
             const c2 = ((data[6] << 8) | data[7]) / 1000;
