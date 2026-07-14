@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Madina Manjeel - BMS Global Viewer</title>
+    <title>Madina Manjeel - Universal BMS Dashboard</title>
     <style>
         :root {
             --primary-bg: #00bcd4;
@@ -42,9 +42,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* মাঝখানে রাখার জন্য */
+            justify-content: space-between;
             text-align: center;
-            gap: 20px;
         }
         .device-mac { font-size: 13px; opacity: 0.8; letter-spacing: 1px; }
         .device-name { font-size: 19px; font-weight: bold; margin-top: 5px; }
@@ -75,7 +74,7 @@
             color: white;
         }
         .percentage { font-size: 38px; font-weight: bold; }
-        .lang-text { font-size: 11px; opacity: 0.8; }
+        .lang-text { font-size: 12px; font-weight: 500; opacity: 0.9; }
 
         .side-stats {
             width: 100%;
@@ -102,9 +101,8 @@
         }
 
         .status-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             background: #fff;
             padding: 12px 15px;
             border-radius: 10px;
@@ -113,7 +111,7 @@
             margin-bottom: 15px;
         }
         .charge-state-box { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; }
-        .sync-status { font-size: 12px; color: var(--text-muted); }
+        .mosfet-box { display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
 
         .data-grid-pc {
             display: grid;
@@ -129,31 +127,58 @@
             text-align: center;
             border-bottom: 3px solid #e0e0e0;
         }
-        .card-val { font-size: 22px; font-weight: bold; color: #00bcd4; margin-bottom: 3px; }
+        .card-val { font-size: 18px; font-weight: bold; color: #00bcd4; margin-bottom: 3px; }
         .card-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
 
         .bottom-layout {
             display: grid;
-            grid-template-columns: 1fr; /* গ্লোবাল ভিউতে শুধু ব্যাটারি স্ট্যাটাস কার্ড রাখলেই হবে */
+            grid-template-columns: 1.2fr 1fr;
             gap: 15px;
         }
-        .sys-status-box {
+        .cells-box-wrapper, .sys-status-box {
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border: 1px solid #eef2f5;
-            text-align: center;
         }
-        .section-title { font-size: 13px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
-        .sys-status-text { font-size: 22px; color: #00bcd4; font-weight: bold; }
+        .section-title { font-size: 13px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px; }
+        
+        .cells-grid-pc {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .cell-container-pc {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fcfdfe;
+            padding: 8px 4px;
+            border-radius: 6px;
+            border: 1.5px solid #edf1f6;
+        }
+        .cell-battery-shape {
+            background: #e0f7fa;
+            border: 1.5px solid var(--primary-bg);
+            border-radius: 4px;
+            width: 90%;
+            padding: 4px 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .sys-status-text { font-size: 16px; color: #00bcd4; font-weight: bold; }
 
         @media (max-width: 768px) {
             body { padding: 5px; }
             .dashboard-container { grid-template-columns: 1fr; border-radius: 8px; }
             .left-panel { padding: 20px 15px; }
             .right-panel { padding: 12px; }
-            .status-header-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .status-header-bar { grid-template-columns: 1fr; gap: 10px; }
+            .mosfet-box { justify-content: flex-start; }
             .data-grid-pc { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .bottom-layout { grid-template-columns: 1fr; gap: 12px; }
         }
     </style>
 </head>
@@ -173,12 +198,15 @@
             </svg>
             <div class="circle-text">
                 <div class="percentage"><span id="socVal">--</span><span style="font-size:16px">%</span></div>
-                <div class="lang-text">剩余电量</div>
+                <div class="lang-text" id="langText">অবশিষ্ট চার্জ</div>
             </div>
         </div>
 
         <div class="side-stats">
             <div class="side-row"><span>BattType:</span> <span style="font-weight:bold;">LFP</span></div>
+            <div class="side-row"><span>BattSwitch:</span> <span class="status-tag" id="battSwitch">OFF<span class="dot" id="switchDot"></span></span></div>
+            <div class="side-row"><span>HeatState:</span> <span class="status-tag" id="heatState">OFF<span class="dot" id="heatDot"></span></span></div>
+            <div class="side-row"><span>BalState:</span> <span class="status-tag" id="balState">OFF<span class="dot" id="balDot"></span></span></div>
             <div class="side-row" style="border-top: 1px solid rgba(255,255,255,0.2); margin-top:4px; padding-top:6px;"><span>Cap Capacity:</span> <span>100 Ah</span></div>
         </div>
     </div>
@@ -187,10 +215,13 @@
         <div class="status-header-bar">
             <div class="charge-state-box">
                 <span id="chargeIcon">🔌</span> 
-                <span id="chargeState" style="color: #2e7d32;">Connecting to Cloud...</span>
+                <span id="chargeState" style="color: #2e7d32;">Connecting...</span>
+                <span style="color:#ccc;">|</span>
+                <span style="font-weight:normal; font-size:13px; color:var(--text-muted);">Est: <span id="estTime" style="color:#d32f2f; font-weight:bold;">--</span></span>
             </div>
-            <div class="sync-status">
-                আপডেট: <span id="updateTime" style="font-weight: bold; color: #00bcd4;">--</span>
+            <div class="mosfet-box">
+                <div>ChgMos: <span style="color:#e91e63; font-weight:bold;" id="chgMos">OFF</span></div>
+                <div>DisMos: <span style="color:#e91e63; font-weight:bold;" id="disMos">OFF</span></div>
             </div>
         </div>
 
@@ -198,20 +229,35 @@
             <div class="pc-card"><div class="card-val" id="totalVolt">-- V</div><div class="card-lbl">Total Volt</div></div>
             <div class="pc-card"><div class="card-val" id="currentVal">-- A</div><div class="card-lbl">Current</div></div>
             <div class="pc-card"><div class="card-val" id="powerVal">-- W</div><div class="card-lbl">Power</div></div>
-            <div class="pc-card"><div class="card-val" id="mosTemp">-- °C</div><div class="card-lbl">MOS Temp</div></div>
+            <div class="pc-card"><div class="card-val" id="cycles">--</div><div class="card-lbl">Cycles</div></div>
+            <div class="pc-card"><div class="card-val" id="highVolt">-- V</div><div class="card-lbl">High Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="lowVolt">-- V</div><div class="card-lbl">Low Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="aveVolt">-- V</div><div class="card-lbl">Ave Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="diffVolt">-- V</div><div class="card-lbl">Diff Volt</div></div>
         </div>
 
         <div class="bottom-layout">
+            <div class="cells-box-wrapper">
+                <div class="section-title">CELLS VOLTAGE (4S)</div>
+                <div class="cells-grid-pc">
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 1</span><div class="cell-battery-shape" id="c1">--</div></div>
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 2</span><div class="cell-battery-shape" id="c2">--</div></div>
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 3</span><div class="cell-battery-shape" id="c3">--</div></div>
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 4</span><div class="cell-battery-shape" id="c4">--</div></div>
+                </div>
+            </div>
+
             <div class="sys-status-box">
                 <div class="section-title">BATTERY STATUS</div>
-                <div class="sys-status-text" id="bmsStatus">Fetching...</div>
+                <div class="sys-status-text" id="bmsStatus">Disconnected</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">MOS Temp: <span id="mosTemp">--</span></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // আপনার ফায়ারবেস রিয়েল-টাইম ডেটাবেস ইউআরএল
+    // ফায়ারবেস ডেটাবেস ইউআরএল (রিয়েল-টাইম SSE ইভেন্ট সহ)
     const FIREBASE_URL = "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
     const safeGet = (id) => document.getElementById(id) || { innerText: "", style: {} };
@@ -225,64 +271,91 @@
         progressRing.style.strokeDashoffset = offset;
     }
 
-    async function fetchBMSData() {
-        const targetUrl = `${FIREBASE_URL}bms_data.json`;
+    // ফায়ারবেসের অফিশিয়াল রিয়েল-টাইম পুশ ট্র্যাকিং (Server-Sent Events)
+    // এর মাধ্যমে আপনার পেজ প্রতি সেকেন্ডে নিজ থেকে ফায়ারবেস ট্র্যাকার লুপ করবে, রিফ্রেশ লাগবে না
+    function initRealtimeSync() {
+        const eventSource = new EventSource(`${FIREBASE_URL}bms_data.json`);
 
-        try {
-            const response = await fetch(targetUrl);
-            if (response.ok) {
-                const data = await response.json();
-                if (data) {
-                    // ভোল্টেজ ও কারেন্ট আপডেট
-                    const volt = parseFloat(data.voltage || 0);
-                    const curr = parseFloat(data.current || 0);
-                    
-                    safeGet('totalVolt').innerText = `${volt.toFixed(2)} V`;
-                    safeGet('currentVal').innerText = `${curr.toFixed(2)} A`;
-                    
-                    // পাওয়ার ক্যালকুলেশন
-                    const power = (volt * curr).toFixed(1);
-                    safeGet('powerVal').innerText = `${Math.abs(power)} W`;
-
-                    // SOC (ব্যাটারি চার্জ পার্সেন্টেজ)
-                    const soc = parseInt(data.soc || 0);
-                    safeGet('socVal').innerText = soc;
-                    setProgress(soc);
-
-                    // তাপমাত্রা
-                    safeGet('mosTemp').innerText = `${data.temperature || "--"} °C`;
-                    
-                    // সর্বশেষ আপডেটের সময়
-                    safeGet('updateTime').innerText = data.last_updated || "--";
-
-                    // চার্জিং/ডিসচার্জিং স্ট্যাটাস নির্ধারণ
-                    const currentAbs = Math.abs(curr);
-                    if (currentAbs > 0.15) {
-                        if (curr > 0) {
-                            safeGet('chargeState').innerText = "Charging";
-                            safeGet('chargeIcon').innerText = "⚡";
-                            safeGet('bmsStatus').innerText = "Charging Active";
-                        } else {
-                            safeGet('chargeState').innerText = "Discharging";
-                            safeGet('chargeIcon').innerText = "🔋";
-                            safeGet('bmsStatus').innerText = "Discharging Active";
-                        }
-                    } else {
-                        safeGet('chargeState').innerText = "Idle / Full";
-                        safeGet('chargeIcon').innerText = "🔌";
-                        safeGet('bmsStatus').innerText = "Standby / Fully Charged";
-                    }
+        eventSource.addEventListener('put', function(e) {
+            try {
+                const eventData = JSON.parse(e.data);
+                // ফায়ারবেস থেকে নতুন ডাটা পুশ হলে তা রেন্ডার হবে
+                if (eventData && eventData.data) {
+                    updateUI(eventData.data);
+                } else if (eventData) {
+                    // প্রথমবার লোড হওয়ার সময় পুরো অবজেক্ট পেলে
+                    updateUI(eventData);
                 }
+            } catch (err) {
+                console.log("SSE Sync Error: ", err);
             }
-        } catch (error) {
-            console.error("Cloud Fetch failed:", error);
-            safeGet('bmsStatus').innerText = "Connection Error ❌";
-        }
+        });
+
+        eventSource.onerror = function() {
+            console.log("SSE Disconnected. Retrying...");
+            safeGet('bmsStatus').innerText = "Reconnecting...";
+        };
     }
 
-    // প্রতি ৩ সেকেন্ড পর পর ফায়ারবেস থেকে লাইভ ডেটা আপডেট নিয়ে আসবে
-    setInterval(fetchBMSData, 3000);
-    fetchBMSData(); // প্রথমবার রান করার জন্য
+    function updateUI(data) {
+        if (!data) return;
+
+        // ভোল্টেজ ও কারেন্ট
+        safeGet('totalVolt').innerText = `${data.voltage || "0.00"} V`;
+        safeGet('currentVal').innerText = `${data.current || "0.00"} A`;
+        safeGet('powerVal').innerText = `${data.power || "0"} W`;
+        safeGet('cycles').innerText = data.cycles !== undefined ? data.cycles : "--";
+
+        // হাই/লো/গড় ভোল্টেজ
+        safeGet('highVolt').innerText = `${data.highVolt || "0.000"} V`;
+        safeGet('lowVolt').innerText = `${data.lowVolt || "0.000"} V`;
+        safeGet('aveVolt').innerText = `${data.aveVolt || "0.000"} V`;
+        safeGet('diffVolt').innerText = `${data.diffVolt || "0.000"} V`;
+
+        // SOC (ব্যাটারি চার্জ %)
+        const soc = parseInt(data.soc || 0);
+        safeGet('socVal').innerText = soc;
+        setProgress(soc);
+
+        // সুইচ ও স্টেট ডট
+        const battSwitch = data.battSwitch || false;
+        safeGet('battSwitch').innerHTML = battSwitch ? `ON<span class="dot on" id="switchDot"></span>` : `OFF<span class="dot" id="switchDot"></span>`;
+        
+        const heatState = data.heatState || false;
+        safeGet('heatState').innerHTML = heatState ? `ON<span class="dot on" id="heatDot"></span>` : `OFF<span class="dot" id="heatDot"></span>`;
+
+        const balState = data.balState || false;
+        safeGet('balState').innerHTML = balState ? `ON<span class="dot on" id="balDot"></span>` : `OFF<span class="dot" id="balDot"></span>`;
+
+        // চার্জিং স্ট্যাটাস ও হেডার
+        safeGet('chargeIcon').innerText = data.chargeIconText || "🔌";
+        safeGet('chargeState').innerText = data.chargeStateText || "Waiting Connection";
+        safeGet('estTime').innerText = data.estTime || "--";
+
+        // MOSFET
+        const chgMos = data.chgMos || false;
+        safeGet('chgMos').innerText = chgMos ? "ON" : "OFF";
+        safeGet('chgMos').style.color = chgMos ? "#00bcd4" : "#e91e63";
+
+        const disMos = data.disMos || false;
+        safeGet('disMos').innerText = disMos ? "ON" : "OFF";
+        safeGet('disMos').style.color = disMos ? "#00bcd4" : "#e91e63";
+
+        // সেলস ভোল্টেজ (৪টি সেল)
+        if (data.cells && data.cells.length >= 4) {
+            safeGet('c1').innerText = `${parseFloat(data.cells[0]).toFixed(3)}V`;
+            safeGet('c2').innerText = `${parseFloat(data.cells[1]).toFixed(3)}V`;
+            safeGet('c3').innerText = `${parseFloat(data.cells[2]).toFixed(3)}V`;
+            safeGet('c4').innerText = `${parseFloat(data.cells[3]).toFixed(3)}V`;
+        }
+
+        // ব্যাটারি স্ট্যাটাস ও টেম্পারেচার
+        safeGet('bmsStatus').innerText = data.bmsStatusText || "Normal operation";
+        safeGet('mosTemp').innerText = `${data.temperature || "31.7"} °C`;
+    }
+
+    // পেজ লোড হবার সাথে সাথে রিয়েল-টাইম সিঙ্ক একটিভ হবে
+    window.addEventListener('DOMContentLoaded', initRealtimeSync);
 </script>
 
 </body>
