@@ -133,10 +133,9 @@
         .charge-state-box { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; }
         .mosfet-box { display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
 
-        /* আপনার নির্দেশানুযায়ী ৩ কলাম পরিবর্তন করে প্রতি লাইনে ৪টি করে ট্যাব করা হলো */
         .data-grid-pc {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-bottom: 15px;
         }
@@ -199,8 +198,7 @@
             .right-panel { padding: 12px; }
             .status-header-bar { grid-template-columns: 1fr; gap: 10px; }
             .mosfet-box { justify-content: flex-start; }
-            /* মোবাইল স্ক্রিনে জায়গা কম থাকায় সুন্দর ফিটিংয়ের জন্য ২ কলাম করা হলো */
-            .data-grid-pc { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .data-grid-pc { grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .bottom-layout { grid-template-columns: 1fr; gap: 12px; }
         }
     </style>
@@ -211,7 +209,6 @@
     <div class="left-panel">
         <div class="device-info-wrapper">
             <div class="device-mac">A5:C2:39:3F:07:72</div>
-            <!-- নাম পরিবর্তন করে Madina Manjeel Power করা হয়েছে -->
             <div class="device-name">Madina Manjeel Power</div>
             <div class="time-display-box">
                 Sent: <span id="liveTimestamp">--:--:-- --</span>
@@ -254,7 +251,6 @@
             </div>
         </div>
 
-        <!-- ৪টি করে ট্যাব এখন সুন্দরভাবে ২ লাইনে বিন্যস্ত থাকবে -->
         <div class="data-grid-pc">
             <div class="pc-card"><div class="card-val" id="totalVolt">-- V</div><div class="card-lbl">Total Volt</div></div>
             <div class="pc-card"><div class="card-val" id="currentVal">-- A</div><div class="card-lbl">Current</div></div>
@@ -325,6 +321,7 @@
     function updateUI(data) {
         if (!data) return;
 
+        // সেন্ডার থেকে আসা টাইম সরাসরি সেট করা হচ্ছে
         safeGet('liveTimestamp').innerText = data.time || "--:--:--";
 
         safeGet('totalVolt').innerText = `${data.voltage || "0.00"} V`;
