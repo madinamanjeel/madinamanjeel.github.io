@@ -213,7 +213,7 @@
             </svg>
             <div class="circle-text">
                 <div class="percentage"><span id="socVal">--</span><span style="font-size:16px">%</span></div>
-                <div class="lang-text" id="langText">অবশিষ্ট চার্জ</div>
+                <div class="lang-text" id="langText">অবशिष्ट চার্জ</div>
             </div>
         </div>
 
@@ -286,7 +286,7 @@
     let txCharacteristic = null;
     let queryInterval = null;
 
-    // ক্লাউডে সিঙ্ক করার ফুল অবজেক্ট
+    // ক্লাউডে সিঙ্ক করার ফুল অবজেক্ট (এখানে 'time' প্রোপার্টি যুক্ত করা হয়েছে)
     let currentBmsState = {
         voltage: "0.00",
         current: "0.00",
@@ -308,7 +308,7 @@
         bmsStatusText: "Disconnected",
         temperature: "31.7",
         cells: ["0.000", "0.000", "0.000", "0.000"],
-        last_updated: ""
+        time: ""
     };
 
     function setProgress(percent) {
@@ -330,10 +330,11 @@
         }
     }
 
-    // প্রতি ১ সেকেন্ডে ফায়ারবেসে পাঠাবে
+    // প্রতি ১ সেকেন্ডে ফায়ারবেসে ডেটা পাঠাবে
     async function syncDataToFirebase() {
         if (bmsServer && bmsServer.connected) {
-            currentBmsState.last_updated = new Date().toLocaleTimeString();
+            // গ্লোবাল পেজের রিসিভারের রিকোয়ারমেন্ট অনুযায়ী সরাসরি 'time' কী-তে লোকাল টাইম ফরম্যাট পুশ করা হচ্ছে
+            currentBmsState.time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             try {
                 await fetch(`${FIREBASE_URL}bms_data.json`, {
                     method: "PUT",
