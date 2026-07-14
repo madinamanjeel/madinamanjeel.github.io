@@ -213,7 +213,7 @@
             </svg>
             <div class="circle-text">
                 <div class="percentage"><span id="socVal">--</span><span style="font-size:16px">%</span></div>
-                <div class="lang-text">剩余电量</div>
+                <div class="lang-text" id="langText">অবশিষ্ট চার্জ</div>
             </div>
         </div>
 
@@ -274,7 +274,6 @@
 </div>
 
 <script>
-    // ফায়ারবেস ডেটাবেস ইউআরএল কনফিগারেশন
     const FIREBASE_URL = "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
     const safeGet = (id) => document.getElementById(id) || { innerText: "", style: {} };
@@ -287,12 +286,28 @@
     let txCharacteristic = null;
     let queryInterval = null;
 
-    // রিয়েল-টাইম ভ্যারিয়েবল স্টোর (যা ফায়ারবেসে পাঠানো হবে)
+    // ক্লাউডে সিঙ্ক করার ফুল অবজেক্ট
     let currentBmsState = {
         voltage: "0.00",
         current: "0.00",
+        power: "0",
+        cycles: "--",
+        highVolt: "0.000",
+        lowVolt: "0.000",
+        aveVolt: "0.000",
+        diffVolt: "0.000",
         soc: 0,
-        temperature: "0.0",
+        battSwitch: false,
+        heatState: false,
+        balState: false,
+        chgMos: false,
+        disMos: false,
+        estTime: "--",
+        chargeStateText: "Disconnected",
+        chargeIconText: "🔌",
+        bmsStatusText: "Disconnected",
+        temperature: "31.7",
+        cells: ["0.000", "0.000", "0.000", "0.000"],
         last_updated: ""
     };
 
@@ -304,7 +319,6 @@
         progressRing.style.strokeDashoffset = offset;
     }
 
-    // প্যানেলে ডেটা রিকোয়েস্ট পাঠানোর কোর ফাংশন
     async function sendDataRequest() {
         if (bmsServer && bmsServer.connected && txCharacteristic) {
             try {
@@ -316,7 +330,7 @@
         }
     }
 
-    // ফায়ারবেসে ডেটা পুশ করার অটোমেটিক ফাংশন
+    // প্রতি ১ সেকেন্ডে ফায়ারবেসে পাঠাবে
     async function syncDataToFirebase() {
         if (bmsServer && bmsServer.connected) {
             currentBmsState.last_updated = new Date().toLocaleTimeString();
@@ -332,8 +346,7 @@
         }
     }
 
-    // প্রতি ৪ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে ডেটা সিঙ্ক হবে
-    setInterval(syncDataToFirebase, 4000);
+    setInterval(syncDataToFirebase, 1000);
 
     async function connectToBms(deviceInstance = null) {
         try {
@@ -355,21 +368,22 @@
             const rxChar = await service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
             txCharacteristic = await service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb');
 
-            safeGet('bmsStatus').innerText = "Normal Operation";
+            safeGet('bmsStatus').innerText = "Normal operation";
+            currentBmsState.bmsStatusText = "Normal operation";
             if(connectBtn) connectBtn.innerText = "BMS CONNECTED";
 
             await rxChar.startNotifications();
             rxChar.addEventListener('characteristicvaluechanged', handleBmsData);
 
-            // কানেক্ট হওয়ার সাথে সাথে প্রথম রিকোয়েস্ট ফায়ার করবে
             sendDataRequest();
 
             if(queryInterval) clearInterval(queryInterval);
-            queryInterval = setInterval(sendDataRequest, 2000);
+            queryInterval = setInterval(sendDataRequest, 1000); // ১ সেকেন্ড পরপর ব্লুটুথ কোয়েরি
 
         } catch (error) {
             console.log(error);
             safeGet('bmsStatus').innerText = "Disconnected";
+            currentBmsState.bmsStatusText = "Disconnected";
             if(connectBtn) connectBtn.innerText = "CONNECT BMS";
         }
     }
@@ -380,6 +394,7 @@
 
     function onDisconnected() {
         safeGet('bmsStatus').innerText = "Disconnected";
+        currentBmsState.bmsStatusText = "Disconnected";
         if(connectBtn) connectBtn.innerText = "CONNECT BMS";
         setTimeout(attemptAutoReconnect, 2000);
     }
@@ -389,7 +404,6 @@
             try {
                 const devices = await navigator.bluetooth.getDevices();
                 if (devices.length > 0) {
-                    console.log("Auto-connecting to saved device...");
                     await connectToBms(devices[0]);
                 }
             } catch (err) {
@@ -400,15 +414,11 @@
 
     window.addEventListener('DOMContentLoaded', attemptAutoReconnect);
 
-    // ল্যাপটপ লিড ওপেন করার সাথে সাথে কোনো ল্যাগ ছাড়া ইনস্ট্যান্ট আপডেট ট্রিম করার লজিক
     document.addEventListener('visibilitychange', async () => {
         if (document.visibilityState === 'visible') {
-            console.log("Lid opened / Tab active - refreshing data instantly");
             if (bmsServer && bmsServer.connected) {
-                // ২ সেকেন্ডের টাইমারের জন্য বসে না থেকে সাথে সাথে ডেটা রিড করবে
                 sendDataRequest();
             } else {
-                // যদি ব্যাকগ্রাউন্ডে ব্রাউজার ভুল করে ডিসকানেক্ট করে দেয়, তবে আবার অটো রিকানেক্ট করবে
                 await attemptAutoReconnect();
             }
         }
@@ -418,21 +428,23 @@
         const data = new Uint8Array(event.target.value.buffer);
         
         if (data[1] === 0x03 && data.length >= 15) {
-            safeGet('bmsStatus').innerText = "Normal Operation";
+            safeGet('bmsStatus').innerText = "Normal operation";
+            currentBmsState.bmsStatusText = "Normal operation";
 
             const voltRaw = (data[4] << 8) | data[5];
             const totalVolt = (voltRaw / 100).toFixed(2);
             safeGet('totalVolt').innerText = `${totalVolt} V`;
-            currentBmsState.voltage = totalVolt; // সিঙ্কের জন্য জমা রাখা হলো
+            currentBmsState.voltage = totalVolt;
 
             let currentRaw = (data[6] << 8) | data[7];
             if (currentRaw & 0x8000) currentRaw = currentRaw - 0x10000;
             const current = (currentRaw / 100).toFixed(2);
             safeGet('currentVal').innerText = `${current} A`;
-            currentBmsState.current = current; // সিঙ্কের জন্য জমা রাখা হলো
+            currentBmsState.current = current;
 
             const power = (totalVolt * current).toFixed(1);
             safeGet('powerVal').innerText = `${Math.abs(power)} W`;
+            currentBmsState.power = Math.abs(power);
 
             const remainAh = ((data[8] << 8) | data[9]) / 100;
             
@@ -447,31 +459,40 @@
 
             safeGet('socVal').innerText = soc;
             setProgress(soc);
-            currentBmsState.soc = soc; // সিঙ্কের জন্য জমা রাখা হলো
+            currentBmsState.soc = soc;
+
+            let chgMosOn = false;
+            let disMosOn = false;
+            let balOn = false;
 
             if (data.length >= 12) {
                 const statusByte = data[10]; 
-                const chgMosOn = (statusByte & 0x01) !== 0;  
-                const disMosOn = (statusByte & 0x02) !== 0;  
-                const balOn = data.length >= 14 ? ((data[13] << 8) | data[14]) > 0 : false; 
+                chgMosOn = (statusByte & 0x01) !== 0;  
+                disMosOn = (statusByte & 0x02) !== 0;  
+                balOn = data.length >= 14 ? ((data[13] << 8) | data[14]) > 0 : false; 
 
                 const chgEl = safeGet('chgMos');
                 chgEl.innerText = chgMosOn ? "ON" : "OFF";
                 chgEl.style.color = chgMosOn ? "#00bcd4" : "#e91e63";
+                currentBmsState.chgMos = chgMosOn;
 
                 const disEl = safeGet('disMos');
                 disEl.innerText = disMosOn ? "ON" : "OFF";
                 disEl.style.color = disMosOn ? "#00bcd4" : "#e91e63";
+                currentBmsState.disMos = disMosOn;
 
                 const balText = safeGet('balState');
                 balText.innerHTML = balOn ? `ON<span class="dot on" id="balDot"></span>` : `OFF<span class="dot" id="balDot"></span>`;
+                currentBmsState.balState = balOn;
 
                 const swText = safeGet('battSwitch');
                 const swOn = chgMosOn || disMosOn;
                 swText.innerHTML = swOn ? `ON<span class="dot on" id="switchDot"></span>` : `OFF<span class="dot" id="switchDot"></span>`;
+                currentBmsState.battSwitch = swOn;
 
                 const heatText = safeGet('heatState');
                 heatText.innerHTML = `OFF<span class="dot" id="heatDot"></span>`;
+                currentBmsState.heatState = false;
             }
 
             const currentAbs = Math.abs(parseFloat(current));
@@ -480,28 +501,45 @@
                     safeGet('chargeState').innerText = "Charging";
                     safeGet('chargeIcon').innerText = "⚡";
                     const hoursLeft = (100 - remainAh) / currentAbs;
-                    safeGet('estTime').innerText = formatHours(hoursLeft);
+                    const fTime = formatHours(hoursLeft);
+                    safeGet('estTime').innerText = fTime;
+                    
+                    currentBmsState.chargeStateText = "Charging";
+                    currentBmsState.chargeIconText = "⚡";
+                    currentBmsState.estTime = fTime;
                 } else {
                     safeGet('chargeState').innerText = "Discharging";
                     safeGet('chargeIcon').innerText = "🔋";
                     const hoursLeft = remainAh / currentAbs;
-                    safeGet('estTime').innerText = formatHours(hoursLeft);
+                    const fTime = formatHours(hoursLeft);
+                    safeGet('estTime').innerText = fTime;
+
+                    currentBmsState.chargeStateText = "Discharging";
+                    currentBmsState.chargeIconText = "🔋";
+                    currentBmsState.estTime = fTime;
                 }
             } else {
                 safeGet('chargeState').innerText = "Idle / Full";
                 safeGet('chargeIcon').innerText = "🔌";
                 safeGet('estTime').innerText = "Standby";
+
+                currentBmsState.chargeStateText = "Idle / Full";
+                currentBmsState.chargeIconText = "🔌";
+                currentBmsState.estTime = "Standby";
             }
 
-            safeGet('cycles').innerText = ((data[12] << 8) | data[13]) || 5;
+            const cyclesVal = ((data[12] << 8) | data[13]) || 5;
+            safeGet('cycles').innerText = cyclesVal;
+            currentBmsState.cycles = cyclesVal;
+
             if (data.length >= 29) {
                 const tempRaw = (data[27] << 8) | data[28];
                 const tempC = tempRaw ? ((tempRaw - 2731) / 10).toFixed(1) : "31.7";
                 safeGet('mosTemp').innerText = `${tempC} °C`;
-                currentBmsState.temperature = tempC; // সিঙ্কের জন্য জমা রাখা হলো
+                currentBmsState.temperature = tempC;
             } else {
                 safeGet('mosTemp').innerText = "31.7 °C";
-                currentBmsState.temperature = "31.7"; // সিঙ্কের জন্য জমা রাখা হলো
+                currentBmsState.temperature = "31.7";
             }
         }
         
@@ -515,6 +553,7 @@
             safeGet('c2').innerText = `${c2.toFixed(3)}V`;
             safeGet('c3').innerText = `${c3.toFixed(3)}V`;
             safeGet('c4').innerText = `${c4.toFixed(3)}V`;
+            currentBmsState.cells = [c1.toFixed(3), c2.toFixed(3), c3.toFixed(3), c4.toFixed(3)];
 
             const cells = [c1, c2, c3, c4];
             const max = Math.max(...cells);
@@ -526,6 +565,11 @@
             safeGet('lowVolt').innerText = `${min.toFixed(3)} V`;
             safeGet('aveVolt').innerText = `${avg.toFixed(3)} V`;
             safeGet('diffVolt').innerText = `${diff.toFixed(3)} V`;
+
+            currentBmsState.highVolt = max.toFixed(3);
+            currentBmsState.lowVolt = min.toFixed(3);
+            currentBmsState.aveVolt = avg.toFixed(3);
+            currentBmsState.diffVolt = diff.toFixed(3);
         }
     }
 
