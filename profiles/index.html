@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Tree (Protected)</title>
   <style>
+    /* ভেরিফিকেশন না হওয়া পর্যন্ত বডি হাইড থাকবে */
     body {
+      display: none;
       line-height: 1.8;
       font-family: Arial, sans-serif;
       position: relative;
@@ -13,48 +15,19 @@
       padding-bottom: 3rem;
     }
 
-    a {
-      font-weight: bold;
-    }
-
-    a + a {
-      color: darkpink;
-    }
-
+    a { font-weight: bold; }
+    
+    /* কালার কোডিং */
     a[href="Monsur_Munshi.html"] { color: #964B00; }
     a[href="Md_Abdul_Khaleque.html"] { color: darkgreen; }
-    a[href="Afia_Ahmed_Adiba.html"],
-    a[href="Ahmad_Muttaqeen.html"],
-    a[href="upcoming.html"] { color: #0f4c81; }
-    a[href="Darul_Ahmed.html"],
-    a[href="Mashayekh_Ahmed.html"] { color: blue; }
-    a[href="Shafia_Khatun.html"],
-    a[href="Shariatunnesa_Madina.html"],
-    a[href="Lima_Akter.html"],
-    a[href="Farjana_Afrin.html"] { color: #d80073; }
+    a[href="Afia_Ahmed_Adiba.html"], a[href="Ahmad_Muttaqeen.html"], a[href="upcoming.html"] { color: #0f4c81; }
+    a[href="Darul_Ahmed.html"], a[href="Mashayekh_Ahmed.html"] { color: blue; }
+    a[href="Shafia_Khatun.html"], a[href="Shariatunnesa_Madina.html"], a[href="Lima_Akter.html"], a[href="Farjana_Afrin.html"] { color: #d80073; }
 
-    h3 {
-      text-align: center;
-      font-weight: bold;
-      text-decoration: underline;
-    }
-
-    #content-wrapper {
-      display: none;
-    }
-
-    #loading-message {
-      text-align: center;
-      padding-top: 50px;
-      font-size: 1.2em;
-      color: #555;
-    }
+    h3 { text-align: center; font-weight: bold; text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div id="loading-message">
-    Verifying user... Please wait.
-  </div>
 
   <div id="content-wrapper">
     <h3><a href="https://madinamanjeel.github.io/profiles/heritage.html">Our Heritage</a></h3>
@@ -91,66 +64,38 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      onAuthStateChanged,
-      signInWithRedirect
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
       authDomain: "family-429c7.firebaseapp.com",
-      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "family-429c7",
       storageBucket: "family-429c7.firebasestorage.app",
       messagingSenderId: "982876086618",
-      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-      measurementId: "G-R7NLCB1B92"
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363"
     };
-
-    const allowedEmails = [
-      "mashayekh.ahmed.archives@gmail.com",
-      "mashayekh64@gmail.com",
-      "shariatunnesa.madina@gmail.com",
-      "abdulkhalequebaf@gmail.com",
-      "lima.akter.1323@gmail.com",
-      "ahmad.muttaqeen@gmail.com",
-      "nusaiba.jannat.alifa@gmail.com",
-      "afia.ahmed.adiba@gmail.com",
-      "darulahmed467170@gmail.com",
-      "madina.manjeel.tv@gmail.com"
-    ];
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    const contentWrapper = document.getElementById('content-wrapper');
-    const loadingMessage = document.getElementById('loading-message');
-
-    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
-
-    if (hasLoggedInBefore === 'true') {
-      loadingMessage.style.display = 'none';
-      contentWrapper.style.display = 'block';
-    }
-
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const email = user.email;
-        if (allowedEmails.includes(email)) {
-          loadingMessage.style.display = 'none';
-          contentWrapper.style.display = 'block';
-          localStorage.setItem('hasLoggedIn', 'true');
-        } else {
-          alert("Access denied for: " + email);
-          window.location.href = "https://google.com";
+        try {
+          const response = await fetch('https://raw.githubusercontent.com/madinamanjeel/madinamanjeel.github.io/refs/heads/main/allowed_emails.json');
+          const allowedEmails = await response.json();
+          
+          if (allowedEmails.includes(user.email)) {
+            // ভেরিফিকেশন সফল হলে পেইজ শো করবে
+            document.body.style.display = 'block';
+          } else {
+            alert("Access denied for: " + user.email);
+            window.location.href = "https://google.com";
+          }
+        } catch (error) {
+          alert("Verification system error.");
         }
       } else {
-        if (hasLoggedInBefore !== 'true') {
-          loadingMessage.style.display = 'block';
-        }
         signInWithRedirect(auth, provider);
       }
     });
