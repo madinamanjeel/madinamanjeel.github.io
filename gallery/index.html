@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gallery</title>
   <style>
+    /* ভেরিফিকেশন না হওয়া পর্যন্ত পুরো বডি হাইড থাকবে */
     body {
+      display: none; 
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
@@ -58,88 +60,41 @@
       transform: scale(1.05);
       box-shadow: 0 0 15px 5px rgba(0, 150, 255, 0.5);
     }
-
-    #content-wrapper {
-      display: none;
-    }
-
-    #loading-message {
-      text-align: center;
-      padding-top: 50px;
-      font-size: 1.2em;
-      color: #555;
-    }
   </style>
 </head>
 <body>
-  <div id="loading-message">
-    Verifying user... Please wait.
-  </div>
 
-  <div id="content-wrapper">
-    <p></p>
+  <div id="content">
     <div class="video-container">
-      <iframe
-        src="https://www.youtube.com/embed/r6A6YrtlkSk?autoplay=1"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
+      <iframe src="https://www.youtube.com/embed/r6A6YrtlkSk?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
 
     <br>
 
-    <div class="newspaper">
-      <a href="https://photos.app.goo.gl/ESRWW2yjYjyubmeq9">Old Days</a>
-    </div>
-    <div class="newspaper">
-      <a href="https://youtube.com/playlist?list=PL1wlAgq3XR1qkQmHzMiqOAh1Kz08Py6uK&feature=shared">Events</a>
-    </div>
-    <div class="newspaper">
-      <a href="https://photos.app.goo.gl/jYT42eN4V2GegLs29">Year 2011-2015</a>
-    </div>
-    <div class="newspaper">
-      <a href="https://photos.app.goo.gl/4XihbWWSSZdTNC786">Year 2015-2020</a>
-    </div>
-    <div class="newspaper">
-      <a href="https://photos.app.goo.gl/e8L7jM1CEwYXtYJU6">Year 2020-2025</a>
-    </div>
-    <div class="newspaper">
-      <a href="https://photos.app.goo.gl/toAa2Seo5PdziGhZ9">Pets</a>
-    </div>
+    <div class="newspaper"><a href="https://photos.app.goo.gl/ESRWW2yjYjyubmeq9">Old Days</a></div>
+    <div class="newspaper"><a href="https://youtube.com/playlist?list=PL1wlAgq3XR1qkQmHzMiqOAh1Kz08Py6uK&feature=shared">Events</a></div>
+    <div class="newspaper"><a href="https://photos.app.goo.gl/jYT42eN4V2GegLs29">Year 2011-2015</a></div>
+    <div class="newspaper"><a href="https://photos.app.goo.gl/4XihbWWSSZdTNC786">Year 2015-2020</a></div>
+    <div class="newspaper"><a href="https://photos.app.goo.gl/e8L7jM1CEwYXtYJU6">Year 2020-2025</a></div>
+    <div class="newspaper"><a href="https://photos.app.goo.gl/toAa2Seo5PdziGhZ9">Pets</a></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      onAuthStateChanged,
-      signInWithRedirect
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
       authDomain: "family-429c7.firebaseapp.com",
-      databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "family-429c7",
       storageBucket: "family-429c7.firebasestorage.app",
       messagingSenderId: "982876086618",
-      appId: "1:982876086618:web:0bdcfdf467c31924f2d363",
-      measurementId: "G-R7NLCB1B92"
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
-
-    const contentWrapper = document.getElementById('content-wrapper');
-    const loadingMessage = document.getElementById('loading-message');
-    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
-
-    if (hasLoggedInBefore === 'true') {
-      loadingMessage.style.display = 'none';
-      contentWrapper.style.display = 'block';
-    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -148,21 +103,16 @@
           const allowedEmails = await response.json();
           
           if (allowedEmails.includes(user.email)) {
-            loadingMessage.style.display = 'none';
-            contentWrapper.style.display = 'block';
-            localStorage.setItem('hasLoggedIn', 'true');
+            // ভেরিফিকেশন সফল হলে বডি দেখানো হবে
+            document.body.style.display = 'block';
           } else {
-            alert("Access denied for: " + user.email);
+            alert("Access denied.");
             window.location.href = "https://google.com";
           }
         } catch (error) {
-          console.error("Error verifying email:", error);
-          alert("Verification system busy. Please try again.");
+          alert("System error. Please contact administrator.");
         }
       } else {
-        if (hasLoggedInBefore !== 'true') {
-          loadingMessage.style.display = 'block';
-        }
         signInWithRedirect(auth, provider);
       }
     });
