@@ -49,7 +49,6 @@
         .device-mac { font-size: 13px; opacity: 0.8; letter-spacing: 1px; }
         .device-name { font-size: 19px; font-weight: bold; margin-top: 5px; }
         
-        /* নতুন টাইম স্ট্যাম্প স্টাইল */
         .time-display-box {
             font-size: 12px;
             font-weight: bold;
@@ -61,7 +60,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* গোল বৃত্ত ও নিচের কার্ড পাশাপাশি আনার জন্য গ্রিড */
         .appearance-row {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
@@ -83,7 +81,7 @@
             stroke: #ffffff; 
             stroke-width: 10; 
             stroke-linecap: round; 
-            stroke-dasharray: 345; /* ব্যাসার্ধ ৫৫ অনুযায়ী পরিধি অ্যাডজাস্ট করা হয়েছে */
+            stroke-dasharray: 345;
             stroke-dashoffset: 345;
             transition: stroke-dashoffset 0.8s ease;
         }
@@ -135,7 +133,6 @@
         .charge-state-box { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; }
         .mosfet-box { display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
 
-        /* আপনার চাহিদা অনুযায়ী ৪ কলাম পরিবর্তন করে ৩ কলাম করা হলো */
         .data-grid-pc {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -197,12 +194,10 @@
             body { padding: 5px; }
             .dashboard-container { grid-template-columns: 1fr; border-radius: 8px; }
             .left-panel { padding: 20px 15px; }
-            /* মোবাইল স্ক্রিনেও বৃত্ত ও টেক্সট পাশাপাশি রাখার চমৎকার ফিট */
             .appearance-row { grid-template-columns: 1fr 1.3fr; gap: 10px; }
             .right-panel { padding: 12px; }
             .status-header-bar { grid-template-columns: 1fr; gap: 10px; }
             .mosfet-box { justify-content: flex-start; }
-            /* মোবাইল ভিউতে ৩ কলাম খুব বেশি ছোট লাগলে এখানে repeat(2, 1fr) করতে পারেন, তবে আপনার নির্দেশানুযায়ী ৩ কলামই রাখা হয়েছে */
             .data-grid-pc { grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .bottom-layout { grid-template-columns: 1fr; gap: 12px; }
         }
@@ -215,13 +210,11 @@
         <div class="device-info-wrapper">
             <div class="device-mac">A5:C2:39:3F:07:72</div>
             <div class="device-name">Madina-Manjeel-Remote</div>
-            <!-- নতুন লাইভ টাইম সেকশন -->
             <div class="time-display-box">
                 Sent: <span id="liveTimestamp">--:--:-- --</span>
             </div>
         </div>
 
-        <!-- গোল বৃত্ত ও BattType কার্ড পাশাপাশি বসানোর নতুন রো কন্টেইনার -->
         <div class="appearance-row">
             <div class="circle-container">
                 <svg class="circle-svg" width="130" height="130">
@@ -248,7 +241,7 @@
         <div class="status-header-bar">
             <div class="charge-state-box">
                 <span id="chargeIcon">🔌</span> 
-                <span id="chargeState" style="color: #2e7d32;">Connecting...</span>
+                <span id="chargeState" style="color: #2e7d32;">Waiting...</span>
                 <span style="color:#ccc;">|</span>
                 <span style="font-weight:normal; font-size:13px; color:var(--text-muted);">Est: <span id="estTime" style="color:#d32f2f; font-weight:bold;">--</span></span>
             </div>
@@ -258,7 +251,6 @@
             </div>
         </div>
 
-        <!-- ৪ লাইনের পরিবর্তে প্রতি লাইনে ৩টি করে ৮টি ট্যাব ৩ লাইনে সাজানো হয়েছে -->
         <div class="data-grid-pc">
             <div class="pc-card"><div class="card-val" id="totalVolt">-- V</div><div class="card-lbl">Total Volt</div></div>
             <div class="pc-card"><div class="card-val" id="currentVal">-- A</div><div class="card-lbl">Current</div></div>
@@ -304,19 +296,6 @@
         progressRing.style.strokeDashoffset = offset;
     }
 
-    // লাইভ টাইম জেনারেট করার নতুন ফাংশন
-    function updateTimestamp() {
-        const now = new Date();
-        let hours = now.getHours();
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // 0 টা কে 12 বানানোর জন্য
-        const timeString = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
-        safeGet('liveTimestamp').innerText = timeString;
-    }
-
     function initRealtimeSync() {
         const eventSource = new EventSource(`${FIREBASE_URL}bms_data.json`);
 
@@ -342,8 +321,8 @@
     function updateUI(data) {
         if (!data) return;
 
-        // ডেটা সফলভাবে আপডেট হওয়ার সাথে সাথে টাইম আপডেট হবে
-        updateTimestamp();
+        // সেন্ডার থেকে আসা টাইম সরাসরি সেট করা হচ্ছে
+        safeGet('liveTimestamp').innerText = data.time || "--:--:--";
 
         safeGet('totalVolt').innerText = `${data.voltage || "0.00"} V`;
         safeGet('currentVal').innerText = `${data.current || "0.00"} A`;
