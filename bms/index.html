@@ -274,6 +274,9 @@
 </div>
 
 <script>
+    // ফায়ারবেস ডেটাবেস ইউআরএল কনফিগারেশন
+    const FIREBASE_URL = "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app/";
+
     const safeGet = (id) => document.getElementById(id) || { innerText: "", style: {} };
 
     const connectBtn = document.getElementById('connectBtn');
@@ -283,6 +286,15 @@
     let bmsServer = null;
     let txCharacteristic = null;
     let queryInterval = null;
+
+    // রিয়েল-টাইম ভ্যারিয়েবল স্টোর (যা ফায়ারবেসে পাঠানো হবে)
+    let currentBmsState = {
+        voltage: "0.00",
+        current: "0.00",
+        soc: 0,
+        temperature: "0.0",
+        last_updated: ""
+    };
 
     function setProgress(percent) {
         if (!progressRing) return;
@@ -303,6 +315,25 @@
             }
         }
     }
+
+    // ফায়ারবেসে ডেটা পুশ করার অটোমেটিক ফাংশন
+    async function syncDataToFirebase() {
+        if (bmsServer && bmsServer.connected) {
+            currentBmsState.last_updated = new Date().toLocaleTimeString();
+            try {
+                await fetch(`${FIREBASE_URL}bms_data.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(currentBmsState)
+                });
+            } catch (e) {
+                console.log("Firebase Sync failed:", e);
+            }
+        }
+    }
+
+    // প্রতি ৪ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে ডেটা সিঙ্ক হবে
+    setInterval(syncDataToFirebase, 4000);
 
     async function connectToBms(deviceInstance = null) {
         try {
@@ -369,7 +400,7 @@
 
     window.addEventListener('DOMContentLoaded', attemptAutoReconnect);
 
-    // 🎯 ল্যাপটপ লিড ওপেন করার সাথে সাথে কোনো ল্যাগ ছাড়া ইনস্ট্যান্ট আপডেট ট্রিম করার লজিক
+    // ল্যাপটপ লিড ওপেন করার সাথে সাথে কোনো ল্যাগ ছাড়া ইনস্ট্যান্ট আপডেট ট্রিম করার লজিক
     document.addEventListener('visibilitychange', async () => {
         if (document.visibilityState === 'visible') {
             console.log("Lid opened / Tab active - refreshing data instantly");
@@ -392,11 +423,13 @@
             const voltRaw = (data[4] << 8) | data[5];
             const totalVolt = (voltRaw / 100).toFixed(2);
             safeGet('totalVolt').innerText = `${totalVolt} V`;
+            currentBmsState.voltage = totalVolt; // সিঙ্কের জন্য জমা রাখা হলো
 
             let currentRaw = (data[6] << 8) | data[7];
             if (currentRaw & 0x8000) currentRaw = currentRaw - 0x10000;
             const current = (currentRaw / 100).toFixed(2);
             safeGet('currentVal').innerText = `${current} A`;
+            currentBmsState.current = current; // সিঙ্কের জন্য জমা রাখা হলো
 
             const power = (totalVolt * current).toFixed(1);
             safeGet('powerVal').innerText = `${Math.abs(power)} W`;
@@ -414,6 +447,7 @@
 
             safeGet('socVal').innerText = soc;
             setProgress(soc);
+            currentBmsState.soc = soc; // সিঙ্কের জন্য জমা রাখা হলো
 
             if (data.length >= 12) {
                 const statusByte = data[10]; 
@@ -464,8 +498,10 @@
                 const tempRaw = (data[27] << 8) | data[28];
                 const tempC = tempRaw ? ((tempRaw - 2731) / 10).toFixed(1) : "31.7";
                 safeGet('mosTemp').innerText = `${tempC} °C`;
+                currentBmsState.temperature = tempC; // সিঙ্কের জন্য জমা রাখা হলো
             } else {
                 safeGet('mosTemp').innerText = "31.7 °C";
+                currentBmsState.temperature = "31.7"; // সিঙ্কের জন্য জমা রাখা হলো
             }
         }
         
