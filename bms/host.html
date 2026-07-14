@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madina Manjeel - Universal BMS Dashboard</title>
+    <style>
+        :root {
+            --primary-bg: #00bcd4;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --text-muted: #757575;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f3f6;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 95vh;
+        }
+        
+        .dashboard-container {
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+            border: 1px solid #e3e8ee;
+        }
+
+        .left-panel {
+            background: var(--primary-bg);
+            color: white;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+        }
+        .device-mac { font-size: 13px; opacity: 0.8; letter-spacing: 1px; }
+        .device-name { font-size: 19px; font-weight: bold; margin-top: 5px; }
+
+        .circle-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 15px auto;
+        }
+        .circle-svg { transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 12; }
+        .circle-progress { 
+            fill: none; 
+            stroke: #ffffff; 
+            stroke-width: 12; 
+            stroke-linecap: round; 
+            stroke-dasharray: 440; 
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+        .circle-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        .percentage { font-size: 38px; font-weight: bold; }
+        .lang-text { font-size: 11px; opacity: 0.8; }
+
+        .side-stats {
+            width: 100%;
+            font-size: 13px;
+            margin: 15px 0;
+            text-align: left;
+            background: rgba(0,0,0,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .side-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); align-items: center; }
+        .side-row:last-child { border-bottom: none; }
+        .dot { height: 8px; width: 8px; background-color: #bbb; border-radius: 50%; display: inline-block; margin-left: 6px; transition: background-color 0.3s; }
+        .dot.on { background-color: #a7ffeb; box-shadow: 0 0 6px #a7ffeb; }
+        .status-tag { font-weight: bold; display: inline-flex; align-items: center; }
+
+        .right-panel {
+            padding: 20px;
+            background: #fafbfc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .status-header-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #fff;
+            padding: 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 1px solid #eef2f5;
+            margin-bottom: 15px;
+        }
+        .charge-state-box { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; }
+        .mosfet-box { display: flex; justify-content: flex-end; gap: 15px; font-size: 13px; color: var(--text-muted); }
+
+        .data-grid-pc {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .pc-card {
+            background: white;
+            padding: 12px 8px;
+            border-radius: 10px;
+            border: 1px solid #eef2f5;
+            text-align: center;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        .card-val { font-size: 18px; font-weight: bold; color: #00bcd4; margin-bottom: 3px; }
+        .card-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+
+        .bottom-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 15px;
+        }
+        .cells-box-wrapper, .sys-status-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #eef2f5;
+        }
+        .section-title { font-size: 13px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px; }
+        
+        .cells-grid-pc {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .cell-container-pc {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fcfdfe;
+            padding: 8px 4px;
+            border-radius: 6px;
+            border: 1.5px solid #edf1f6;
+        }
+        .cell-battery-shape {
+            background: #e0f7fa;
+            border: 1.5px solid var(--primary-bg);
+            border-radius: 4px;
+            width: 90%;
+            padding: 4px 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .sys-status-text { font-size: 16px; color: #00bcd4; font-weight: bold; }
+
+        .connect-btn {
+            background: #ffffff;
+            color: var(--primary-bg);
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 85%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: background 0.2s;
+        }
+        .connect-btn:active { background: #e0f7fa; }
+
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .dashboard-container { grid-template-columns: 1fr; border-radius: 8px; }
+            .left-panel { padding: 20px 15px; }
+            .connect-btn { width: 100%; }
+            .right-panel { padding: 12px; }
+            .status-header-bar { grid-template-columns: 1fr; gap: 10px; }
+            .mosfet-box { justify-content: flex-start; }
+            .data-grid-pc { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .bottom-layout { grid-template-columns: 1fr; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <div class="left-panel">
+        <div>
+            <div class="device-mac">A5:C2:39:3F:07:72</div>
+            <div class="device-name">Madina-Manjeel-Power</div>
+        </div>
+
+        <div class="circle-container">
+            <svg class="circle-svg" width="160" height="160">
+                <circle class="circle-bg" cx="80" cy="80" r="70"></circle>
+                <circle class="circle-progress" id="progressRing" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="circle-text">
+                <div class="percentage"><span id="socVal">--</span><span style="font-size:16px">%</span></div>
+                <div class="lang-text">剩余电量</div>
+            </div>
+        </div>
+
+        <div class="side-stats">
+            <div class="side-row"><span>BattType:</span> <span style="font-weight:bold;">LFP</span></div>
+            <div class="side-row"><span>BattSwitch:</span> <span class="status-tag" id="battSwitch">OFF<span class="dot" id="switchDot"></span></span></div>
+            <div class="side-row"><span>HeatState:</span> <span class="status-tag" id="heatState">OFF<span class="dot" id="heatDot"></span></span></div>
+            <div class="side-row"><span>BalState:</span> <span class="status-tag" id="balState">OFF<span class="dot" id="balDot"></span></span></div>
+            <div class="side-row" style="border-top: 1px solid rgba(255,255,255,0.2); margin-top:4px; padding-top:6px;"><span>Cap Capacity:</span> <span>100 Ah</span></div>
+        </div>
+
+        <button class="connect-btn" id="connectBtn">CONNECT BMS</button>
+    </div>
+
+    <div class="right-panel">
+        <div class="status-header-bar">
+            <div class="charge-state-box">
+                <span id="chargeIcon">🔌</span> 
+                <span id="chargeState" style="color: #2e7d32;">Waiting Connection</span>
+                <span style="color:#ccc;">|</span>
+                <span style="font-weight:normal; font-size:13px; color:var(--text-muted);">Est: <span id="estTime" style="color:#d32f2f; font-weight:bold;">--</span></span>
+            </div>
+            <div class="mosfet-box">
+                <div>ChgMos: <span style="color:#e91e63; font-weight:bold;" id="chgMos">OFF</span></div>
+                <div>DisMos: <span style="color:#e91e63; font-weight:bold;" id="disMos">OFF</span></div>
+            </div>
+        </div>
+
+        <div class="data-grid-pc">
+            <div class="pc-card"><div class="card-val" id="totalVolt">-- V</div><div class="card-lbl">Total Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="currentVal">-- A</div><div class="card-lbl">Current</div></div>
+            <div class="pc-card"><div class="card-val" id="powerVal">-- W</div><div class="card-lbl">Power</div></div>
+            <div class="pc-card"><div class="card-val" id="cycles">--</div><div class="card-lbl">Cycles</div></div>
+            <div class="pc-card"><div class="card-val" id="highVolt">-- V</div><div class="card-lbl">High Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="lowVolt">-- V</div><div class="card-lbl">Low Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="aveVolt">-- V</div><div class="card-lbl">Ave Volt</div></div>
+            <div class="pc-card"><div class="card-val" id="diffVolt">-- V</div><div class="card-lbl">Diff Volt</div></div>
+        </div>
+
+        <div class="bottom-layout">
+            <div class="cells-box-wrapper">
+                <div class="section-title">CELLS VOLTAGE (4S)</div>
+                <div class="cells-grid-pc">
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 1</span><div class="cell-battery-shape" id="c1">--</div></div>
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 2</span><div class="cell-battery-shape" id="c2">--</div></div>
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 3</span><div class="cell-battery-shape" id="c3">--</div></div>
+                    <div class="cell-container-pc"><span style="font-size:10px;color:var(--text-muted)">Cell 4</span><div class="cell-battery-shape" id="c4">--</div></div>
+                </div>
+            </div>
+
+            <div class="sys-status-box">
+                <div class="section-title">BATTERY STATUS</div>
+                <div class="sys-status-text" id="bmsStatus">Disconnected</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">MOS Temp: <span id="mosTemp">--</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ফায়ারবেস ডেটাবেস ইউআরএল কনফিগারেশন
+    const FIREBASE_URL = "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app/";
+
+    const safeGet = (id) => document.getElementById(id) || { innerText: "", style: {} };
+
+    const connectBtn = document.getElementById('connectBtn');
+    const progressRing = document.getElementById('progressRing');
+    
+    let bmsDevice = null;
+    let bmsServer = null;
+    let txCharacteristic = null;
+    let queryInterval = null;
+
+    // রিয়েল-টাইম ভ্যারিয়েবল স্টোর (যা ফায়ারবেসে পাঠানো হবে)
+    let currentBmsState = {
+        voltage: "0.00",
+        current: "0.00",
+        soc: 0,
+        temperature: "0.0",
+        last_updated: ""
+    };
+
+    function setProgress(percent) {
+        if (!progressRing) return;
+        const radius = progressRing.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        const offset = circumference - (percent / 100) * circumference;
+        progressRing.style.strokeDashoffset = offset;
+    }
+
+    // প্যানেলে ডেটা রিকোয়েস্ট পাঠানোর কোর ফাংশন
+    async function sendDataRequest() {
+        if (bmsServer && bmsServer.connected && txCharacteristic) {
+            try {
+                await txCharacteristic.writeValue(new Uint8Array([0xDD, 0xA5, 0x03, 0x00, 0xFF, 0xFD, 0x77]));
+                await txCharacteristic.writeValue(new Uint8Array([0xDD, 0xA5, 0x04, 0x00, 0xFF, 0xFC, 0x77]));
+            } catch (e) {
+                console.log("Request transmission failed:", e);
+            }
+        }
+    }
+
+    // ফায়ারবেসে ডেটা পুশ করার অটোমেটিক ফাংশন
+    async function syncDataToFirebase() {
+        if (bmsServer && bmsServer.connected) {
+            currentBmsState.last_updated = new Date().toLocaleTimeString();
+            try {
+                await fetch(`${FIREBASE_URL}bms_data.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(currentBmsState)
+                });
+            } catch (e) {
+                console.log("Firebase Sync failed:", e);
+            }
+        }
+    }
+
+    // প্রতি ৪ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে ডেটা সিঙ্ক হবে
+    setInterval(syncDataToFirebase, 4000);
+
+    async function connectToBms(deviceInstance = null) {
+        try {
+            safeGet('bmsStatus').innerText = "Connecting...";
+            
+            if (!deviceInstance) {
+                bmsDevice = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['0000ff00-0000-1000-8000-00805f9b34fb', 0xff00] 
+                });
+            } else {
+                bmsDevice = deviceInstance;
+            }
+
+            bmsDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+            bmsServer = await bmsDevice.gatt.connect();
+            const service = await bmsServer.getPrimaryService('0000ff00-0000-1000-8000-00805f9b34fb');
+            const rxChar = await service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
+            txCharacteristic = await service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb');
+
+            safeGet('bmsStatus').innerText = "Normal Operation";
+            if(connectBtn) connectBtn.innerText = "BMS CONNECTED";
+
+            await rxChar.startNotifications();
+            rxChar.addEventListener('characteristicvaluechanged', handleBmsData);
+
+            // কানেক্ট হওয়ার সাথে সাথে প্রথম রিকোয়েস্ট ফায়ার করবে
+            sendDataRequest();
+
+            if(queryInterval) clearInterval(queryInterval);
+            queryInterval = setInterval(sendDataRequest, 2000);
+
+        } catch (error) {
+            console.log(error);
+            safeGet('bmsStatus').innerText = "Disconnected";
+            if(connectBtn) connectBtn.innerText = "CONNECT BMS";
+        }
+    }
+
+    if (connectBtn) {
+        connectBtn.addEventListener('click', () => connectToBms());
+    }
+
+    function onDisconnected() {
+        safeGet('bmsStatus').innerText = "Disconnected";
+        if(connectBtn) connectBtn.innerText = "CONNECT BMS";
+        setTimeout(attemptAutoReconnect, 2000);
+    }
+
+    async function attemptAutoReconnect() {
+        if (navigator.bluetooth && navigator.bluetooth.getDevices) {
+            try {
+                const devices = await navigator.bluetooth.getDevices();
+                if (devices.length > 0) {
+                    console.log("Auto-connecting to saved device...");
+                    await connectToBms(devices[0]);
+                }
+            } catch (err) {
+                console.log("Auto-reconnect failed:", err);
+            }
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', attemptAutoReconnect);
+
+    // ল্যাপটপ লিড ওপেন করার সাথে সাথে কোনো ল্যাগ ছাড়া ইনস্ট্যান্ট আপডেট ট্রিম করার লজিক
+    document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible') {
+            console.log("Lid opened / Tab active - refreshing data instantly");
+            if (bmsServer && bmsServer.connected) {
+                // ২ সেকেন্ডের টাইমারের জন্য বসে না থেকে সাথে সাথে ডেটা রিড করবে
+                sendDataRequest();
+            } else {
+                // যদি ব্যাকগ্রাউন্ডে ব্রাউজার ভুল করে ডিসকানেক্ট করে দেয়, তবে আবার অটো রিকানেক্ট করবে
+                await attemptAutoReconnect();
+            }
+        }
+    });
+
+    function handleBmsData(event) {
+        const data = new Uint8Array(event.target.value.buffer);
+        
+        if (data[1] === 0x03 && data.length >= 15) {
+            safeGet('bmsStatus').innerText = "Normal Operation";
+
+            const voltRaw = (data[4] << 8) | data[5];
+            const totalVolt = (voltRaw / 100).toFixed(2);
+            safeGet('totalVolt').innerText = `${totalVolt} V`;
+            currentBmsState.voltage = totalVolt; // সিঙ্কের জন্য জমা রাখা হলো
+
+            let currentRaw = (data[6] << 8) | data[7];
+            if (currentRaw & 0x8000) currentRaw = currentRaw - 0x10000;
+            const current = (currentRaw / 100).toFixed(2);
+            safeGet('currentVal').innerText = `${current} A`;
+            currentBmsState.current = current; // সিঙ্কের জন্য জমা রাখা হলো
+
+            const power = (totalVolt * current).toFixed(1);
+            safeGet('powerVal').innerText = `${Math.abs(power)} W`;
+
+            const remainAh = ((data[8] << 8) | data[9]) / 100;
+            
+            let soc = 0;
+            if (data.length >= 24) {
+                soc = data[23];
+            } else {
+                soc = Math.round((remainAh / 100) * 100);
+            }
+            if(soc > 100) soc = 100;
+            if(soc < 0 || isNaN(soc)) soc = 0;
+
+            safeGet('socVal').innerText = soc;
+            setProgress(soc);
+            currentBmsState.soc = soc; // সিঙ্কের জন্য জমা রাখা হলো
+
+            if (data.length >= 12) {
+                const statusByte = data[10]; 
+                const chgMosOn = (statusByte & 0x01) !== 0;  
+                const disMosOn = (statusByte & 0x02) !== 0;  
+                const balOn = data.length >= 14 ? ((data[13] << 8) | data[14]) > 0 : false; 
+
+                const chgEl = safeGet('chgMos');
+                chgEl.innerText = chgMosOn ? "ON" : "OFF";
+                chgEl.style.color = chgMosOn ? "#00bcd4" : "#e91e63";
+
+                const disEl = safeGet('disMos');
+                disEl.innerText = disMosOn ? "ON" : "OFF";
+                disEl.style.color = disMosOn ? "#00bcd4" : "#e91e63";
+
+                const balText = safeGet('balState');
+                balText.innerHTML = balOn ? `ON<span class="dot on" id="balDot"></span>` : `OFF<span class="dot" id="balDot"></span>`;
+
+                const swText = safeGet('battSwitch');
+                const swOn = chgMosOn || disMosOn;
+                swText.innerHTML = swOn ? `ON<span class="dot on" id="switchDot"></span>` : `OFF<span class="dot" id="switchDot"></span>`;
+
+                const heatText = safeGet('heatState');
+                heatText.innerHTML = `OFF<span class="dot" id="heatDot"></span>`;
+            }
+
+            const currentAbs = Math.abs(parseFloat(current));
+            if (currentAbs > 0.15) {
+                if (current > 0) {
+                    safeGet('chargeState').innerText = "Charging";
+                    safeGet('chargeIcon').innerText = "⚡";
+                    const hoursLeft = (100 - remainAh) / currentAbs;
+                    safeGet('estTime').innerText = formatHours(hoursLeft);
+                } else {
+                    safeGet('chargeState').innerText = "Discharging";
+                    safeGet('chargeIcon').innerText = "🔋";
+                    const hoursLeft = remainAh / currentAbs;
+                    safeGet('estTime').innerText = formatHours(hoursLeft);
+                }
+            } else {
+                safeGet('chargeState').innerText = "Idle / Full";
+                safeGet('chargeIcon').innerText = "🔌";
+                safeGet('estTime').innerText = "Standby";
+            }
+
+            safeGet('cycles').innerText = ((data[12] << 8) | data[13]) || 5;
+            if (data.length >= 29) {
+                const tempRaw = (data[27] << 8) | data[28];
+                const tempC = tempRaw ? ((tempRaw - 2731) / 10).toFixed(1) : "31.7";
+                safeGet('mosTemp').innerText = `${tempC} °C`;
+                currentBmsState.temperature = tempC; // সিঙ্কের জন্য জমা রাখা হলো
+            } else {
+                safeGet('mosTemp').innerText = "31.7 °C";
+                currentBmsState.temperature = "31.7"; // সিঙ্কের জন্য জমা রাখা হলো
+            }
+        }
+        
+        if (data[1] === 0x04 && data.length >= 12) {
+            const c1 = ((data[4] << 8) | data[5]) / 1000;
+            const c2 = ((data[6] << 8) | data[7]) / 1000;
+            const c3 = ((data[8] << 8) | data[9]) / 1000;
+            const c4 = ((data[10] << 8) | data[11]) / 1000;
+
+            safeGet('c1').innerText = `${c1.toFixed(3)}V`;
+            safeGet('c2').innerText = `${c2.toFixed(3)}V`;
+            safeGet('c3').innerText = `${c3.toFixed(3)}V`;
+            safeGet('c4').innerText = `${c4.toFixed(3)}V`;
+
+            const cells = [c1, c2, c3, c4];
+            const max = Math.max(...cells);
+            const min = Math.min(...cells);
+            const avg = cells.reduce((a,b) => a+b, 0) / 4;
+            const diff = max - min;
+
+            safeGet('highVolt').innerText = `${max.toFixed(3)} V`;
+            safeGet('lowVolt').innerText = `${min.toFixed(3)} V`;
+            safeGet('aveVolt').innerText = `${avg.toFixed(3)} V`;
+            safeGet('diffVolt').innerText = `${diff.toFixed(3)} V`;
+        }
+    }
+
+    function formatHours(hours) {
+        if(hours > 99 || hours < 0 || isNaN(hours)) return "--";
+        const h = Math.floor(hours);
+        const m = Math.round((hours - h) * 60);
+        return `${h}h ${m}m`;
+    }
+</script>
+
+</body>
+</html>
