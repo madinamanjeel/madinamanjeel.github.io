@@ -402,8 +402,8 @@
                 estTime.innerText = "--";
             }
 
-            // SOC (পার্সেন্টেজ)
-            const soc = data[19] || 0;
+            // SOC (পারসেন্টেজ ফিক্স - ২৩ নম্বর বাইট থেকে রিড করা হচ্ছে)
+            const soc = data[23] || 0;
             socVal.innerText = soc;
             setProgress(soc);
 
