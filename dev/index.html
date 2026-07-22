@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Hub</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: #1e293b;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            border: 1px solid #334155;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Fira Code', monospace;
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #93c5fd;
+        }
+
+        .links-container {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dev-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0f172a;
+            padding: 16px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #f8fafc;
+            font-weight: 500;
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+        }
+
+        .dev-link:hover {
+            background: #1e293b;
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+        }
+
+        .link-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .link-info i {
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 8px;
+        }
+
+        .link-text h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .link-text span {
+            font-size: 12px;
+            color: #64748b;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .dev-link .fa-arrow-right {
+            color: #64748b;
+            font-size: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .dev-link:hover .fa-arrow-right {
+            color: #3b82f6;
+            transform: translateX(4px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #0f172a;
+            border-top: 1px solid #334155;
+            font-size: 12px;
+            color: #64748b;
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>&lt;DeveloperHub /&gt;</h1>
+            <p>Quick access to your project dashboards & consoles</p>
+        </div>
+
+        <!-- Links Section -->
+        <div class="links-container">
+            <!-- Firebase Console -->
+            <a href="https://console.firebase.google.com/u/3/project/family-429c7/" target="_blank" class="dev-link">
+                <div class="link-info">
+                    <i class="fa-solid fa-fire"></i>
+                    <div class="link-text">
+                        <h3>Firebase Console</h3>
+                        <span>Project Dashboard</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <!-- Firebase Messaging -->
+            <a href="https://console.firebase.google.com/u/3/project/family-429c7/notification/compose" target="_blank" class="dev-link">
+                <div class="link-info">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <div class="link-text">
+                        <h3>Firebase Messaging</h3>
+                        <span>Notifications & Compose</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <!-- Github Dashboard -->
+            <a href="https://github.com/madinamanjeel/madinamanjeel.github.io" target="_blank" class="dev-link">
+                <div class="link-info">
+                    <i class="fa-brands fa-github"></i>
+                    <div class="link-text">
+                        <h3>Github Dashboard</h3>
+                        <span>madinamanjeel.github.io</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <!-- Blogger Dashboard -->
+            <a href="https://draft.blogger.com/" target="_blank" class="dev-link">
+                <div class="link-info">
+                    <i class="fa-brands fa-blogger-b"></i>
+                    <div class="link-text">
+                        <h3>Blogger Dashboard</h3>
+                        <span>Draft Blogger</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer">
+            Designed for Developer Workspace &bull; 2026
+        </div>
+    </div>
+
+</body>
+</html>
