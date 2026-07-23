@@ -32,7 +32,7 @@
         .global-sticky-header {
             position: sticky;
             top: 0;
-            background-color: var(--bg); /* Ensures background hides scrolling content */
+            background-color: var(--bg);
             z-index: 50;
             border-bottom: 1px solid #e5e7eb;
             box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.05);
@@ -194,7 +194,7 @@
 
         .surah-card {
             background-color: var(--card-bg);
-            padding: 14px 18px;
+            padding: 12px 15px;
             border-radius: 12px;
             display: flex;
             justify-content: space-between;
@@ -216,32 +216,29 @@
             background-color: var(--primary-light);
         }
 
-        .surah-info { display: flex; align-items: center; gap: 14px; }
+        .surah-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
         .surah-number {
             background-color: var(--primary); color: white;
-            width: 38px; height: 38px; border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-weight: 700; font-size: 14px;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
         }
-        .surah-title { font-size: 16px; font-weight: 600; color: var(--text-main); }
-        .actions { display: flex; align-items: center; gap: 10px; }
+        .surah-title { 
+            font-size: 15px; font-weight: 600; color: var(--text-main); 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        
+        .actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-        .add-to-pl-btn, .play-btn {
-            background: none; border: none; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; transition: transform 0.2s;
-        }
+        /* Compact Add/Remove Playlist Button */
         .add-to-pl-btn {
-            color: var(--text-muted); font-size: 13px; background: #f3f4f6;
-            border-radius: 6px; padding: 6px 10px; font-weight: 500;
+            background: #f3f4f6; color: var(--text-muted); border: none; 
+            width: 36px; height: 36px; border-radius: 50%; font-size: 18px; 
+            font-weight: 700; cursor: pointer; display: flex; justify-content: center; 
+            align-items: center; transition: all 0.2s;
         }
         .add-to-pl-btn:hover { background: #e5e7eb; color: var(--text-main); }
-
-        .play-btn {
-            background-color: var(--primary); color: white;
-            width: 38px; height: 38px; border-radius: 50%;
-        }
-        .play-btn:hover { background-color: var(--primary-hover); }
-        .play-btn svg { width: 18px; height: 18px; fill: currentColor; margin-left: 2px; }
+        .add-to-pl-btn.remove-btn { color: var(--danger); font-size: 16px; }
 
         .empty-state { text-align: center; color: var(--text-muted); padding: 40px 20px; font-size: 15px; }
 
@@ -252,6 +249,7 @@
             border-top: 1px solid rgba(229, 231, 235, 0.8);
             padding: 12px 20px; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
             display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 20;
+            transition: transform 0.3s ease-in-out;
         }
         .player-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; }
         .current-surah-title {
@@ -296,7 +294,6 @@
             position: absolute; top: 50%; left: 50%; 
             width: 45px; height: 45px; 
             transform: translate(-50%, -50%); 
-            background-image: url('kaaba_icon.png'); 
             background-size: contain; background-repeat: no-repeat; background-position: center; 
             z-index: 2; display: flex; justify-content: center; align-items: center;
         }
@@ -374,7 +371,6 @@
         }
         .btn-cancel { background: #e5e7eb; color: var(--text-main); }
         .btn-save { background: var(--primary); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
 
     </style>
 </head>
@@ -389,7 +385,7 @@
             <button class="app-tab" id="btn-lectures" onclick="switchAppTab('lectures')">Lectures</button>
         </div>
 
-        <!-- Quran Search & Playlist Sub-Header (Sticky with the tabs) -->
+        <!-- Quran Search & Playlist Sub-Header -->
         <div id="quran-header-content" class="quran-header-content active">
             <div class="main-container" style="padding: 0;">
                 <div class="playlist-nav-container">
@@ -456,19 +452,16 @@
     <div id="tab-lectures" class="tab-content">
         <div class="main-container">
             
-            <!-- Video at the top -->
             <div class="video-container">
                 <iframe id="yt-player" src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
 
-            <!-- Hanafi Fiqh Banner after Video -->
             <div class="banner-container">
                 <a href="https://hanafifiqh.net/" target="_blank">
                     <img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh">
                 </a>
             </div>
 
-            <!-- Other Links -->
             <div class="lecture-links-container">
                 <a class="lecture-card" href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w" target="_blank">
                     <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
@@ -538,15 +531,12 @@
         // TAB SWITCHING LOGIC
         // ==========================================
         function switchAppTab(tabName) {
-            // Update Tab Buttons
             document.querySelectorAll('.app-tab').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + tabName).classList.add('active');
 
-            // Update Tab Contents
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
 
-            // Header visibility specifically for Quran
             const quranHeader = document.getElementById('quran-header-content');
             const playerBar = document.getElementById('quran-player-bar');
             if(tabName === 'quran') {
@@ -590,6 +580,21 @@
         const container = document.getElementById("surahContainer");
         const audioPlayer = document.getElementById("audioPlayer");
         const nowPlayingText = document.getElementById("nowPlaying");
+        
+        const searchInputBox = document.getElementById("searchInput");
+        const quranPlayerBar = document.getElementById("quran-player-bar");
+
+        searchInputBox.addEventListener("focus", () => {
+            quranPlayerBar.style.display = 'none';
+        });
+
+        searchInputBox.addEventListener("blur", () => {
+            setTimeout(() => {
+                if(document.getElementById('btn-quran').classList.contains('active')) {
+                    quranPlayerBar.style.display = 'flex';
+                }
+            }, 150);
+        });
         
         let currentPlayingIndex = -1; let searchTimeout; let repeatMode = 0; let selectedSurahIdForModal = null;
         let playlists = JSON.parse(localStorage.getItem('quran_playlists')) || { "All Surahs": [], "Favorites": [] };
@@ -740,14 +745,14 @@
         }
 
         function triggerSearch() {
-            let rawQuery = document.getElementById("searchInput").value.trim().replace(/^(surah|সূরা|সুরা)\s+/i, '').trim();
+            let rawQuery = searchInputBox.value.trim().replace(/^(surah|সূরা|সুরা)\s+/i, '').trim();
             if (rawQuery === '') { renderSurahList(surahData); return; }
             let scoredSurahs = surahData.map(s => { return { ...s, score: getSearchScore(rawQuery, s) }; }).filter(s => s.score > 0);
             scoredSurahs.sort((a, b) => { if (b.score !== a.score) return b.score - a.score; return a.id - b.id; });
             renderSurahList(scoredSurahs);
         }
 
-        document.getElementById("searchInput").addEventListener("input", () => {
+        searchInputBox.addEventListener("input", () => {
             clearTimeout(searchTimeout); searchTimeout = setTimeout(triggerSearch, 200); 
         });
 
@@ -765,17 +770,19 @@
                 card.id = `surah-${surah.id}`;
                 
                 let plActionButton = '';
-                if(activePlaylist !== "All Surahs") { plActionButton = `<button class="add-to-pl-btn" style="color:var(--danger);" onclick="toggleSurahInPlaylistDirect(${surah.id}, '${activePlaylist}', event)">Remove</button>`; } 
-                else { plActionButton = `<button class="add-to-pl-btn" onclick="openAddToPlaylistModal(${surah.id}, event)">Add to Playlist</button>`; }
+                if(activePlaylist !== "All Surahs") { 
+                    plActionButton = `<button class="add-to-pl-btn remove-btn" title="Remove" onclick="toggleSurahInPlaylistDirect(${surah.id}, '${activePlaylist}', event)">×</button>`; 
+                } else { 
+                    plActionButton = `<button class="add-to-pl-btn" title="Add to Playlist" onclick="openAddToPlaylistModal(${surah.id}, event)">+</button>`; 
+                }
 
                 card.innerHTML = `
                     <div class="surah-info">
                         <div class="surah-number">${surah.id}</div>
-                        <div class="surah-details"><span class="surah-title">${surah.id}. Surah ${surah.displayName}</span></div>
+                        <div class="surah-title">${surah.id}. Surah ${surah.displayName}</div>
                     </div>
                     <div class="actions">
                         ${plActionButton}
-                        <button class="play-btn" aria-label="Play Surah"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
                     </div>
                 `;
                 card.addEventListener("click", () => playSurah(surah.originalFile, surah.index, surah.id, surah.displayName));
@@ -806,7 +813,6 @@
             }
         });
 
-        // Initialize Quran List
         renderPlaylistTabs(); renderSurahList(surahData);
 
         // ==========================================
