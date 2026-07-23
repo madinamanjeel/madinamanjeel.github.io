@@ -1,316 +1,844 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Islamic - Compass & Ramadan 2026</title>
-
+    <title>Islamic Hub - Quran, Qiblah & Lectures</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; box-sizing: border-box; background-color: #f4f4f4; }
+        :root {
+            --primary: #059669;
+            --primary-hover: #047857;
+            --primary-light: #d1fae5;
+            --bg: #f9fafb;
+            --card-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --danger: #ef4444;
+        }
 
-        /* Compass Style */
-        .compass-container { margin-top: 20px; position: relative; width: 200px; height: 200px; border-radius: 50%; background-color: #fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; margin-left: auto; margin-right: auto; }
-        .compass-needle { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 60px solid red; position: absolute; top: 50%; left: 50%; transform-origin: 50% 50%; transform: translate(-50%, -100%); z-index: 1; }
-        .qibla-indicator { position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; transform: translate(-50%, -50%); background-image: url('kaaba_icon.png'); background-size: contain; background-repeat: no-repeat; background-position: center; }
-        .error-message { margin-top: 10px; color: red; text-align: center; }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 180px; 
+            scroll-behavior: smooth;
+        }
 
-        /* Ramadan Widget Style */
-        
-        /* =========================================================================
-           TODO: পরবর্তীতে রমজানের উইজেটটি আবার শো করতে চাইলে নিচের 'display: none;' 
-                 লেখাটি পরিবর্তন করে 'display: block;' করে দিন।
-           ========================================================================= */
-        #ramadan-widget { display: none; width: 92%; margin: 20px auto; background: linear-gradient(135deg, #004422, #006633); color: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative; box-sizing: border-box;}
-        
-        #live-clock { position: absolute; top: 10px; right: 15px; font-size: 11px; background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 20px; font-family: monospace; }
-        .district-select { margin-bottom: 10px; padding: 6px; border-radius: 5px; width: 150px; cursor: pointer; border: none; font-weight: bold; background: #fff; margin-top: 10px; }
-        #countdown-container { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        #timer-label { font-size: 13px; opacity: 0.9; }
-        #timer-clock { font-size: 28px; font-weight: bold; color: #ffeb3b; margin: 2px 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        .timer-row { display: flex; justify-content: space-around; margin-top: 10px; font-weight: bold; }
-        .time-box { display: flex; flex-direction: column; background: rgba(255,255,255,0.15); padding: 8px; border-radius: 10px; min-width: 85px; }
-        .time-label { font-size: 10px; opacity: 0.9; margin-bottom: 3px; }
-        .time-val { font-size: 16px; }
-        .view-btn { margin-top: 15px; font-size: 13px; text-decoration: underline; cursor: pointer; color: #fff; display: block; opacity: 0.8; }
-        
-        /* Modal Style */
-        #calendar-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-content { background: #fff; margin: 5% auto; padding: 15px; width: 95%; border-radius: 10px; color: #333; position: relative; box-sizing: border-box; }
-        .close-btn { position: absolute; right: 15px; top: 10px; font-size: 30px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-        th, td { border: 1px solid #ddd; padding: 6px 1px; text-align: center; }
-        th { background-color: #004422; color: white; position: sticky; top: 0; }
-        .today-highlight { background-color: #ffeb3b !important; font-weight: bold; }
+        /* --- Global Sticky Header & App Tabs --- */
+        .global-sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg); /* Ensures background hides scrolling content */
+            z-index: 50;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
 
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; width: 90%; margin: 20px auto 0; background: #000; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        .banner-container { display: flex; justify-content: center; margin: 20px 0 15px 0; }
-        .banner-container a { width: 80%; display: block; text-decoration: none; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+        .app-tabs {
+            display: flex;
+            background-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .app-tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .app-tab:hover {
+            color: #ffffff;
+        }
+
+        .app-tab.active {
+            color: #ffffff;
+            border-bottom: 3px solid #ffffff;
+            background-color: var(--primary-hover);
+        }
+
+        .main-container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* --- Quran Tab Specific Header --- */
+        .quran-header-content {
+            padding: 15px 15px 15px 15px;
+            display: none;
+            background-color: var(--bg);
+        }
+        .quran-header-content.active {
+            display: block;
+        }
+
+        /* Playlist Section Top */
+        .playlist-nav-container {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 12px;
+        }
+
+        .playlist-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .playlist-header-row h3 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .playlist-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .create-pl-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .pl-manage-btn {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: var(--text-main);
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: none;
+        }
+
+        .pl-manage-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .playlist-tabs {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 8px;
+            padding-bottom: 5px;
+        }
+
+        .playlist-tab {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .playlist-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            margin-bottom: 0px;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* --- Tab Content Controllers --- */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; padding-top: 15px; }
+
+        /* --- Quran Surah List & Player --- */
+        .surah-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .surah-card {
+            background-color: var(--card-bg);
+            padding: 14px 18px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .surah-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .surah-card.active {
+            border: 1px solid var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .surah-info { display: flex; align-items: center; gap: 14px; }
+        .surah-number {
+            background-color: var(--primary); color: white;
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 700; font-size: 14px;
+        }
+        .surah-title { font-size: 16px; font-weight: 600; color: var(--text-main); }
+        .actions { display: flex; align-items: center; gap: 10px; }
+
+        .add-to-pl-btn, .play-btn {
+            background: none; border: none; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; transition: transform 0.2s;
+        }
+        .add-to-pl-btn {
+            color: var(--text-muted); font-size: 13px; background: #f3f4f6;
+            border-radius: 6px; padding: 6px 10px; font-weight: 500;
+        }
+        .add-to-pl-btn:hover { background: #e5e7eb; color: var(--text-main); }
+
+        .play-btn {
+            background-color: var(--primary); color: white;
+            width: 38px; height: 38px; border-radius: 50%;
+        }
+        .play-btn:hover { background-color: var(--primary-hover); }
+        .play-btn svg { width: 18px; height: 18px; fill: currentColor; margin-left: 2px; }
+
+        .empty-state { text-align: center; color: var(--text-muted); padding: 40px 20px; font-size: 15px; }
+
+        /* Bottom Fixed Player */
+        .player-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(229, 231, 235, 0.8);
+            padding: 12px 20px; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 20;
+        }
+        .player-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; }
+        .current-surah-title {
+            font-weight: 700; color: var(--primary-hover); font-size: 15px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            flex: 1; text-align: center;
+        }
+        .repeat-btn {
+            background: none; border: none; cursor: pointer; color: var(--text-muted);
+            padding: 5px; display: flex; align-items: center; gap: 3px; font-size: 12px; font-weight: bold;
+        }
+        .repeat-btn.active-all, .repeat-btn.active-one { color: var(--primary); }
+        .repeat-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        audio { width: 100%; max-width: 600px; height: 40px; border-radius: 30px; outline: none; }
+
+        /* --- Qiblah Compass Styles --- */
+        .qiblah-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px 20px; text-align: center;
+        }
+        .qiblah-title {
+            font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 30px;
+        }
+        .compass-container {
+            position: relative; width: 250px; height: 250px; 
+            border-radius: 50%; background-color: var(--card-bg); 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            display: flex; justify-content: center; align-items: center; 
+            border: 6px solid var(--primary-light);
+        }
+        .compass-needle {
+            width: 0; height: 0; 
+            border-left: 18px solid transparent; 
+            border-right: 18px solid transparent; 
+            border-top: 80px solid var(--danger); 
+            position: absolute; top: 50%; left: 50%; 
+            transform-origin: 50% 50%; 
+            transform: translate(-50%, -100%); z-index: 1; 
+            transition: transform 0.1s ease-out;
+        }
+        .qibla-indicator {
+            position: absolute; top: 50%; left: 50%; 
+            width: 45px; height: 45px; 
+            transform: translate(-50%, -50%); 
+            background-image: url('kaaba_icon.png'); 
+            background-size: contain; background-repeat: no-repeat; background-position: center; 
+            z-index: 2; display: flex; justify-content: center; align-items: center;
+        }
+        .qibla-indicator::after {
+            content: "🕋"; font-size: 30px; 
+            position: absolute; z-index: -1;
+        }
+        .compass-error { margin-top: 25px; color: var(--danger); font-weight: 600; font-size: 15px; display: none; }
+
+        .qiblah-instructions {
+            margin-top: 30px; 
+            color: var(--text-main); 
+            font-size: 15px; 
+            line-height: 1.5;
+            font-weight: 500;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--primary-light);
+        }
+
+        /* --- Lectures Styles --- */
+        .banner-container a {
+            display: block; width: 100%; text-decoration: none; border-radius: 12px; overflow: hidden;
+            box-shadow: var(--shadow-md); margin-bottom: 20px;
+        }
         .banner-container img { width: 100%; height: auto; display: block; }
-        .newspaper { display: flex; justify-content: center; margin-bottom: 15px; }
-        .newspaper a { display: inline-block; width: 80%; text-align: center; padding: 10px; background-color: #003366; border-radius: 10px; text-decoration: none; font-size: 18px; color: #FFFFFF; background-image: linear-gradient(135deg, #003366, #002244); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
         
-        .wake-lock-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; margin-left: 5px; }
+        .video-container {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+            width: 100%; background: #000; border-radius: 12px; box-shadow: var(--shadow-md); margin-bottom: 20px;
+        }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        
+        .lecture-links-container { display: flex; flex-direction: column; gap: 12px; }
+        .lecture-card {
+            background-color: var(--card-bg); padding: 16px 20px; border-radius: 12px;
+            text-decoration: none; font-size: 16px; color: var(--text-main); font-weight: 600;
+            display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow-sm);
+            border: 1px solid transparent; transition: all 0.2s ease-in-out;
+        }
+        .lecture-card:hover {
+            transform: translateY(-2px); box-shadow: var(--shadow-md);
+            border-color: var(--primary-light); color: var(--primary);
+        }
+        .lecture-card .icon-wrap {
+            background-color: #fee2e2; width: 40px; height: 40px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .lecture-card svg { width: 22px; height: 22px; fill: var(--danger); }
+
+        /* --- Modals --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; padding: 20px; border-radius: 12px;
+            width: 90%; max-width: 350px; box-shadow: var(--shadow-md);
+        }
+        .modal-content h3 { margin-top: 0; font-size: 18px; }
+        .modal-input {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: 6px; margin-bottom: 12px; box-sizing: border-box;
+        }
+        .playlist-checkboxes {
+            display: flex; flex-direction: column; gap: 8px;
+            max-height: 150px; overflow-y: auto; margin-bottom: 15px; padding: 5px 0;
+        }
+        .playlist-checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
+        .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
+        .modal-btns button {
+            padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;
+        }
+        .btn-cancel { background: #e5e7eb; color: var(--text-main); }
+        .btn-save { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+
     </style>
 </head>
 <body>
 
-<div class="compass-container">
-    <div class="compass-needle" id="needle"></div>
-    <div class="qibla-indicator"></div>
-</div>
-<div class="error-message" id="error" style="display: none;"></div>
+    <!-- Unified Sticky Header -->
+    <div class="global-sticky-header">
+        <!-- Main App Tabs -->
+        <div class="app-tabs">
+            <button class="app-tab active" id="btn-quran" onclick="switchAppTab('quran')">Al Quran</button>
+            <button class="app-tab" id="btn-qiblah" onclick="switchAppTab('qiblah')">Qiblah</button>
+            <button class="app-tab" id="btn-lectures" onclick="switchAppTab('lectures')">Lectures</button>
+        </div>
 
-<div id="ramadan-widget">
-    <div id="live-clock">00:00:00 <button class="wake-lock-btn" onclick="toggleWakeLock()" id="wakeLockBtn">⚡ লক রাখুন</button></div>
-    <select id="district-picker" class="district-select" onchange="updateView()">
-        <option value="dhaka">ঢাকা জেলা</option>
-        <option value="barishal">বরিশাল জেলা</option>
-        <option value="patuakhali">পটুয়াখালী জেলা</option>
-    </select>
-    <div id="display-date" style="font-size: 14px; margin-bottom: 8px; font-weight: bold;">লোড হচ্ছে...</div>
-    <div id="countdown-container">
-        <div id="timer-label">বাকি সময়</div>
-        <div id="timer-clock">00:00:00</div>
+        <!-- Quran Search & Playlist Sub-Header (Sticky with the tabs) -->
+        <div id="quran-header-content" class="quran-header-content active">
+            <div class="main-container" style="padding: 0;">
+                <div class="playlist-nav-container">
+                    <div class="playlist-header-row">
+                        <h3>Playlists</h3>
+                        <div class="playlist-actions-right">
+                            <button class="pl-manage-btn" id="renamePlBtn" onclick="openRenameModal()">Rename</button>
+                            <button class="pl-manage-btn" id="deletePlBtn" style="color:var(--danger);" onclick="deleteCurrentPlaylist()">Delete</button>
+                            <button class="create-pl-btn" onclick="openPlaylistModal()">+ New Playlist</button>
+                        </div>
+                    </div>
+                    <div class="playlist-tabs" id="playlistTabs"></div>
+                </div>
+                <input type="text" id="searchInput" class="search-box" placeholder="Search Surah...">
+            </div>
+        </div>
     </div>
-    <div class="timer-row">
-        <div class="time-box"><span class="time-label">সেহরী শেষ</span><span id="today-sehri" class="time-val">--:--</span></div>
-        <div class="time-box"><span class="time-label">ফজর আজান</span><span id="today-fajr" class="time-val">--:--</span></div>
-        <div class="time-box"><span class="time-label">ইফতার</span><span id="today-iftar" class="time-val">--:--</span></div>
+
+    <!-- TAB 1: AL QURAN -->
+    <div id="tab-quran" class="tab-content active">
+        <div class="main-container">
+            <div class="surah-list" id="surahContainer"></div>
+        </div>
+        
+        <!-- Quran Player Bar -->
+        <div class="player-bar" id="quran-player-bar">
+            <div class="player-top-row">
+                <div style="width: 40px;"></div>
+                <div class="current-surah-title" id="nowPlaying">No Surah Selected</div>
+                <button class="repeat-btn" id="repeatBtn" onclick="toggleRepeat()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                    </svg>
+                    <span id="repeatText">Off</span>
+                </button>
+            </div>
+            <audio id="audioPlayer" controls preload="metadata"></audio>
+        </div>
     </div>
-    <span class="view-btn" onclick="showCalendar()">পুরো মাসের ক্যালেন্ডার</span>
-</div>
 
-<audio id="sehri-pre-timer" preload="auto" loop><source src="sehritimer.mp3" type="audio/mpeg"></audio>
-<audio id="sehri-siren" preload="auto"><source src="sehrisiren.mp3" type="audio/mpeg"></audio>
-<audio id="iftar-sound" preload="auto"><source src="iftar.mp3" type="audio/mpeg"></audio>
-<audio id="silent-audio" preload="auto" loop><source src="data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mp3"></audio>
+    <!-- TAB 2: QIBLAH -->
+    <div id="tab-qiblah" class="tab-content">
+        <div class="main-container">
+            <div class="qiblah-wrapper">
+                <div class="qiblah-title">Qiblah Direction</div>
+                <div class="compass-container">
+                    <div class="compass-needle" id="needle"></div>
+                    <div class="qibla-indicator"></div>
+                </div>
+                <div class="compass-error" id="error"></div>
+                
+                <div class="qiblah-instructions">
+                    ডিভাইসটি অনুভূমিক ভাবে রেখে তীরের মাথা কাবাঘর বরাবর আনুন। তীরের নির্দেশিত দিক পশ্চিম দিক।
+                </div>
 
-<div class="video-container">
-    <iframe id="yt-player" src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-
-<div class="banner-container">
-    <a href="https://hanafifiqh.net/"><img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh"></a>
-</div>
-
-<div class="newspaper"><a href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w">Al Quran</a></div>
-<div class="newspaper"><a href="https://youtube.com/@baseeramedia/videos">Baseera</a></div>
-<div class="newspaper"><a href="https://youtube.com/@sheikhahmadullahofficial/videos">Ahmadullah</a></div>
-<div class="newspaper"><a href="https://youtube.com/@drmizanurrahmanazharichannel/videos">Mizanur Rahman Azhari</a></div>
-<div class="newspaper"><a href="https://youtube.com/@tawhaatv/videos">Abu Tawha Adnan</a></div>
-<div class="newspaper"><a href="https://youtube.com/@ridjaalahmedofficial/videos">Ridjaal Ahmed</a></div>
-
-<div id="calendar-modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeCalendar()">&times;</span>
-        <h3 style="text-align: center; margin: 0;">রমাদান ক্যালেন্ডার ২০২৬</h3>
-        <div id="calendar-table-container"></div>
+                <p style="margin-top: 15px; color: var(--text-muted); font-size: 13px;">
+                    Ensure your device's location is turned on and allow location access for accurate directions.
+                </p>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-const ramadanData = {
-    dhaka: [{r:1, d:"19 Feb", bn:"০৬ ফাল্গুন", s:"5:12", f:"5:15", i:"5:58"},{r:2, d:"20 Feb", bn:"০৭ ফাল্গুন", s:"5:11", f:"5:14", i:"5:58"},{r:3, d:"21 Feb", bn:"০৮ ফাল্গুন", s:"5:11", f:"5:14", i:"5:59"},{r:4, d:"22 Feb", bn:"০৯ ফাল্গুন", s:"5:10", f:"5:13", i:"5:59"},{r:5, d:"23 Feb", bn:"১০ ফাল্গুন", s:"5:09", f:"5:12", i:"6:00"},{r:6, d:"24 Feb", bn:"১১ ফাল্গুন", s:"5:08", f:"5:11", i:"6:00"},{r:7, d:"25 Feb", bn:"১২ ফাল্গুন", s:"5:08", f:"5:11", i:"6:01"},{r:8, d:"26 Feb", bn:"১৩ ফাল্গুন", s:"5:07", f:"5:10", i:"6:01"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:06", f:"5:09", i:"6:02"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:05", f:"5:08", i:"6:02"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:05", f:"5:08", i:"6:03"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:04", f:"5:07", i:"6:03"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:03", f:"5:06", i:"6:04"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:02", f:"5:05", i:"6:04"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"5:00", f:"5:03", i:"6:05"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:06"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:00", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:57", f:"4:59", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:56", f:"4:58", i:"6:07"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:54", f:"4:57", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:54", f:"4:57", i:"6:08"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:53", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"০১ চৈত্র", s:"4:52", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"০২ চৈত্র", s:"4:51", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"০৩ চৈত্র", s:"4:50", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"০৪ চৈত্র", s:"4:49", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"০৫ চৈত্র", s:"4:48", f:"4:50", i:"6:11"},{r:30, d:"20 Mar", bn:"০৬ চৈত্র", s:"4:47", f:"4:49", i:"6:11"}],
-    barishal: [{r:1, d:"19 Feb", bn:"০৬ ফাল্গুন", s:"5:11", f:"5:15", i:"5:59"},{r:2, d:"20 Feb", bn:"০৭ ফাল্গুন", s:"5:10", f:"5:14", i:"5:59"},{r:3, d:"21 Feb", bn:"০৮ ফাল্গুন", s:"5:09", f:"5:13", i:"6:00"},{r:4, d:"22 Feb", bn:"০৯ ফাল্গুন", s:"5:09", f:"5:13", i:"6:00"},{r:5, d:"23 Feb", bn:"১০ ফাল্গুন", s:"5:08", f:"5:12", i:"6:01"},{r:6, d:"24 Feb", bn:"১১ ফাল্গুন", s:"5:07", f:"5:11", i:"6:01"},{r:7, d:"25 Feb", bn:"১২ ফাল্গুন", s:"5:07", f:"5:10", i:"6:02"},{r:8, d:"26 Feb", bn:"১৩ ফাল্গুন", s:"5:06", f:"5:10", i:"6:02"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:05", f:"5:09", i:"6:03"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:04", f:"5:08", i:"6:03"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:04", f:"5:07", i:"6:03"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:03", f:"5:07", i:"6:03"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:02", f:"5:06", i:"6:04"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:01", f:"5:05", i:"6:05"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:00", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"4:59", f:"5:03", i:"6:06"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:59", f:"5:02", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:58", f:"5:01", i:"6:07"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:57", f:"5:01", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:56", f:"5:00", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:55", f:"4:59", i:"6:08"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:54", f:"4:58", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:53", f:"4:57", i:"6:09"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:52", f:"4:56", i:"6:09"},{r:25, d:"15 Mar", bn:"০১ চৈত্র", s:"4:51", f:"4:55", i:"6:09"},{r:26, d:"16 Mar", bn:"০২ চৈত্র", s:"4:50", f:"4:54", i:"6:10"},{r:27, d:"17 Mar", bn:"০৩ চৈত্র", s:"4:49", f:"4:53", i:"6:10"},{r:28, d:"18 Mar", bn:"০৪ চৈত্র", s:"4:48", f:"4:52", i:"6:10"},{r:29, d:"19 Mar", bn:"০৫ চৈত্র", s:"4:47", f:"4:51", i:"6:11"},{r:30, d:"20 Mar", bn:"০৬ চৈত্র", s:"4:46", f:"4:50", i:"6:11"}],
-    patuakhali: [{r:1, d:"19 Feb", bn:"০৬ ফাল্গুন", s:"5:11", f:"5:14", i:"5:59"},{r:2, d:"20 Feb", bn:"০৭ ফাল্গুন", s:"5:10", f:"5:13", i:"6:00"},{r:3, d:"21 Feb", bn:"০৮ ফাল্গুন", s:"5:10", f:"5:13", i:"6:00"},{r:4, d:"22 Feb", bn:"০৯ ফাল্গুন", s:"5:09", f:"5:12", i:"6:01"},{r:5, d:"23 Feb", bn:"১০ ফাল্গুন", s:"5:08", f:"5:11", i:"6:01"},{r:6, d:"24 Feb", bn:"১১ ফাল্গুন", s:"5:08", f:"5:11", i:"6:02"},{r:7, d:"25 Feb", bn:"১২ ফাল্গুন", s:"5:07", f:"5:10", i:"6:02"},{r:8, d:"26 Feb", bn:"১৩ ফাল্গুন", s:"5:06", f:"5:09", i:"6:03"},{r:9, d:"27 Feb", bn:"১৪ ফাল্গুন", s:"5:05", f:"5:09", i:"6:03"},{r:10, d:"28 Feb", bn:"১৫ ফাল্গুন", s:"5:05", f:"5:08", i:"6:03"},{r:11, d:"1 Mar", bn:"১৬ ফাল্গুন", s:"5:04", f:"5:07", i:"6:04"},{r:12, d:"2 Mar", bn:"১৭ ফাল্গুন", s:"5:03", f:"5:06", i:"6:04"},{r:13, d:"3 Mar", bn:"১৮ ফাল্গুন", s:"5:02", f:"5:05", i:"6:05"},{r:14, d:"4 Mar", bn:"১৯ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:15, d:"5 Mar", bn:"২০ ফাল্গুন", s:"5:01", f:"5:04", i:"6:05"},{r:16, d:"6 Mar", bn:"২১ ফাল্গুন", s:"4:50", f:"4:53", i:"6:06"},{r:17, d:"7 Mar", bn:"২২ ফাল্গুন", s:"4:49", f:"4:52", i:"6:06"},{r:18, d:"8 Mar", bn:"২৩ ফাল্গুন", s:"4:48", f:"4:51", i:"6:07"},{r:19, d:"9 Mar", bn:"২৪ ফাল্গুন", s:"4:47", f:"4:50", i:"6:07"},{r:20, d:"10 Mar", bn:"২৫ ফাল্গুন", s:"4:46", f:"4:50", i:"6:07"},{r:21, d:"11 Mar", bn:"২৬ ফাল্গুন", s:"4:45", f:"4:49", i:"6:08"},{r:22, d:"12 Mar", bn:"২৭ ফাল্গুন", s:"4:44", f:"4:48", i:"6:08"},{r:23, d:"13 Mar", bn:"২৮ ফাল্গুন", s:"4:43", f:"4:47", i:"6:08"},{r:24, d:"14 Mar", bn:"২৯ ফাল্গুন", s:"4:43", f:"4:46", i:"6:09"},{r:25, d:"15 Mar", bn:"০১ চৈত্র", s:"4:42", f:"4:45", i:"6:09"},{r:26, d:"16 Mar", bn:"০২ চৈত্র", s:"4:41", f:"4:44", i:"6:10"},{r:27, d:"17 Mar", bn:"০৩ চৈত্র", s:"4:40", f:"4:43", i:"6:10"},{r:28, d:"18 Mar", bn:"০৪ চৈত্র", s:"4:39", f:"4:42", i:"6:10"},{r:29, d:"19 Mar", bn:"০৫ চৈত্র", s:"4:38", f:"4:41", i:"6:11"},{r:30, d:"20 Mar", bn:"০৬ চৈত্র", s:"4:37", f:"4:40", i:"6:11"}]
-};
-
-let ramadanInterval;
-let resetInterval;
-let isPreSehriPlayed = false;
-let isSirenPlayed = false;
-let isIftarPlayed = false;
-let wakeLock = null;
-let silentAudio = document.getElementById('silent-audio');
-
-const preSehriAudio = document.getElementById('sehri-pre-timer');
-const sirenAudio = document.getElementById('sehri-siren');
-const iftarAudio = document.getElementById('iftar-sound');
-
-async function toggleWakeLock() {
-    const btn = document.getElementById('wakeLockBtn');
-    if (wakeLock === null) {
-        try {
-            wakeLock = await navigator.wakeLock.request('screen');
-            btn.textContent = '⚡ লক করা আছে';
-            btn.style.background = '#ffeb3b';
-            btn.style.color = '#004422';
-            silentAudio.volume = 0.05;
-            silentAudio.play().catch(e => console.log("Silent audio failed"));
+    <!-- TAB 3: LECTURES -->
+    <div id="tab-lectures" class="tab-content">
+        <div class="main-container">
             
-            wakeLock.addEventListener('release', () => {
-                wakeLock = null;
-                btn.textContent = '⚡ লক রাখুন';
-                btn.style.background = 'rgba(255,255,255,0.2)';
-                btn.style.color = 'white';
-                silentAudio.pause();
-            });
-        } catch (err) {
-            alert('ওয়েক লক আপনার ব্রাউজারে সাপোর্ট করছে না।');
-        }
-    } else {
-        await wakeLock.release();
-    }
-}
+            <!-- Video at the top -->
+            <div class="video-container">
+                <iframe id="yt-player" src="https://www.youtube.com/embed/eIrRj6vDddU?autoplay=0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
 
-function stopAllAudioExcept(exception) {
-    if (exception !== preSehriAudio) { preSehriAudio.pause(); preSehriAudio.currentTime = 0; }
-    if (exception !== sirenAudio) { sirenAudio.pause(); sirenAudio.currentTime = 0; }
-    if (exception !== iftarAudio) { iftarAudio.pause(); iftarAudio.currentTime = 0; }
-}
+            <!-- Hanafi Fiqh Banner after Video -->
+            <div class="banner-container">
+                <a href="https://hanafifiqh.net/" target="_blank">
+                    <img src="https://madinamanjeel.github.io/islamic/hanafifiqh.webp" alt="Hanafi Fiqh">
+                </a>
+            </div>
 
-function updateView() {
-    const district = document.getElementById('district-picker').value;
-    const now = new Date();
-    const day = now.getDate();
-    const month = now.toLocaleString('en-GB', { month: 'short' });
-    const todayStr = `${day} ${month}`;
+            <!-- Other Links -->
+            <div class="lecture-links-container">
+                <a class="lecture-card" href="https://youtube.com/playlist?list=PLoqNzfHlA__knCeUoKUHjQfZpUL6mj64w" target="_blank">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
+                    <span>Al Quran</span>
+                </a>
+                <a class="lecture-card" href="https://youtube.com/@baseeramedia/videos" target="_blank">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
+                    <span>Baseera</span>
+                </a>
+                <a class="lecture-card" href="https://youtube.com/@sheikhahmadullahofficial/videos" target="_blank">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
+                    <span>Ahmadullah</span>
+                </a>
+                <a class="lecture-card" href="https://youtube.com/@drmizanurrahmanazharichannel/videos" target="_blank">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
+                    <span>Mizanur Rahman Azhari</span>
+                </a>
+                <a class="lecture-card" href="https://youtube.com/@tawhaatv/videos" target="_blank">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
+                    <span>Abu Tawha Adnan</span>
+                </a>
+                <a class="lecture-card" href="https://youtube.com/@ridjaalahmedofficial/videos" target="_blank">
+                    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
+                    <span>Ridjaal Ahmed</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
-    let todayData = ramadanData[district].find(item => item.d === todayStr) || ramadanData[district][0];
-    
-    document.getElementById('today-sehri').innerText = todayData.s;
-    document.getElementById('today-fajr').innerText = todayData.f;
-    document.getElementById('today-iftar').innerText = todayData.i;
-    document.getElementById('display-date').innerText = `${todayData.r} রমজান | ${todayData.d} | ${todayData.bn}`;
 
-    isPreSehriPlayed = false;
-    isSirenPlayed = false;
-    isIftarPlayed = false;
-    stopAllAudioExcept(null);
-    
-    startRamadanLogic(todayData.s, todayData.i);
-}
+    <!-- Quran App Modals -->
+    <div class="modal" id="playlistModal">
+        <div class="modal-content">
+            <h3>Create New Playlist</h3>
+            <input type="text" id="playlistNameInput" class="modal-input" placeholder="Playlist Name">
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closePlaylistModal()">Cancel</button>
+                <button class="btn-save" onclick="saveNewPlaylist()">Save</button>
+            </div>
+        </div>
+    </div>
 
-function startRamadanLogic(sehri, iftar) {
-    if (ramadanInterval) clearInterval(ramadanInterval);
-    
-    ramadanInterval = setInterval(() => {
-        const now = new Date();
-        document.getElementById('live-clock').firstChild.textContent = now.toLocaleTimeString('en-GB') + ' ';
-        
-        const sehriParts = sehri.split(':');
-        const iftarParts = iftar.split(':');
-        
-        const sTime = new Date(); 
-        sTime.setHours(parseInt(sehriParts[0]), parseInt(sehriParts[1]), 0);
-        
-        const iTime = new Date(); 
-        iTime.setHours(parseInt(iftarParts[0]) + 12, parseInt(iftarParts[1]), 0);
+    <div class="modal" id="renamePlaylistModal">
+        <div class="modal-content">
+            <h3>Rename Playlist</h3>
+            <input type="text" id="playlistRenameInput" class="modal-input" placeholder="New Playlist Name">
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeRenameModal()">Cancel</button>
+                <button class="btn-save" onclick="saveRenamePlaylist()">Update</button>
+            </div>
+        </div>
+    </div>
 
-        let target, label;
-        if (now < sTime) { 
-            target = sTime; 
-            label = "সেহরীর বাকি"; 
-        } else if (now < iTime) { 
-            target = iTime; 
-            label = "ইফতারের বাকি"; 
-            // সেহরি শেষ হলে প্রি-টাইমার বন্ধ করুন
-            if (isPreSehriPlayed) {
-                preSehriAudio.pause();
-                preSehriAudio.currentTime = 0;
-                isPreSehriPlayed = false;
+    <div class="modal" id="addToPlaylistModal">
+        <div class="modal-content">
+            <h3>Add to Playlists</h3>
+            <div class="playlist-checkboxes" id="playlistCheckboxesContainer"></div>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeAddToPlaylistModal()">Cancel</button>
+                <button class="btn-save" onclick="saveSurahToSelectedPlaylists()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // TAB SWITCHING LOGIC
+        // ==========================================
+        function switchAppTab(tabName) {
+            // Update Tab Buttons
+            document.querySelectorAll('.app-tab').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + tabName).classList.add('active');
+
+            // Update Tab Contents
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            // Header visibility specifically for Quran
+            const quranHeader = document.getElementById('quran-header-content');
+            const playerBar = document.getElementById('quran-player-bar');
+            if(tabName === 'quran') {
+                quranHeader.classList.add('active');
+                playerBar.style.display = 'flex';
+            } else {
+                quranHeader.classList.remove('active');
+                playerBar.style.display = 'none';
             }
-        } else { 
-            label = "ইফতার সম্পন্ন"; 
-            document.getElementById('timer-clock').innerText = "00:00:00";
-            return; 
         }
 
-        const diff = target - now;
-        const h = Math.floor(diff / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
+        // ==========================================
+        // QURAN LOGIC
+        // ==========================================
+        const surahFiles = [
+            "001.-.Al-Fatiha.mp3", "002.-.Al-Baqarah.mp3", "003.-.Al-e-Imran.mp3", "004.-.An-Nisa.mp3", "005.-.Al-Maida.mp3", "006.-.Anaam.mp3", "007.-.Al-Aaraaf.mp3", "008.-.Al-Anfal.mp3", "009.-.At-Tauba.mp3", "010.-.Yunus.mp3", "011.-.Hud.mp3", "012.-.Yusuf.mp3", "013.-.Ar-Raad.mp3", "014.-.Ibrahim.mp3", "015.-.Al-Hijr.mp3", "016.-.An-Nahl.mp3", "017.-.Al-Isra.mp3", "018.-.Al-Kahf.mp3", "019.-.Maryam.mp3", "020.-.Taha.mp3", "021.-.Al-Anbiya.mp3", "022.-.Al-Hajj.mp3", "023.-.Muminun.mp3", "024.-.An-Noor.mp3", "025.-.Al-Furqan.mp3", "026.-.Ash-Shuara.mp3", "027.-.An-Naml.mp3", "028.-.Al-Qasas.mp3", "029.-.Ankabut.mp3", "030.-.Ar-Rum.mp3", "031.-.Luqman.mp3", "032.-.As-Sajda.mp3", "033.-.Al-Ahzaab.mp3", "034.-.Saba.mp3", "035.-.Fatir.mp3", "036.-.Ya.Seen.mp3", "037.-.Saffaat.mp3", "038.-.Sad.mp3", "039.-.Az-Zumar.mp3", "040.-.Al-Ghafir.mp3", "041.-.Fussilat.mp3", "042.-.Ash-Shura.mp3", "043.-.Az-Zukhruf.mp3", "044.-.Ad-Dukhan.mp3", "045.-.Al-Jathiya.mp3", "046.-.Al-Ahqaaf.mp3", "047.-.Muhammad.mp3", "048.-.Al-Fath.mp3", "049.-.Al-Hujraat.mp3", "050.-.Qaaf.mp3", "051.-.Adh-Dhariyat.mp3", "052.-.At-Tur.mp3", "053.-.An-Najm.mp3", "054.-.Al-Qamar.mp3", "055.-.Ar-Rahmaan.mp3", "056.-.Al-Waaqiya.mp3", "057.-.Al-Hadid.mp3", "058.-.Al-Mujaadila.mp3", "059.-.Al-Hashr.mp3", "060.-.Al-Mumtahina.mp3", "061.-.As-Saff.mp3", "062.-.Al-Jumuah.mp3", "063.-.Al-Munafiqoon.mp3", "064.-.At-Taghabun.mp3", "065.-.At-Talaq.mp3", "066.-.At-Tahrim.mp3", "067.-.Al-Mulk.mp3", "068.-.Al-Qalam.mp3", "069.-.Al-Haaqqa.mp3", "070.-.Al-Maarij.mp3", "071.-.Nooh.mp3", "072.-.Al-Jinn.mp3", "073.-.Al-Muzzammil.mp3", "074.-.Al-Mudatthir.mp3", "075.Al-Qiyama.mp3", "076.-.Al-Insan.mp3", "077.-.Al-Mursalat.mp3", "078.-.An-Naba.mp3", "079.-.An-Naziat.mp3", "080.-.Al-Abasa.mp3", "081.-.At-Takwir.mp3", "082.-.Al-Infitar.mp3", "083.-.Al-Mutaffifeen.mp3", "084.-.Al-Inshiqaq.mp3", "085.-.Al-Burooj.mp3", "086.-.At-Tariq.mp3", "087.-.Al-Aala.mp3", "088.-.Al-Ghashiya.mp3", "089.-.Al-Fajr.mp3", "090.-.Al-Balad.mp3", "091.-.Ash-Shams.mp3", "092.-.Al-Layl.mp3", "093.-.Ad-Duha.mp3", "094.-.Al-Inshirah.mp3", "095.-.At-Teen.mp3", "096.-.Al-Alaq.mp3", "097.-.Al-Qadr.mp3", "098.-.Al-Bayyinah.mp3", "099.-.Al-Zilzaal.mp3", "100.-.Al-Aadiyaat.mp3", "101.-.Al-Qariyah.mp3", "102.-.At-Takathur.mp3", "103.-.Al-Asr.mp3", "104.-.Al-Humaza.mp3", "105.-.Al-Feel.mp3", "106.-.Al-Quraysh.mp3", "107.-.Al-Maoon.mp3", "108.-.Al-Kawthar.mp3", "109.-.Al-Kaafirun.mp3", "110.-.An-Nasr.mp3", "111.-.Al-Lahab.mp3", "112.-.Al-Ikhlaas.mp3", "113.-.Al-Falaq.mp3", "114.-.An-Naas.mp3"
+        ];
+        const bnNames = [
+            "ফাতিহা", "বাকারাহ", "আলে ইমরান", "নিসা", "মায়িদাহ", "আনআম", "আরাফ", "আনফাল", "তাওবাহ", "ইউনুস", 
+            "হুদ", "ইউসুফ", "রাদ", "ইবরাহিম", "হিজর", "নাহল", "ইসরা", "কাহফ", "মারইয়াম", "ত্বাহা", 
+            "আম্বিয়া", "হাজ্জ", "মুমিনুন", "নূর", "ফুরকান", "শুআরা", "নামল", "কাসাস", "আনকাবুত", "রুম", 
+            "লুকমান", "সাজদাহ", "আহযাব", "সাবা", "ফাতির", "ইয়াসীন", "সাফফাত", "সোয়াদ", "যুমার", "গাফির", 
+            "ফুসসিলাত", "শূরা", "যুখরুফ", "দুখান", "জাসিয়াহ", "আহকাফ", "মুহাম্মদ", "ফাতহ", "হুজুরাত", "ক্বাফ", 
+            "যারিয়াত", "তূর", "নাজম", "ক্বামার", "রহমান", "ওয়াকিয়াহ", "হাদীদ", "মুজাদালাহ", "হাশর", "মুমতাহিনাহ", 
+            "সফ", "জুমুআহ", "মুনাফিকুন", "তাগাবুন", "তালাক", "তাহরীম", "মুলক", "কলম", "হাক্কাহ", "মাআরিজ", 
+            "নূহ", "জিন", "মুয্যাম্মিল", "মুদ্দাসসির", "ক্বিয়ামাহ", "ইনসান", "মুরসালাত", "নাবা", "নাযিয়াত", "আবাসা", 
+            "তাকভীর", "ইনফিতার", "মুতাফফিফীন", "ইনশিকাক", "বুরূজ", "তারিক", "আলা", "গাশিয়াহ", "ফাজর", "বালাদ", 
+            "শামস", "লাইل", "দুহা", "ইনশিরাহ", "তীন", "আলাক", "কদর", "বায়্যিনাহ", "যিলযাল", "আদিয়াত", 
+            "কারিআহ", "তাকাসুর", "আসর", "হুমাযাহ", "ফীল", "কুরাইশ", "মাউন", "কাউসার", "কাফিরুন", "নাসর", 
+            "লাহাব", "ইখলাস", "ফালাক", "নাস"
+        ];
+
+        const surahData = surahFiles.map((file, i) => {
+            const numStr = file.substring(0, 3);
+            const num = parseInt(numStr);
+            const enNameClean = file.replace(".mp3", "").replace(/^\d{3}(?:\.-\.|\.)/, "").replace(/\./g, " ");
+            return { id: num, originalFile: file, displayName: enNameClean, bnName: bnNames[i], index: i };
+        });
+
+        const baseUrl = "https://github.com/madinamanjeel/madinamanjeel.github.io/releases/download/Al-Quran/";
+        const container = document.getElementById("surahContainer");
+        const audioPlayer = document.getElementById("audioPlayer");
+        const nowPlayingText = document.getElementById("nowPlaying");
         
-        document.getElementById('timer-label').innerText = label;
-        document.getElementById('timer-clock').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        let currentPlayingIndex = -1; let searchTimeout; let repeatMode = 0; let selectedSurahIdForModal = null;
+        let playlists = JSON.parse(localStorage.getItem('quran_playlists')) || { "All Surahs": [], "Favorites": [] };
+        if(!playlists["All Surahs"]) playlists["All Surahs"] = [];
+        if(!playlists["Favorites"]) playlists["Favorites"] = [];
+        let activePlaylist = "All Surahs";
 
-        // সেহরী প্রি-টাইমার (১ মিনিট বাকি থাকতে)
-        if (label === "সেহরীর বাকি" && diff <= 60000 && diff > 2000 && !isPreSehriPlayed) {
-            console.log("Playing pre-sehri timer");
-            stopAllAudioExcept(preSehriAudio);
-            preSehriAudio.currentTime = 0;
-            preSehriAudio.play().catch(e => console.log("Pre-sehri audio error:", e));
-            isPreSehriPlayed = true;
+        function openPlaylistModal() { document.getElementById('playlistModal').style.display = 'flex'; document.getElementById('playlistNameInput').value = ''; }
+        function closePlaylistModal() { document.getElementById('playlistModal').style.display = 'none'; }
+        function saveNewPlaylist() {
+            const name = document.getElementById('playlistNameInput').value.trim();
+            if(name && !playlists[name]) {
+                playlists[name] = []; localStorage.setItem('quran_playlists', JSON.stringify(playlists));
+                activePlaylist = name; renderPlaylistTabs(); triggerSearch();
+            }
+            closePlaylistModal();
         }
 
-        // সাইরেন লজিক (ঠিক সেহরি শেষ হওয়ার সময়)
-        if (label === "সেহরীর বাকি" && diff <= 1000 && !isSirenPlayed) {
-            console.log("Playing sehri siren");
-            stopAllAudioExcept(sirenAudio);
-            sirenAudio.currentTime = 0;
-            sirenAudio.play().catch(e => console.log("Siren error:", e));
-            isSirenPlayed = true;
+        function openRenameModal() {
+            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites") return;
+            document.getElementById('renamePlaylistModal').style.display = 'flex';
+            document.getElementById('playlistRenameInput').value = activePlaylist;
+        }
+        function closeRenameModal() { document.getElementById('renamePlaylistModal').style.display = 'none'; }
+        function saveRenamePlaylist() {
+            const newName = document.getElementById('playlistRenameInput').value.trim();
+            if(newName && newName !== activePlaylist && !playlists[newName]) {
+                playlists[newName] = playlists[activePlaylist]; delete playlists[activePlaylist];
+                localStorage.setItem('quran_playlists', JSON.stringify(playlists));
+                activePlaylist = newName; renderPlaylistTabs(); triggerSearch();
+            }
+            closeRenameModal();
+        }
+
+        function deleteCurrentPlaylist() {
+            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites") return;
+            if(confirm(`Are you sure you want to delete the playlist "${activePlaylist}"?`)) {
+                delete playlists[activePlaylist]; localStorage.setItem('quran_playlists', JSON.stringify(playlists));
+                activePlaylist = "All Surahs"; renderPlaylistTabs(); triggerSearch();
+            }
+        }
+
+        function renderPlaylistTabs() {
+            const tabsContainer = document.getElementById('playlistTabs'); tabsContainer.innerHTML = '';
+            const renameBtn = document.getElementById('renamePlBtn'); const deleteBtn = document.getElementById('deletePlBtn');
+
+            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites") {
+                renameBtn.style.display = 'none'; deleteBtn.style.display = 'none';
+            } else { renameBtn.style.display = 'inline-block'; deleteBtn.style.display = 'inline-block'; }
+
+            Object.keys(playlists).forEach(plName => {
+                const tab = document.createElement('div');
+                tab.className = `playlist-tab ${activePlaylist === plName ? 'active' : ''}`; tab.innerText = plName;
+                tab.onclick = () => { activePlaylist = plName; renderPlaylistTabs(); triggerSearch(); };
+                tabsContainer.appendChild(tab);
+            });
+        }
+
+        function toggleSurahInPlaylistDirect(surahId, plName, event) {
+            event.stopPropagation(); if(plName === "All Surahs") return;
+            let list = playlists[plName];
+            if(list.includes(surahId)) playlists[plName] = list.filter(id => id !== surahId);
+            else playlists[plName].push(surahId);
+            localStorage.setItem('quran_playlists', JSON.stringify(playlists)); triggerSearch();
+        }
+
+        function openAddToPlaylistModal(surahId, event) {
+            event.stopPropagation(); selectedSurahIdForModal = surahId;
+            const containerBox = document.getElementById('playlistCheckboxesContainer'); containerBox.innerHTML = '';
+            const customLists = Object.keys(playlists).filter(p => p !== "All Surahs");
             
-            // অডিও শেষ হলে নিজে নিজেই থামবে (loop নেই বলে)
-            sirenAudio.onended = function() {
-                sirenAudio.currentTime = 0;
-            };
+            if(customLists.length === 0) {
+                containerBox.innerHTML = `<div style="color:var(--text-muted); font-size:14px; text-align:center;">No playlists found. Create one first!</div>`;
+            } else {
+                customLists.forEach(plName => {
+                    const isChecked = playlists[plName].includes(surahId);
+                    const label = document.createElement('label'); label.className = 'playlist-checkbox-item';
+                    label.innerHTML = `<input type="checkbox" value="${plName}" ${isChecked ? 'checked' : ''}><span>${plName}</span>`;
+                    containerBox.appendChild(label);
+                });
+            }
+            document.getElementById('addToPlaylistModal').style.display = 'flex';
         }
 
-        // ইফতার লজিক
-        if (label === "ইফতারের বাকি" && diff <= 1000 && !isIftarPlayed) {
-            console.log("Playing iftar audio");
-            stopAllAudioExcept(iftarAudio);
-            iftarAudio.currentTime = 0;
-            iftarAudio.play();
-            isIftarPlayed = true;
-            
-            // অডিও শেষ হলে নিজে নিজেই থামবে (loop নেই বলে)
-            iftarAudio.onended = function() {
-                iftarAudio.currentTime = 0;
-            };
+        function closeAddToPlaylistModal() { document.getElementById('addToPlaylistModal').style.display = 'none'; selectedSurahIdForModal = null; }
+        
+        function saveSurahToSelectedPlaylists() {
+            if(selectedSurahIdForModal === null) return;
+            const checkboxes = document.querySelectorAll('#playlistCheckboxesContainer input[type="checkbox"]');
+            checkboxes.forEach(chk => {
+                const plName = chk.value; const list = playlists[plName] || [];
+                const isAlreadyIn = list.includes(selectedSurahIdForModal);
+                if(chk.checked && !isAlreadyIn) playlists[plName].push(selectedSurahIdForModal);
+                else if(!chk.checked && isAlreadyIn) playlists[plName] = list.filter(id => id !== selectedSurahIdForModal);
+            });
+            localStorage.setItem('quran_playlists', JSON.stringify(playlists));
+            closeAddToPlaylistModal(); triggerSearch();
         }
 
-    }, 1000);
-}
+        function toggleRepeat() {
+            const btn = document.getElementById('repeatBtn'); const txt = document.getElementById('repeatText');
+            repeatMode = (repeatMode + 1) % 3; btn.className = 'repeat-btn';
+            if (repeatMode === 1) { btn.classList.add('active-all'); txt.innerText = 'All'; audioPlayer.loop = false; } 
+            else if (repeatMode === 2) { btn.classList.add('active-one'); txt.innerText = 'One'; audioPlayer.loop = true; } 
+            else { txt.innerText = 'Off'; audioPlayer.loop = false; }
+        }
 
-function showCalendar() {
-    const district = document.getElementById('district-picker').value;
-    const now = new Date(); 
-    const todayStr = `${now.getDate()} ${now.toLocaleString('en-GB', { month: 'short' })}`;
-    let table = `<table><tr><th>রমজান</th><th>ইংলিশ</th><th>বাংলা</th><th>সেহরী</th><th>ফজর</th><th>ইফতার</th></tr>`;
-    ramadanData[district].forEach(d => {
-        const isToday = (d.d === todayStr) ? 'class="today-highlight"' : '';
-        table += `<tr ${isToday}><td>${d.r}</td><td>${d.d}</td><td>${d.bn}</td><td>${d.s}</td><td>${d.f}</td><td>${d.i}</td></tr>`;
-    });
-    table += `</table>`;
-    document.getElementById('calendar-table-container').innerHTML = table;
-    document.getElementById('calendar-modal').style.display = 'block';
-}
+        function getLevenshteinDistance(a, b) {
+            if (a.length === 0) return b.length; if (b.length === 0) return a.length;
+            const matrix = []; for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) { matrix[i][j] = matrix[i - 1][j - 1]; } 
+                    else { matrix[i][j] = Math.min( matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1 ); }
+                }
+            } return matrix[b.length][a.length];
+        }
 
-function closeCalendar() { document.getElementById('calendar-modal').style.display = 'none'; }
+        function isSubsequence(sub, str) {
+            let i = 0, j = 0; while (i < str.length && j < sub.length) { if (str[i] === sub[j]) j++; i++; } return j === sub.length;
+        }
 
-/* Compass Logic */
-const needle = document.getElementById('needle');
-const errorDiv = document.getElementById('error');
-const qiblaLat = 21.4225, qiblaLng = 39.8262;
-let latitude, longitude;
+        function getSearchScore(query, surah) {
+            const q = query.toLowerCase().replace(/\s+/g, ''); const qEng = q.replace(/[^a-z0-9]/gi, ''); const qBen = q.replace(/[^\u0980-\u09FF]/g, ''); 
+            const eng = surah.displayName.toLowerCase().replace(/[^a-z0-9]/gi, ''); const ben = surah.bnName.replace(/[^\u0980-\u09FF]/g, '');
+            let score = 0;
+            if (q === surah.id.toString()) return 100;
+            if (qEng.length > 0) {
+                if (eng === qEng) score = Math.max(score, 100);
+                else if (eng.includes(qEng)) score = Math.max(score, 90);
+                else if (isSubsequence(qEng, eng)) score = Math.max(score, 70);
+                else {
+                    const dist = getLevenshteinDistance(qEng, eng);
+                    if (qEng.length > 4 && dist <= 2) score = Math.max(score, 50); else if (qEng.length > 2 && dist <= 1) score = Math.max(score, 50);
+                }
+            }
+            if (qBen.length > 0) {
+                if (ben === qBen) score = Math.max(score, 100);
+                else if (ben.includes(qBen)) score = Math.max(score, 90);
+                else if (isSubsequence(qBen, ben)) score = Math.max(score, 70);
+                else {
+                    const dist = getLevenshteinDistance(qBen, ben);
+                    if (qBen.length > 3 && dist <= 2) score = Math.max(score, 50); else if (qBen.length > 1 && dist <= 1) score = Math.max(score, 50);
+                }
+            }
+            return score;
+        }
 
-function updateCompass(heading) {
-    if(!latitude) return;
-    const phiK = qiblaLat * Math.PI / 180, lambdaK = qiblaLng * Math.PI / 180;
-    const phi = latitude * Math.PI / 180, lambda = longitude * Math.PI / 180;
-    const y = Math.sin(lambdaK - lambda) * Math.cos(phiK);
-    const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(lambdaK - lambda);
-    const qiblaAngle = Math.atan2(y, x) * 180 / Math.PI;
-    needle.style.transform = `translate(-50%, -100%) rotate(${heading + qiblaAngle}deg)`;
-}
+        function triggerSearch() {
+            let rawQuery = document.getElementById("searchInput").value.trim().replace(/^(surah|সূরা|সুরা)\s+/i, '').trim();
+            if (rawQuery === '') { renderSurahList(surahData); return; }
+            let scoredSurahs = surahData.map(s => { return { ...s, score: getSearchScore(rawQuery, s) }; }).filter(s => s.score > 0);
+            scoredSurahs.sort((a, b) => { if (b.score !== a.score) return b.score - a.score; return a.id - b.id; });
+            renderSurahList(scoredSurahs);
+        }
 
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-        latitude = position.coords.latitude; 
-        longitude = position.coords.longitude;
-        window.addEventListener('deviceorientationabsolute', e => { 
-            if (e.alpha !== null) updateCompass(360 - e.alpha); 
-        }, true);
-    }, err => { 
-        errorDiv.style.display = 'block'; 
-        errorDiv.textContent = "Location Permission Required for Compass"; 
-    });
-}
+        document.getElementById("searchInput").addEventListener("input", () => {
+            clearTimeout(searchTimeout); searchTimeout = setTimeout(triggerSearch, 200); 
+        });
 
-window.onload = updateView;
-</script>
+        function renderSurahList(list) {
+            container.innerHTML = ""; let displayList = list;
+            if(activePlaylist !== "All Surahs") {
+                const plSurahIds = playlists[activePlaylist] || []; displayList = list.filter(s => plSurahIds.includes(s.id));
+            }
+            if (displayList.length === 0) { container.innerHTML = `<div class="empty-state">No Surahs found in this playlist or search result.</div>`; return; }
+            const fragment = document.createDocumentFragment();
+
+            displayList.forEach((surah) => {
+                const card = document.createElement("div"); card.className = "surah-card";
+                if(currentPlayingIndex === surah.index) card.classList.add("active");
+                card.id = `surah-${surah.id}`;
+                
+                let plActionButton = '';
+                if(activePlaylist !== "All Surahs") { plActionButton = `<button class="add-to-pl-btn" style="color:var(--danger);" onclick="toggleSurahInPlaylistDirect(${surah.id}, '${activePlaylist}', event)">Remove</button>`; } 
+                else { plActionButton = `<button class="add-to-pl-btn" onclick="openAddToPlaylistModal(${surah.id}, event)">Add to Playlist</button>`; }
+
+                card.innerHTML = `
+                    <div class="surah-info">
+                        <div class="surah-number">${surah.id}</div>
+                        <div class="surah-details"><span class="surah-title">${surah.id}. Surah ${surah.displayName}</span></div>
+                    </div>
+                    <div class="actions">
+                        ${plActionButton}
+                        <button class="play-btn" aria-label="Play Surah"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                    </div>
+                `;
+                card.addEventListener("click", () => playSurah(surah.originalFile, surah.index, surah.id, surah.displayName));
+                fragment.appendChild(card);
+            });
+            container.appendChild(fragment);
+        }
+
+        function playSurah(fileName, index, num, displayName) {
+            currentPlayingIndex = index; const fullUrl = baseUrl + fileName; 
+            audioPlayer.src = fullUrl; audioPlayer.play();
+            nowPlayingText.innerText = `Now Playing: ${num}. Surah ${displayName}`;
+            document.querySelectorAll(".surah-card").forEach(c => c.classList.remove("active"));
+            const currentCard = document.getElementById(`surah-${num}`); if (currentCard) currentCard.classList.add("active");
+        }
+
+        audioPlayer.addEventListener("ended", () => {
+            if (repeatMode === 2) return;
+            let currentList = surahData;
+            if(activePlaylist !== "All Surahs") {
+                const plIds = playlists[activePlaylist] || []; currentList = surahData.filter(s => plIds.includes(s.id));
+            }
+            const currentIndexInView = currentList.findIndex(s => s.index === currentPlayingIndex);
+            if (currentIndexInView !== -1 && currentIndexInView < currentList.length - 1) {
+                const nextSurah = currentList[currentIndexInView + 1]; playSurah(nextSurah.originalFile, nextSurah.index, nextSurah.id, nextSurah.displayName);
+            } else if (repeatMode === 1 && currentList.length > 0) {
+                const firstSurah = currentList[0]; playSurah(firstSurah.originalFile, firstSurah.index, firstSurah.id, firstSurah.displayName);
+            }
+        });
+
+        // Initialize Quran List
+        renderPlaylistTabs(); renderSurahList(surahData);
+
+        // ==========================================
+        // COMPASS LOGIC
+        // ==========================================
+        const needle = document.getElementById('needle');
+        const errorDiv = document.getElementById('error');
+        const qiblaLat = 21.4225, qiblaLng = 39.8262;
+        let latitude, longitude;
+
+        function updateCompass(heading) {
+            if(!latitude) return;
+            const phiK = qiblaLat * Math.PI / 180, lambdaK = qiblaLng * Math.PI / 180;
+            const phi = latitude * Math.PI / 180, lambda = longitude * Math.PI / 180;
+            const y = Math.sin(lambdaK - lambda) * Math.cos(phiK);
+            const x = Math.cos(phi) * Math.sin(phiK) - Math.sin(phi) * Math.cos(phiK) * Math.cos(lambdaK - lambda);
+            const qiblaAngle = Math.atan2(y, x) * 180 / Math.PI;
+            needle.style.transform = `translate(-50%, -100%) rotate(${heading + qiblaAngle}deg)`;
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                latitude = position.coords.latitude; 
+                longitude = position.coords.longitude;
+                window.addEventListener('deviceorientationabsolute', e => { 
+                    if (e.alpha !== null) updateCompass(360 - e.alpha); 
+                }, true);
+            }, err => { 
+                errorDiv.style.display = 'block'; 
+                errorDiv.textContent = "Location Permission Required for Compass."; 
+            });
+        }
+    </script>
 </body>
 </html>
