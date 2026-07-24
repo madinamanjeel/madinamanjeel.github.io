@@ -16,6 +16,7 @@
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --danger: #ef4444;
+            --accent: #f59e0b;
         }
 
         body {
@@ -191,6 +192,16 @@
             flex-direction: column;
             gap: 12px;
         }
+        
+        /* Section Titles for Extra and Ruqyah */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 15px 5px 5px 5px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 5px;
+        }
 
         .surah-card {
             background-color: var(--card-bg);
@@ -217,15 +228,20 @@
         }
 
         .surah-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        
         .surah-number {
             background-color: var(--primary); color: white;
             width: 36px; height: 36px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             font-weight: 700; font-size: 14px; flex-shrink: 0;
         }
+        
         .surah-title { 
-            font-size: 15px; font-weight: 600; color: var(--text-main); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            font-size: 15px; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            line-height: 1.4;
+            word-break: break-word;
         }
         
         .actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -399,7 +415,8 @@
                     </div>
                     <div class="playlist-tabs" id="playlistTabs"></div>
                 </div>
-                <input type="text" id="searchInput" class="search-box" placeholder="Search Surah...">
+                <!-- Updated Placeholder -->
+                <input type="text" id="searchInput" class="search-box" placeholder="Search Surah">
             </div>
         </div>
     </div>
@@ -414,7 +431,7 @@
         <div class="player-bar" id="quran-player-bar">
             <div class="player-top-row">
                 <div style="width: 40px;"></div>
-                <div class="current-surah-title" id="nowPlaying">No Surah Selected</div>
+                <div class="current-surah-title" id="nowPlaying">No Audio Selected</div>
                 <button class="repeat-btn" id="repeatBtn" onclick="toggleRepeat()">
                     <svg viewBox="0 0 24 24">
                         <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
@@ -549,8 +566,12 @@
         }
 
         // ==========================================
-        // QURAN LOGIC
+        // QURAN & AUDIO LOGIC
         // ==========================================
+        const quranBaseUrl = "https://github.com/madinamanjeel/madinamanjeel.github.io/releases/download/Al-Quran/";
+        const specialBaseUrl = "https://github.com/madinamanjeel/madinamanjeel.github.io/releases/download/special-ayat/";
+        const ruqyahBaseUrl = "https://github.com/madinamanjeel/madinamanjeel.github.io/releases/download/Ruqyah/";
+
         const surahFiles = [
             "001.-.Al-Fatiha.mp3", "002.-.Al-Baqarah.mp3", "003.-.Al-e-Imran.mp3", "004.-.An-Nisa.mp3", "005.-.Al-Maida.mp3", "006.-.Anaam.mp3", "007.-.Al-Aaraaf.mp3", "008.-.Al-Anfal.mp3", "009.-.At-Tauba.mp3", "010.-.Yunus.mp3", "011.-.Hud.mp3", "012.-.Yusuf.mp3", "013.-.Ar-Raad.mp3", "014.-.Ibrahim.mp3", "015.-.Al-Hijr.mp3", "016.-.An-Nahl.mp3", "017.-.Al-Isra.mp3", "018.-.Al-Kahf.mp3", "019.-.Maryam.mp3", "020.-.Taha.mp3", "021.-.Al-Anbiya.mp3", "022.-.Al-Hajj.mp3", "023.-.Muminun.mp3", "024.-.An-Noor.mp3", "025.-.Al-Furqan.mp3", "026.-.Ash-Shuara.mp3", "027.-.An-Naml.mp3", "028.-.Al-Qasas.mp3", "029.-.Ankabut.mp3", "030.-.Ar-Rum.mp3", "031.-.Luqman.mp3", "032.-.As-Sajda.mp3", "033.-.Al-Ahzaab.mp3", "034.-.Saba.mp3", "035.-.Fatir.mp3", "036.-.Ya.Seen.mp3", "037.-.Saffaat.mp3", "038.-.Sad.mp3", "039.-.Az-Zumar.mp3", "040.-.Al-Ghafir.mp3", "041.-.Fussilat.mp3", "042.-.Ash-Shura.mp3", "043.-.Az-Zukhruf.mp3", "044.-.Ad-Dukhan.mp3", "045.-.Al-Jathiya.mp3", "046.-.Al-Ahqaaf.mp3", "047.-.Muhammad.mp3", "048.-.Al-Fath.mp3", "049.-.Al-Hujraat.mp3", "050.-.Qaaf.mp3", "051.-.Adh-Dhariyat.mp3", "052.-.At-Tur.mp3", "053.-.An-Najm.mp3", "054.-.Al-Qamar.mp3", "055.-.Ar-Rahmaan.mp3", "056.-.Al-Waaqiya.mp3", "057.-.Al-Hadid.mp3", "058.-.Al-Mujaadila.mp3", "059.-.Al-Hashr.mp3", "060.-.Al-Mumtahina.mp3", "061.-.As-Saff.mp3", "062.-.Al-Jumuah.mp3", "063.-.Al-Munafiqoon.mp3", "064.-.At-Taghabun.mp3", "065.-.At-Talaq.mp3", "066.-.At-Tahrim.mp3", "067.-.Al-Mulk.mp3", "068.-.Al-Qalam.mp3", "069.-.Al-Haaqqa.mp3", "070.-.Al-Maarij.mp3", "071.-.Nooh.mp3", "072.-.Al-Jinn.mp3", "073.-.Al-Muzzammil.mp3", "074.-.Al-Mudatthir.mp3", "075.Al-Qiyama.mp3", "076.-.Al-Insan.mp3", "077.-.Al-Mursalat.mp3", "078.-.An-Naba.mp3", "079.-.An-Naziat.mp3", "080.-.Al-Abasa.mp3", "081.-.At-Takwir.mp3", "082.-.Al-Infitar.mp3", "083.-.Al-Mutaffifeen.mp3", "084.-.Al-Inshiqaq.mp3", "085.-.Al-Burooj.mp3", "086.-.At-Tariq.mp3", "087.-.Al-Aala.mp3", "088.-.Al-Ghashiya.mp3", "089.-.Al-Fajr.mp3", "090.-.Al-Balad.mp3", "091.-.Ash-Shams.mp3", "092.-.Al-Layl.mp3", "093.-.Ad-Duha.mp3", "094.-.Al-Inshirah.mp3", "095.-.At-Teen.mp3", "096.-.Al-Alaq.mp3", "097.-.Al-Qadr.mp3", "098.-.Al-Bayyinah.mp3", "099.-.Al-Zilzaal.mp3", "100.-.Al-Aadiyaat.mp3", "101.-.Al-Qariyah.mp3", "102.-.At-Takathur.mp3", "103.-.Al-Asr.mp3", "104.-.Al-Humaza.mp3", "105.-.Al-Feel.mp3", "106.-.Al-Quraysh.mp3", "107.-.Al-Maoon.mp3", "108.-.Al-Kawthar.mp3", "109.-.Al-Kaafirun.mp3", "110.-.An-Nasr.mp3", "111.-.Al-Lahab.mp3", "112.-.Al-Ikhlaas.mp3", "113.-.Al-Falaq.mp3", "114.-.An-Naas.mp3"
         ];
@@ -564,19 +585,119 @@
             "সফ", "জুমুআহ", "মুনাফিকুন", "তাগাবুন", "তালাক", "তাহরীম", "মুলক", "কলম", "হাক্কাহ", "মাআরিজ", 
             "নূহ", "জিন", "মুয্যাম্মিল", "মুদ্দাসসির", "ক্বিয়ামাহ", "ইনসান", "মুরসালাত", "নাবা", "নাযিয়াত", "আবাসা", 
             "তাকভীর", "ইনফিতার", "মুতাফফিফীন", "ইনশিকাক", "বুরূজ", "তারিক", "আলা", "গাশিয়াহ", "ফাজর", "বালাদ", 
-            "শামস", "লাইل", "দুহা", "ইনশিরাহ", "তীন", "আলাক", "কদর", "বায়্যিনাহ", "যিলযাল", "আদিয়াত", 
+            "শামস", "লাইল", "দুহা", "ইনশিরাহ", "তীন", "আলাক", "কদর", "বায়্যিনাহ", "যিলযাল", "আদিয়াত", 
             "কারিআহ", "তাকাসুর", "আসর", "হুমাযাহ", "ফীল", "কুরাইশ", "মাউন", "কাউসার", "কাফিরুন", "নাসর", 
             "লাহাব", "ইখলাস", "ফালাক", "নাস"
         ];
 
-        const surahData = surahFiles.map((file, i) => {
+        const extraFiles = [
+            "-.Recited.By.Ismail.Annuri.Sikhun.Surah.m4a",
+            "Ayat.E.Shifa.Beautiful.Recitation._.-._.Sheikh.Masud.m4a",
+            "Ayatul-Kursi.Al-Ikhlas.Al-Falaq.Al-Nas.Recited.by.Sheikh.Mishary.Rashid.Alafasy.m4a",
+            "Ayatul.Kursi.100.times._.-.recited.by.Alaa.Aqel.m4a",
+            "BEAUTIFUL.QURAN.RECITATION._.For.Relaxing.Sleep.m4a",
+            "Kullo.nafsin.zaikatul.maut._.Beautiful.Quran.Recitation._.by.Abdul.Rahman.Mossad.m4a",
+            "Mevlan.Kurtishi.-.Quranic.Recitations.m4a",
+            "Surah.Al.Baqarah.Recited.by.Abdul.Rahman.Al.Rashoud.m4a",
+            "Surah.Al.Kahf.FULL._.Sheikh.Mishary.Al.Afasy.-.English.Translation.-.m4a",
+            "surah.ar.rahman.ismail.an.nawri.m4a"
+        ];
+        
+        const extraBnNames = [
+            "রিসাইটেড বাই ইসমাইল আন্নুরি",
+            "আয়াতে শিফা শেখ মাসুদ",
+            "আয়াতুল কুরসি, ইখলাস, ফালাক, নাস",
+            "আয়াতুল কুরসি ১০০ বার",
+            "বিউটিফুল কুরআন রিসাইটেশন ফর স্লিপ ঘুম",
+            "কুল্লু নাফসিন যোয়াইকাতুল মাউত",
+            "কুরআনিক রিসাইটেশন",
+            "সূরা বাকারা",
+            "সূরা কাহাফ ফুল",
+            "সূরা আর রহমান"
+        ];
+
+        const ruqyahFiles = [
+            "baby-cry.Recited.By.Alaa.Aqel.m4a",
+            "Curse-against-magician-ruqyahbd.org.mp3",
+            "evileye.desease.home-protection.m4a",
+            "Powerful.Ruqyah.By.Mishary.Rashid.Alafasy.l.Bismillah.l.m4a",
+            "Powerful.Ruqyah.DUA.Against.Bad.Jinns._.EP_3.m4a",
+            "Powerful.Ruqyah.for.home.protection._.-._EP_40.m4a",
+            "Ruqyah-EvilEye-ruqyahbd.org.mp3",
+            "Ruqyah-EyeHasad-ruqyahbd.org.mp3",
+            "Ruqyah-Sihr-Hibshi-ruqyahbd.org.mp3",
+            "Ruqyah-Sihr-Mass-ruqyahbd.org.mp3"
+        ];
+        
+        const ruqyahBnNames = [
+            "বেবি ক্রাই",
+            "কার্স এগেইনস্ট ম্যাজিশিয়ান",
+            "ইভিল আই ডিজিজ",
+            "পাওয়ারফুল রুকইয়াহ বিসমিল্লাহ",
+            "পাওয়ারফুল রুকইয়াহ দোয়া",
+            "পাওয়ারফুল রুকইয়াহ ফর হোম প্রটেকশন",
+            "রুকইয়াহ ইভিল আই",
+            "রুকইয়াহ আই হাসাদ",
+            "রুকইয়াহ সিহর হিবশি",
+            "রুকইয়াহ সিহর মাসস"
+        ];
+
+        let globalIndex = 0;
+        const surahData = [];
+
+        // 1. Add Quran Files (1 - 114)
+        surahFiles.forEach((file, i) => {
             const numStr = file.substring(0, 3);
             const num = parseInt(numStr);
             const enNameClean = file.replace(".mp3", "").replace(/^\d{3}(?:\.-\.|\.)/, "").replace(/\./g, " ");
-            return { id: num, originalFile: file, displayName: enNameClean, bnName: bnNames[i], index: i };
+            surahData.push({ 
+                id: num, 
+                fullUrl: quranBaseUrl + file, 
+                displayName: enNameClean, 
+                bnName: bnNames[i], 
+                searchTags: "quran কুরআন " + bnNames[i] + " " + enNameClean,
+                index: globalIndex++,
+                type: 'quran',
+                displayTitle: `${num}. Surah ${enNameClean}`
+            });
         });
 
-        const baseUrl = "https://github.com/madinamanjeel/madinamanjeel.github.io/releases/download/Al-Quran/";
+        // 2. Add Extra Files (115 onwards)
+        const extraIds = [];
+        extraFiles.forEach((file, i) => {
+            const num = 114 + i + 1;
+            const enNameClean = file.replace(/\.(m4a|mp3)$/, "").replace(/[\._-]/g, " ").replace(/\s+/g, " ").trim();
+            surahData.push({
+                id: num,
+                fullUrl: specialBaseUrl + file,
+                displayName: enNameClean,
+                bnName: extraBnNames[i],
+                searchTags: "extra এক্সট্রা sleep ঘুম relaxing آرام " + extraBnNames[i] + " " + enNameClean,
+                index: globalIndex++,
+                type: 'extra',
+                displayTitle: enNameClean
+            });
+            extraIds.push(num);
+        });
+
+        // 3. Add Ruqyah Files (Next sequence)
+        const ruqyahIds = [];
+        ruqyahFiles.forEach((file, i) => {
+            const num = 114 + extraFiles.length + i + 1;
+            const enNameClean = file.replace(/\.(m4a|mp3)$/, "").replace(/[\._-]/g, " ").replace(/\s+/g, " ").trim();
+            surahData.push({
+                id: num,
+                fullUrl: ruqyahBaseUrl + file,
+                displayName: enNameClean,
+                bnName: ruqyahBnNames[i],
+                searchTags: "ruqyah রুকইয়াহ রুকইয়া রুক " + ruqyahBnNames[i] + " " + enNameClean,
+                index: globalIndex++,
+                type: 'ruqyah',
+                displayTitle: enNameClean
+            });
+            ruqyahIds.push(num);
+        });
+
         const container = document.getElementById("surahContainer");
         const audioPlayer = document.getElementById("audioPlayer");
         const nowPlayingText = document.getElementById("nowPlaying");
@@ -597,9 +718,21 @@
         });
         
         let currentPlayingIndex = -1; let searchTimeout; let repeatMode = 0; let selectedSurahIdForModal = null;
-        let playlists = JSON.parse(localStorage.getItem('quran_playlists')) || { "All Surahs": [], "Favorites": [] };
-        if(!playlists["All Surahs"]) playlists["All Surahs"] = [];
-        if(!playlists["Favorites"]) playlists["Favorites"] = [];
+        
+        let playlists = JSON.parse(localStorage.getItem('quran_playlists'));
+        if(!playlists) {
+            playlists = { 
+                "All Surahs": [], 
+                "Favorites": [...extraIds], 
+                "Ruqyah": [...ruqyahIds] 
+            };
+        } else {
+            if(!playlists["All Surahs"]) playlists["All Surahs"] = [];
+            if(!playlists["Favorites"]) playlists["Favorites"] = [];
+            if(!playlists["Ruqyah"]) playlists["Ruqyah"] = [...ruqyahIds];
+        }
+        localStorage.setItem('quran_playlists', JSON.stringify(playlists));
+
         let activePlaylist = "All Surahs";
 
         function openPlaylistModal() { document.getElementById('playlistModal').style.display = 'flex'; document.getElementById('playlistNameInput').value = ''; }
@@ -614,7 +747,7 @@
         }
 
         function openRenameModal() {
-            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites") return;
+            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites" || activePlaylist === "Ruqyah") return;
             document.getElementById('renamePlaylistModal').style.display = 'flex';
             document.getElementById('playlistRenameInput').value = activePlaylist;
         }
@@ -630,7 +763,7 @@
         }
 
         function deleteCurrentPlaylist() {
-            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites") return;
+            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites" || activePlaylist === "Ruqyah") return;
             if(confirm(`Are you sure you want to delete the playlist "${activePlaylist}"?`)) {
                 delete playlists[activePlaylist]; localStorage.setItem('quran_playlists', JSON.stringify(playlists));
                 activePlaylist = "All Surahs"; renderPlaylistTabs(); triggerSearch();
@@ -641,11 +774,15 @@
             const tabsContainer = document.getElementById('playlistTabs'); tabsContainer.innerHTML = '';
             const renameBtn = document.getElementById('renamePlBtn'); const deleteBtn = document.getElementById('deletePlBtn');
 
-            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites") {
+            if(activePlaylist === "All Surahs" || activePlaylist === "Favorites" || activePlaylist === "Ruqyah") {
                 renameBtn.style.display = 'none'; deleteBtn.style.display = 'none';
             } else { renameBtn.style.display = 'inline-block'; deleteBtn.style.display = 'inline-block'; }
 
-            Object.keys(playlists).forEach(plName => {
+            const defaultTabs = ["All Surahs", "Favorites", "Ruqyah"];
+            const customTabs = Object.keys(playlists).filter(plName => !defaultTabs.includes(plName));
+            
+            [...defaultTabs, ...customTabs].forEach(plName => {
+                if(plName === "All Surahs" && !playlists["All Surahs"]) return; 
                 const tab = document.createElement('div');
                 tab.className = `playlist-tab ${activePlaylist === plName ? 'active' : ''}`; tab.innerText = plName;
                 tab.onclick = () => { activePlaylist = plName; renderPlaylistTabs(); triggerSearch(); };
@@ -702,53 +839,88 @@
             else { txt.innerText = 'Off'; audioPlayer.loop = false; }
         }
 
-        function getLevenshteinDistance(a, b) {
-            if (a.length === 0) return b.length; if (b.length === 0) return a.length;
-            const matrix = []; for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        // ==========================================
+        // SMART SEARCH ALGORITHM (Fuzzy + Semantic Synonyms)
+        // ==========================================
+        function getSearchScore(query, surah) {
+            let q = query.toLowerCase().trim();
+            if (!q) return 1;
+
+            const synonyms = {
+                "ঘুম": "sleep relaxing",
+                "ঘুমানো": "sleep relaxing",
+                "রুকইয়াহ": "ruqyah",
+                "রুকিয়া": "ruqyah",
+                "শান্তি": "relaxing sleep",
+                "রাত্রি": "sleep"
+            };
+
+            if (synonyms[q]) {
+                q += " " + synonyms[q];
+            }
+
+            const targetText = (surah.displayName + " " + surah.bnName + " " + surah.searchTags).toLowerCase();
+            
+            if (q.replace(/\s+/g, '') === surah.id.toString()) return 100;
+
+            let queryWords = q.split(/\s+/);
+            let matchedCount = 0;
+
+            for (let word of queryWords) {
+                if (word.length === 0) continue;
+                if (targetText.includes(word)) {
+                    matchedCount++;
+                } else {
+                    let subMatch = false;
+                    let targetWords = targetText.split(/\s+/);
+                    for (let tw of targetWords) {
+                        if (tw.includes(word) || word.includes(tw) || levenshteinDistance(word, tw) <= 2) {
+                            subMatch = true;
+                            break;
+                        }
+                    }
+                    if (subMatch) matchedCount += 0.8;
+                }
+            }
+
+            if (matchedCount > 0) {
+                return (matchedCount / queryWords.length) * 80;
+            }
+
+            return 0;
+        }
+
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            let matrix = [];
+            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
             for (let i = 1; i <= b.length; i++) {
                 for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i - 1) === a.charAt(j - 1)) { matrix[i][j] = matrix[i - 1][j - 1]; } 
-                    else { matrix[i][j] = Math.min( matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1 ); }
-                }
-            } return matrix[b.length][a.length];
-        }
-
-        function isSubsequence(sub, str) {
-            let i = 0, j = 0; while (i < str.length && j < sub.length) { if (str[i] === sub[j]) j++; i++; } return j === sub.length;
-        }
-
-        function getSearchScore(query, surah) {
-            const q = query.toLowerCase().replace(/\s+/g, ''); const qEng = q.replace(/[^a-z0-9]/gi, ''); const qBen = q.replace(/[^\u0980-\u09FF]/g, ''); 
-            const eng = surah.displayName.toLowerCase().replace(/[^a-z0-9]/gi, ''); const ben = surah.bnName.replace(/[^\u0980-\u09FF]/g, '');
-            let score = 0;
-            if (q === surah.id.toString()) return 100;
-            if (qEng.length > 0) {
-                if (eng === qEng) score = Math.max(score, 100);
-                else if (eng.includes(qEng)) score = Math.max(score, 90);
-                else if (isSubsequence(qEng, eng)) score = Math.max(score, 70);
-                else {
-                    const dist = getLevenshteinDistance(qEng, eng);
-                    if (qEng.length > 4 && dist <= 2) score = Math.max(score, 50); else if (qEng.length > 2 && dist <= 1) score = Math.max(score, 50);
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                    }
                 }
             }
-            if (qBen.length > 0) {
-                if (ben === qBen) score = Math.max(score, 100);
-                else if (ben.includes(qBen)) score = Math.max(score, 90);
-                else if (isSubsequence(qBen, ben)) score = Math.max(score, 70);
-                else {
-                    const dist = getLevenshteinDistance(qBen, ben);
-                    if (qBen.length > 3 && dist <= 2) score = Math.max(score, 50); else if (qBen.length > 1 && dist <= 1) score = Math.max(score, 50);
-                }
-            }
-            return score;
+            return matrix[b.length][a.length];
         }
 
         function triggerSearch() {
-            let rawQuery = searchInputBox.value.trim().replace(/^(surah|সূরা|সুরা)\s+/i, '').trim();
+            let rawQuery = searchInputBox.value.trim();
             if (rawQuery === '') { renderSurahList(surahData); return; }
-            let scoredSurahs = surahData.map(s => { return { ...s, score: getSearchScore(rawQuery, s) }; }).filter(s => s.score > 0);
-            scoredSurahs.sort((a, b) => { if (b.score !== a.score) return b.score - a.score; return a.id - b.id; });
+            
+            let scoredSurahs = surahData.map(s => { 
+                return { ...s, score: getSearchScore(rawQuery, s) }; 
+            }).filter(s => s.score > 0);
+            
+            scoredSurahs.sort((a, b) => { 
+                if (b.score !== a.score) return b.score - a.score; 
+                return a.id - b.id; 
+            });
+            
             renderSurahList(scoredSurahs);
         }
 
@@ -757,14 +929,25 @@
         });
 
         function renderSurahList(list) {
-            container.innerHTML = ""; let displayList = list;
+            container.innerHTML = ""; 
+            let displayList = list;
+            
             if(activePlaylist !== "All Surahs") {
-                const plSurahIds = playlists[activePlaylist] || []; displayList = list.filter(s => plSurahIds.includes(s.id));
+                const plSurahIds = playlists[activePlaylist] || []; 
+                displayList = list.filter(s => plSurahIds.includes(s.id));
             }
-            if (displayList.length === 0) { container.innerHTML = `<div class="empty-state">No Surahs found in this playlist or search result.</div>`; return; }
+            if (displayList.length === 0) { 
+                container.innerHTML = `<div class="empty-state">No audio found in this playlist or search result.</div>`; 
+                return; 
+            }
+            
+            const quranList = displayList.filter(s => s.type === 'quran');
+            const extraList = displayList.filter(s => s.type === 'extra');
+            const ruqyahList = displayList.filter(s => s.type === 'ruqyah');
+
             const fragment = document.createDocumentFragment();
 
-            displayList.forEach((surah) => {
+            function createCard(surah) {
                 const card = document.createElement("div"); card.className = "surah-card";
                 if(currentPlayingIndex === surah.index) card.classList.add("active");
                 card.id = `surah-${surah.id}`;
@@ -776,25 +959,50 @@
                     plActionButton = `<button class="add-to-pl-btn" title="Add to Playlist" onclick="openAddToPlaylistModal(${surah.id}, event)">+</button>`; 
                 }
 
+                let numberHtml = surah.type === 'quran' 
+                    ? `<div class="surah-number">${surah.id}</div>` 
+                    : `<div class="surah-number" style="background-color: var(--danger);"><svg fill="white" width="14" height="14" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+
                 card.innerHTML = `
                     <div class="surah-info">
-                        <div class="surah-number">${surah.id}</div>
-                        <div class="surah-title">${surah.id}. Surah ${surah.displayName}</div>
+                        ${numberHtml}
+                        <div class="surah-title">${surah.displayTitle}</div>
                     </div>
                     <div class="actions">
                         ${plActionButton}
                     </div>
                 `;
-                card.addEventListener("click", () => playSurah(surah.originalFile, surah.index, surah.id, surah.displayName));
-                fragment.appendChild(card);
-            });
+                card.addEventListener("click", () => playSurah(surah.fullUrl, surah.index, surah.id, surah.displayTitle));
+                return card;
+            }
+
+            if (quranList.length > 0) {
+                quranList.forEach(surah => fragment.appendChild(createCard(surah)));
+            }
+            
+            if (extraList.length > 0) {
+                const extraHeader = document.createElement("div");
+                extraHeader.className = "section-title";
+                extraHeader.innerText = "Extra";
+                fragment.appendChild(extraHeader);
+                extraList.forEach(surah => fragment.appendChild(createCard(surah)));
+            }
+
+            if (ruqyahList.length > 0) {
+                const ruqyahHeader = document.createElement("div");
+                ruqyahHeader.className = "section-title";
+                ruqyahHeader.innerText = "Ruqyah";
+                fragment.appendChild(ruqyahHeader);
+                ruqyahList.forEach(surah => fragment.appendChild(createCard(surah)));
+            }
+
             container.appendChild(fragment);
         }
 
-        function playSurah(fileName, index, num, displayName) {
-            currentPlayingIndex = index; const fullUrl = baseUrl + fileName; 
+        function playSurah(fullUrl, index, num, displayTitle) {
+            currentPlayingIndex = index;  
             audioPlayer.src = fullUrl; audioPlayer.play();
-            nowPlayingText.innerText = `Now Playing: ${num}. Surah ${displayName}`;
+            nowPlayingText.innerText = `Now Playing: ${displayTitle}`;
             document.querySelectorAll(".surah-card").forEach(c => c.classList.remove("active"));
             const currentCard = document.getElementById(`surah-${num}`); if (currentCard) currentCard.classList.add("active");
         }
@@ -807,9 +1015,9 @@
             }
             const currentIndexInView = currentList.findIndex(s => s.index === currentPlayingIndex);
             if (currentIndexInView !== -1 && currentIndexInView < currentList.length - 1) {
-                const nextSurah = currentList[currentIndexInView + 1]; playSurah(nextSurah.originalFile, nextSurah.index, nextSurah.id, nextSurah.displayName);
+                const nextSurah = currentList[currentIndexInView + 1]; playSurah(nextSurah.fullUrl, nextSurah.index, nextSurah.id, nextSurah.displayTitle);
             } else if (repeatMode === 1 && currentList.length > 0) {
-                const firstSurah = currentList[0]; playSurah(firstSurah.originalFile, firstSurah.index, firstSurah.id, firstSurah.displayName);
+                const firstSurah = currentList[0]; playSurah(firstSurah.fullUrl, firstSurah.index, firstSurah.id, firstSurah.displayTitle);
             }
         });
 
