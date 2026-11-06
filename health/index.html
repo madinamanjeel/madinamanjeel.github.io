@@ -54,16 +54,31 @@ a{text-decoration:none;color:inherit}
 /* USER BAR & AUTH */
 .user-bar{background:#eaf7f5;padding:15px;border-radius:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border:1px solid #d2ece8}
 .user-info{display:flex;align-items:center;gap:11px}
-.user-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-weight:700;font-size:15px;overflow:hidden;flex-shrink:0}
+.user-avatar{width:42px;height:42px;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-weight:800;font-size:15px;overflow:hidden;flex-shrink:0}
 .user-avatar img{width:100%;height:100%;object-fit:cover}
 .user-details h4{color:var(--primary);font-size:14px;font-weight:800}
 .user-details p{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all}
 .auth-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.switch-btn{background:white;color:var(--dark);border:1px solid #cce3e0;padding:8px 13px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+.switch-btn{background:white;color:var(--dark);border:1px solid #cce3e0;padding:9px 13px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
 .switch-btn:hover{border-color:var(--primary);color:var(--primary)}
 .admin-bar{width:100%;padding-top:12px;border-top:1px dashed #c0e0dc;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .admin-bar span{font-size:11px;font-weight:700;color:#075c65}
 .admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--primary);font-size:11px;font-weight:600;background:white;color:var(--dark);outline:none;flex:1;max-width:280px}
+
+/* ACCOUNT SWITCHER MODAL (WEBVIEW SAFE) */
+.modal-backdrop{position:fixed;inset:0;background:rgba(18,59,67,0.55);backdrop-filter:blur(3px);z-index:9999;display:none;place-items:center;padding:16px}
+.modal-card{background:white;width:100%;max-width:400px;border-radius:20px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,0.2);animation:popIn .2s ease}
+@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.modal-head h4{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+.modal-close{background:#f3f8f8;border:0;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--dark)}
+.acc-list{display:flex;flex-direction:column;gap:8px;margin:14px 0;max-height:240px;overflow-y:auto}
+.acc-item{display:flex;align-items:center;gap:11px;padding:11px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;background:#fbfdfd;width:100%}
+.acc-item:hover{border-color:var(--primary);background:#eaf7f5}
+.acc-item-avatar{width:36px;height:36px;border-radius:50%;background:#e1f4f2;color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.acc-item-info{flex:1;min-width:0}
+.acc-item-info h5{font-size:13px;color:var(--dark);font-weight:700}
+.acc-item-info p{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 
 /* QUICK LINKS */
 .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -189,7 +204,7 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- 1. TODAY'S OVERVIEW (MOVED ABOVE HEALTH RESOURCES) -->
+<!-- 1. TODAY'S OVERVIEW (TOP SECTION BEFORE HEALTH RESOURCES) -->
 <section class="section" id="myOverviewSection">
   <div class="section-head">
     <div><h3>My Medication Overview</h3><p>Active schedules and daily dose tracker</p></div>
@@ -203,14 +218,14 @@ a{text-decoration:none;color:inherit}
         <div class="user-avatar" id="userAvatar"><i class="fa-solid fa-user"></i></div>
         <div class="user-details">
           <h4 id="displayUserName">Not Signed In</h4>
-          <p id="displayUserEmail">Sign in with Google to view your medicines</p>
+          <p id="displayUserEmail">Tap 'Switch Account' to select your Gmail</p>
         </div>
       </div>
 
       <div class="auth-actions">
-        <button class="switch-btn" onclick="switchGoogleAccount()">
+        <button class="switch-btn" onclick="openAccountModal()">
           <i class="fa-brands fa-google" style="color:#087f83"></i>
-          <span id="authBtnText">Sign In / Switch Account</span>
+          <span id="authBtnText">Switch Account</span>
         </button>
       </div>
 
@@ -238,7 +253,7 @@ a{text-decoration:none;color:inherit}
     </div>
 
     <div id="medContent">
-      <div class="empty">Please sign in to view your scheduled medicines.</div>
+      <div class="empty">Please select your account to view scheduled medicines.</div>
     </div>
   </div>
 </section>
@@ -342,10 +357,10 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- 5. ADD / MANAGE MEDICINE SECTION (AT THE BOTTOM) -->
+<!-- 5. ADD / MANAGE MEDICINE SECTION (BOTTOM) -->
 <section class="section" id="medicineManager">
   <div class="section-head">
-    <div><h3>Add / Modify Medicine</h3><p>Add new medicine schedules to the selected account</p></div>
+    <div><h3>Add / Modify Medicine</h3><p>Add new medicine schedules to your account</p></div>
     <div class="section-icon"><i class="fa-solid fa-plus"></i></div>
   </div>
 
@@ -418,7 +433,35 @@ a{text-decoration:none;color:inherit}
 
 </div>
 
-<!-- Firebase SDKs (App, Auth, Firestore) -->
+<!-- WEBVIEW-SAFE ACCOUNT SWITCHER MODAL -->
+<div class="modal-backdrop" id="accountModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h4><i class="fa-brands fa-google" style="color:#087f83"></i> Choose an Account</h4>
+      <button class="modal-close" onclick="closeAccountModal()">×</button>
+    </div>
+    <p style="font-size:11px;color:var(--muted);line-height:1.5">Select your profile or enter your Gmail address to sync your personal medicines.</p>
+
+    <!-- Saved / Family Accounts List -->
+    <div class="acc-list" id="savedAccountsList"></div>
+
+    <div style="border-top:1px solid var(--border);margin:14px 0;padding-top:14px">
+      <div class="field">
+        <label>Your Name</label>
+        <input type="text" id="manualUserName" placeholder="e.g. Mashayekh Ahmed">
+      </div>
+      <div class="field">
+        <label>Your Gmail Address</label>
+        <input type="email" id="manualUserEmail" placeholder="e.g. example@gmail.com">
+      </div>
+      <button class="action-btn" onclick="saveManualAccount()">
+        <i class="fa-solid fa-check"></i> Continue with this Account
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -486,14 +529,12 @@ function showResult(id,html){
 }
 
 /* ===============================
-   AUTHENTICATION & USER SESSION
+   WEBVIEW-SAFE AUTHENTICATION
 =============================== */
 const ADMIN_EMAIL = "madina.manjeel@gmail.com";
 
-// ফ্যামিলির পরিচিত ইমেইল লিস্ট বা অ্যাডমিন যাতে নতুন কারো ইমেইল সিলেক্ট করতে পারে
 let loggedInUser = null;
 let viewingEmail = null;
-
 let allMedicines = []; 
 let allHistory = [];
 let pendingTimes = [];
@@ -509,7 +550,7 @@ function safeText(v){
   return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
 }
 
-// 1. Firebase Auth Listener (যখন ইউজার গুগল দিয়ে লগইন করবে)
+// 1. Auto-detect existing user from Firebase Auth, URL params, or LocalStorage
 auth.onAuthStateChanged(user => {
   if (user && user.email) {
     setActiveUser({
@@ -517,39 +558,76 @@ auth.onAuthStateChanged(user => {
       name: user.displayName || user.email.split("@")[0],
       photo: user.photoURL || ""
     });
-  } else {
-    // যদি ব্রাউজার/ওয়েবভিউতে আগে থেকে লগইন সেশন সেভ থাকে
-    const cached = localStorage.getItem("hc_active_user");
-    if (cached) {
-      try {
-        setActiveUser(JSON.parse(cached));
-        return;
-      } catch(e) {}
-    }
-    setSignedOutState();
+    return;
   }
+  checkLocalOrUrlUser();
 });
 
-// 2. Android WebView থেকে সরাসরি ইউজার সেট করার গ্লোবাল ফাংশন (যদি অ্যাপ থেকে ইনজেক্ট করা হয়)
+function checkLocalOrUrlUser() {
+  // Check URL parameters first (e.g., ?email=user@gmail.com&name=User)
+  const params = new URLSearchParams(window.location.search);
+  const urlEmail = params.get("email");
+  const urlName = params.get("name");
+  if (urlEmail && urlEmail.includes("@")) {
+    setActiveUser({ email: urlEmail.toLowerCase().trim(), name: urlName || urlEmail.split("@")[0], photo: "" });
+    return;
+  }
+
+  // Check saved user in localStorage
+  const cached = localStorage.getItem("hc_active_user");
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (parsed && parsed.email) {
+        setActiveUser(parsed);
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // Search if Firebase Auth saved user in localStorage under firebase:authUser:...
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith("firebase:authUser:")) {
+      try {
+        const fbUser = JSON.parse(localStorage.getItem(k));
+        if (fbUser && fbUser.email) {
+          setActiveUser({
+            email: fbUser.email.toLowerCase().trim(),
+            name: fbUser.displayName || fbUser.email.split("@")[0],
+            photo: fbUser.photoURL || ""
+          });
+          return;
+        }
+      } catch(e) {}
+    }
+  }
+
+  setSignedOutState();
+}
+
+// Android WebView Bridge (যদি আপনার অ্যাপ থেকে কল করতে চান)
 window.setWebViewUser = function(email, name, photo = "") {
   if (!email) return;
-  const u = {
+  setActiveUser({
     email: String(email).toLowerCase().trim(),
     name: name || String(email).split("@")[0],
     photo: photo
-  };
-  localStorage.setItem("hc_active_user", JSON.stringify(u));
-  setActiveUser(u);
+  });
 };
 
 function setActiveUser(userObj) {
   loggedInUser = userObj;
   localStorage.setItem("hc_active_user", JSON.stringify(userObj));
 
-  // যদি আগে কোনো ভিউয়িং ইমেইল না থাকে বা ইউজার অ্যাডমিন না হয়, তবে নিজের ইমেইলই দেখবে
-  if (!viewingEmail || loggedInUser.email !== ADMIN_EMAIL) {
-    viewingEmail = loggedInUser.email;
-  }
+  // Save to recent accounts list on this device for 1-tap switching
+  let savedList = [];
+  try { savedList = JSON.parse(localStorage.getItem("hc_saved_accounts") || "[]"); } catch(e) {}
+  savedList = savedList.filter(a => a.email !== userObj.email);
+  savedList.unshift(userObj);
+  localStorage.setItem("hc_saved_accounts", JSON.stringify(savedList.slice(0, 8)));
+
+  viewingEmail = loggedInUser.email;
 
   document.getElementById("displayUserName").textContent = loggedInUser.name;
   document.getElementById("displayUserEmail").textContent = loggedInUser.email;
@@ -578,39 +656,69 @@ function setSignedOutState() {
   allMedicines = [];
   allHistory = [];
   document.getElementById("displayUserName").textContent = "Not Signed In";
-  document.getElementById("displayUserEmail").textContent = "Tap 'Sign In / Switch Account' to load your medicines";
-  document.getElementById("authBtnText").textContent = "Sign In with Google";
+  document.getElementById("displayUserEmail").textContent = "Tap 'Switch Account' to select your Gmail";
+  document.getElementById("authBtnText").textContent = "Sign In / Switch";
   document.getElementById("userAvatar").innerHTML = `<i class="fa-solid fa-user"></i>`;
   document.getElementById("adminControls").style.display = "none";
   document.getElementById("targetAccountNote").textContent = "";
   document.getElementById("totalStat").textContent = "0";
   document.getElementById("takenStat").textContent = "0";
   document.getElementById("pendingStat").textContent = "0";
-  document.getElementById("medContent").innerHTML = '<div class="empty">Please sign in with your Google account to view or add medicines.</div>';
+  document.getElementById("medContent").innerHTML = '<div class="empty">Please tap <b>Sign In / Switch</b> above to load your medicines.</div>';
 }
 
-// 3. Google Switch Account Button Handler
-async function switchGoogleAccount() {
-  // যদি আপনার Android App এ নিজস্ব জাভাস্ক্রিপ্ট ব্রিজ থাকে
-  if (window.Android && typeof window.Android.switchAccount === "function") {
-    window.Android.switchAccount();
+/* ===============================
+   IN-PAGE ACCOUNT SWITCHER MODAL
+=============================== */
+function openAccountModal() {
+  renderSavedAccountsInModal();
+  document.getElementById("manualUserName").value = loggedInUser ? loggedInUser.name : "";
+  document.getElementById("manualUserEmail").value = loggedInUser ? loggedInUser.email : "";
+  document.getElementById("accountModal").style.display = "grid";
+}
+
+function closeAccountModal() {
+  document.getElementById("accountModal").style.display = "none";
+}
+
+function renderSavedAccountsInModal() {
+  let savedList = [];
+  try { savedList = JSON.parse(localStorage.getItem("hc_saved_accounts") || "[]"); } catch(e) {}
+
+  const box = document.getElementById("savedAccountsList");
+  if (!savedList.length) {
+    box.style.display = "none";
     return;
   }
+  box.style.display = "flex";
+  box.innerHTML = savedList.map(acc => `
+    <button class="acc-item" onclick="selectSavedAccount('${safeText(acc.email)}','${safeText(acc.name)}')">
+      <div class="acc-item-avatar">${safeText((acc.name||"U").charAt(0).toUpperCase())}</div>
+      <div class="acc-item-info">
+        <h5>${safeText(acc.name)}</h5>
+        <p>${safeText(acc.email)}</p>
+      </div>
+      <i class="fa-solid fa-chevron-right" style="color:#9db2b4;font-size:12px"></i>
+    </button>
+  `).join("");
+}
 
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
+function selectSavedAccount(email, name) {
+  setActiveUser({ email: email.toLowerCase().trim(), name: name, photo: "" });
+  closeAccountModal();
+}
 
-  try {
-    await auth.signInWithPopup(provider);
-  } catch (popupErr) {
-    // WebView তে কখনো কখনো পপআপ ব্লক থাকলে Redirect কাজ করবে
-    if (popupErr.code === "auth/popup-blocked" || popupErr.code === "auth/operation-not-supported-in-this-environment") {
-      auth.signInWithRedirect(provider);
-    } else {
-      console.error("Google Sign-In Error:", popupErr);
-      alert("Sign-In failed: " + popupErr.message);
-    }
+function saveManualAccount() {
+  const name = document.getElementById("manualUserName").value.trim();
+  const email = document.getElementById("manualUserEmail").value.trim().toLowerCase();
+
+  if (!email || !email.includes("@")) {
+    alert("Please enter a valid Gmail address.");
+    return;
   }
+  const finalName = name || email.split("@")[0];
+  setActiveUser({ email, name: finalName, photo: "" });
+  closeAccountModal();
 }
 
 function updateTargetAccountNote() {
@@ -620,7 +728,7 @@ function updateTargetAccountNote() {
     return;
   }
   if (loggedInUser && loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) {
-    note.textContent = `Admin Action: Adding/Editing medicine for ${viewingEmail}`;
+    note.textContent = `Admin Mode: Adding/Editing medicine for ${viewingEmail}`;
   } else {
     note.textContent = `Saving to account: ${viewingEmail}`;
   }
@@ -637,7 +745,6 @@ async function loadDataFromFirebase() {
   try {
     let medSnapshot, historySnapshot;
     
-    // অ্যাডমিন হলে সবার ডাটা লোড করতে পারবে, সাধারণ ইউজার হলে শুধুমাত্র নিজের ইমেইলের ডাটা লোড হবে
     if (loggedInUser.email === ADMIN_EMAIL) {
       medSnapshot = await db.collection("medicines").get();
       historySnapshot = await db.collection("med_history").get();
@@ -655,7 +762,7 @@ async function loadDataFromFirebase() {
     renderAll();
   } catch (error) {
     console.error("Error loading data: ", error);
-    document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check internet or Firestore Rules.</div>';
+    document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check internet connection.</div>';
   }
 }
 
@@ -671,7 +778,7 @@ function populateAdminDropdown() {
     `<option value="${safeText(email)}" ${email === viewingEmail ? 'selected' : ''}>
       ${email === ADMIN_EMAIL ? `My Account (${email})` : email}
     </option>`
-  ).join("") + `<option value="__ADD_USER__">+ Add / View Another Gmail...</option>`;
+  ).join("") + `<option value="__ADD_USER__">+ View / Add Another Gmail...</option>`;
 }
 
 function switchUserView() {
@@ -729,8 +836,7 @@ function removeTime(i){
 /* SAVE & UPDATE MEDICINE */
 async function saveMedicine(){
   if (!loggedInUser || !viewingEmail) {
-    alert("Please sign in with your Google account first!");
-    switchGoogleAccount();
+    openAccountModal();
     return;
   }
 
@@ -764,7 +870,7 @@ async function saveMedicine(){
     if(loggedInUser.email === ADMIN_EMAIL) populateAdminDropdown();
     renderAll();
     window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
-    alert("Medicine saved to " + viewingEmail);
+    alert("Medicine saved for " + viewingEmail);
   } catch(e) {
     alert("Error saving medicine: " + e.message);
   } finally {
@@ -856,7 +962,7 @@ function renderToday(){
     document.getElementById("totalStat").textContent = "0";
     document.getElementById("takenStat").textContent = "0";
     document.getElementById("pendingStat").textContent = "0";
-    return '<div class="empty">Please sign in with Google to view your scheduled medicines.</div>';
+    return '<div class="empty">Please tap <b>Sign In / Switch</b> above to view your scheduled medicines.</div>';
   }
 
   const items=todayItems();
