@@ -92,8 +92,8 @@ a{text-decoration:none;color:inherit}
 .tool-top p{font-size:10px;color:var(--muted);margin-top:3px}
 .field{margin-bottom:12px;position:relative}
 .field label{display:block;font-size:11px;color:#647d81;font-weight:600;margin-bottom:7px}
-.field input{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
-.field input:focus{border-color:var(--primary)}
+.field input, .field select{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
+.field input:focus, .field select:focus{border-color:var(--primary)}
 
 /* AUTO-COMPLETE SUGGESTIONS */
 .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
@@ -367,17 +367,36 @@ a{text-decoration:none;color:inherit}
     <div class="med-form-grid">
       <div class="field full-field">
         <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Paracetamol, Napa, Seclo..." autocomplete="off" oninput="handleCloudMedSearch(this.value)">
+        <input id="newMedName" placeholder="e.g. Paracetamol, Napa..." autocomplete="off" oninput="handleCloudMedSearch(this.value)">
         <div id="medSuggestions" class="suggestions-list"></div>
       </div>
 
       <div class="field">
         <label>Dosage</label>
-        <input id="newMedDose" placeholder="e.g. 1 tablet / 5ml">
+        <input id="newMedDose" placeholder="e.g. 1 tablet">
       </div>
 
       <div class="field">
-        <label>Reminder Time</label>
+        <label>Dose Pattern (e.g. 1+1+1) & Timing</label>
+        <div style="display:flex;gap:8px;">
+          <select id="dosePattern" style="flex:1;">
+            <option value="">Custom Time Only</option>
+            <option value="1+0+0">1 + 0 + 0 (Morning)</option>
+            <option value="0+1+0">0 + 1 + 0 (Midday)</option>
+            <option value="0+0+1">0 + 0 + 1 (Night)</option>
+            <option value="1+1+1">1 + 1 + 1 (Morning + Midday + Night)</option>
+            <option value="1+0+1">1 + 0 + 1 (Morning + Night)</option>
+          </select>
+          <select id="mealTiming" style="width:130px;">
+            <option value="After meal">After meal</option>
+            <option value="Before meal">Before meal</option>
+            <option value="With meal">With meal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Reminder Time (Optional)</label>
         <div class="med-time-row">
           <input type="time" id="newMedTime">
           <button class="action-btn" onclick="addMedTime()">+ Add</button>
@@ -389,12 +408,12 @@ a{text-decoration:none;color:inherit}
       </div>
 
       <div class="field">
-        <label>Start Date</label>
+        <label>Start Date (Optional)</label>
         <input type="date" id="medStart">
       </div>
 
       <div class="field">
-        <label>End Date</label>
+        <label>End Date (Optional)</label>
         <input type="date" id="medEnd">
       </div>
     </div>
@@ -436,7 +455,7 @@ a{text-decoration:none;color:inherit}
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-  import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
@@ -461,7 +480,7 @@ a{text-decoration:none;color:inherit}
   let currentTab = "today";
   let editingId = null;
 
-  // Initial built-in broad list of common medicines
+  // Built-in standard list of medicines
   let globalMedicineNames = [
     "Paracetamol", "Napa", "Napa Extra", "Napa Extend", "Napa Drop", "Napa Syrup",
     "Ace", "Ace Plus", "Ace Drop", "Ace Syrup", "Tylenol", "Fexo", "Rinex",
@@ -487,13 +506,14 @@ a{text-decoration:none;color:inherit}
     "Seclo 20", "Omeprazole", "Pantix 20", "Pantoprazole", "Maxpro 20", "Esomeprazole",
     "Esoral 20", "Sergel 20", "Rabeprazole", "Antacid Syrup", "Mucaine Gel",
     "Ceevit", "Vitamin C", "Calci-X", "Calcium D3", "Evion 400", "Vitamin E",
-    "B-Complex", "Neuro-B", "Becosules", "Multivitamin", "Iron Tablet", "Fefol"
+    "B-Complex", "Neuro-B", "Becosules", "Multivitamin", "Iron Tablet", "Fefol",
+    "Chlorhexidine Gluconate 0.2%"
   ];
 
-  // Load custom global medicines added by users from Firestore
+  // Shared Global Cloud Sync for all users (using existing user-data collection safely via shared query logic or user-generated logs)
   async function loadGlobalMedicines() {
     try {
-      const snap = await getDocs(collection(db, "global_medicines"));
+      const snap = await getDocs(collection(db, "medicines"));
       snap.forEach(docSnap => {
         const medName = docSnap.data().name;
         if(medName && !globalMedicineNames.includes(medName)) {
@@ -501,7 +521,7 @@ a{text-decoration:none;color:inherit}
         }
       });
     } catch(e) {
-      console.error("Error loading global medicines:", e);
+      console.error("Error loading medicines for suggestions:", e);
     }
   }
 
@@ -529,7 +549,6 @@ a{text-decoration:none;color:inherit}
     document.getElementById("medSuggestions").style.display = "none";
   };
 
-  // Close suggestion box on outside click
   document.addEventListener("click", function(e) {
     if(!e.target.closest('#newMedName') && !e.target.closest('#medSuggestions')) {
       const s = document.getElementById("medSuggestions");
@@ -587,7 +606,7 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // OPTIMIZED AUTH STATE LISTENER
+  // AUTH STATE LISTENER
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -637,12 +656,13 @@ a{text-decoration:none;color:inherit}
     document.getElementById("medContent").innerHTML = '<div class="empty">Loading your medicines... <i class="fa-solid fa-spinner fa-spin"></i></div>';
     
     try {
-      await loadGlobalMedicines();
       const medSnap = await getDocs(collection(db, "medicines"));
       const histSnap = await getDocs(collection(db, "med_history"));
 
       allMedicines = medSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       allHistory = histSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      await loadGlobalMedicines();
       
       if (currentUser.email.toLowerCase() === ADMIN_EMAIL) {
         populateAdminDropdown();
@@ -728,13 +748,23 @@ a{text-decoration:none;color:inherit}
 
     const name=document.getElementById("newMedName").value.trim();
     const dose=document.getElementById("newMedDose").value.trim();
+    const pattern=document.getElementById("dosePattern").value;
+    const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
     const end=document.getElementById("medEnd").value;
 
-    if(!name||!start||!end||!pendingTimes.length){
-      alert("Fill medicine name, dates and at least one time.");return;
+    if(!name){
+      alert("Please enter medicine name.");return;
     }
-    if(start>end){alert("End date cannot be before start date.");return;}
+
+    let times = [...pendingTimes];
+    if(pattern === "1+0+0" && times.length === 0) times = ["08:00"];
+    if(pattern === "0+1+0" && times.length === 0) times = ["14:00"];
+    if(pattern === "0+0+1" && times.length === 0) times = ["21:00"];
+    if(pattern === "1+1+1" && times.length === 0) times = ["08:00", "14:00", "21:00"];
+    if(pattern === "1+0+1" && times.length === 0) times = ["08:00", "21:00"];
+
+    const fullDose = `${dose ? dose : ''} (${pattern ? pattern : 'Custom'}) - ${meal}`.trim();
 
     const saveBtn = document.getElementById("saveMedButton");
     saveBtn.disabled = true;
@@ -742,7 +772,7 @@ a{text-decoration:none;color:inherit}
 
     const newMed = {
       userEmail: viewingEmail.toLowerCase().trim(),
-      name, dose, start, end, times:[...pendingTimes],
+      name, dose: fullDose, start: start || todayDate(), end: end || todayDate(), times,
       createdAt: new Date().toISOString()
     };
 
@@ -750,10 +780,8 @@ a{text-decoration:none;color:inherit}
       const docRef = await addDoc(collection(db, "medicines"), newMed);
       allMedicines.push({ id: docRef.id, ...newMed });
 
-      // Auto-save new medicine name to global cloud dictionary so it appears in suggestions for everyone
       if(!globalMedicineNames.some(m => m.toLowerCase() === name.toLowerCase())) {
         globalMedicineNames.push(name);
-        await addDoc(collection(db, "global_medicines"), { name, addedBy: viewingEmail });
       }
       
       clearMedForm();
@@ -772,12 +800,22 @@ a{text-decoration:none;color:inherit}
   async function updateMedicine() {
     const name=document.getElementById("newMedName").value.trim();
     const dose=document.getElementById("newMedDose").value.trim();
+    const pattern=document.getElementById("dosePattern").value;
+    const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
     const end=document.getElementById("medEnd").value;
 
-    if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
+    if(!name){alert("Please enter medicine name.");return;}
 
-    const updatedData = { name, dose, start, end, times: [...pendingTimes] };
+    let times = [...pendingTimes];
+    if(pattern === "1+0+0" && times.length === 0) times = ["08:00"];
+    if(pattern === "0+1+0" && times.length === 0) times = ["14:00"];
+    if(pattern === "0+0+1" && times.length === 0) times = ["21:00"];
+    if(pattern === "1+1+1" && times.length === 0) times = ["08:00", "14:00", "21:00"];
+    if(pattern === "1+0+1" && times.length === 0) times = ["08:00", "21:00"];
+
+    const fullDose = `${dose ? dose : ''} (${pattern ? pattern : 'Custom'}) - ${meal}`.trim();
+    const updatedData = { name, dose: fullDose, start: start || todayDate(), end: end || todayDate(), times };
 
     try {
       await updateDoc(doc(db, "medicines", editingId), updatedData);
@@ -786,7 +824,6 @@ a{text-decoration:none;color:inherit}
 
       if(!globalMedicineNames.some(med => med.toLowerCase() === name.toLowerCase())) {
         globalMedicineNames.push(name);
-        await addDoc(collection(db, "global_medicines"), { name, addedBy: viewingEmail });
       }
 
       editingId = null;
@@ -804,6 +841,8 @@ a{text-decoration:none;color:inherit}
   function clearMedForm() {
     document.getElementById("newMedName").value="";
     document.getElementById("newMedDose").value="";
+    document.getElementById("dosePattern").value="";
+    document.getElementById("mealTiming").value="After meal";
     document.getElementById("medStart").value="";
     document.getElementById("medEnd").value="";
     pendingTimes=[];
@@ -815,8 +854,13 @@ a{text-decoration:none;color:inherit}
     const date=todayDate();
     const result=[];
     getActiveMedicines().forEach(m => {
-      if(date < m.start || date > m.end) return;
-      (m.times || []).forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
+      if(m.start && date < m.start) return;
+      if(m.end && date > m.end) return;
+      if(m.times && m.times.length > 0) {
+        m.times.forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
+      } else {
+        result.push({id:m.id, name:m.name, dose:m.dose, time: "Anytime"});
+      }
     });
     return result.sort((a,b)=>a.time.localeCompare(b.time));
   }
@@ -909,7 +953,7 @@ a{text-decoration:none;color:inherit}
             <h4>${safeText(m.name)}</h4>
             <p>${safeText(m.dose||"Dosage not specified")}</p>
             <p>${safeText(m.start)} → ${safeText(m.end)}</p>
-            <p>Times: ${(m.times||[]).map(safeText).join(" · ")}</p>
+            <p>Times: ${(m.times||[]).map(safeText).join(" · ") || "None"}</p>
           </div>
         </div>
         <div class="med-buttons">
@@ -961,8 +1005,8 @@ a{text-decoration:none;color:inherit}
 
     document.getElementById("newMedName").value=m.name;
     document.getElementById("newMedDose").value=m.dose||"";
-    document.getElementById("medStart").value=m.start;
-    document.getElementById("medEnd").value=m.end;
+    document.getElementById("medStart").value=m.start||"";
+    document.getElementById("medEnd").value=m.end||"";
     pendingTimes=[...(m.times||[])];
     editingId=id;
     renderTimes();
@@ -1024,7 +1068,10 @@ a{text-decoration:none;color:inherit}
     const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
 
     getActiveMedicines().forEach(m=>{
-      if(date<m.start||date>m.end||!(m.times||[]).includes(time)) return;
+      if(!m.times || m.times.length === 0) return;
+      if(m.start && date < m.start) return;
+      if(m.end && date > m.end) return;
+      if(!m.times.includes(time)) return;
       if(statusOf(m.id,time)!=="pending") return;
 
       const key="alert_"+m.id+"_"+date+"_"+time;
