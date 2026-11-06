@@ -122,7 +122,7 @@ a{text-decoration:none;color:inherit}
 
 .med-row{background:#f9fbfb;border:1px solid #e9eeee;border-radius:13px;padding:14px;margin-top:10px}
 .med-row.morning{background:#e0f2fe;border-color:#bae6fd;} /* Sky Blue */
-.med-row.midday{background:#fef08a;border-color:#fde047;}  /* Dark Yellow */
+.med-row.midday{background:#fed7aa;border-color:#fdba74;}  /* Dark Orange */
 .med-row.night{background:#f1f5f9;border-color:#cbd5e1;}   /* Ash */
 
 .med-row-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -135,12 +135,12 @@ a{text-decoration:none;color:inherit}
 .med-skipped{background:#d17c3c;color:white}
 .med-delete{background:#fff0f0;color:#d66}
 .med-edit{background:#e8f1ff;color:#4277c9}
-.med-add-jump{background:#087f83;color:white;padding:7px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:0;white-space:nowrap;}
+.med-add-jump{background:#087f83;color:white;padding:6px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;border:0;white-space:nowrap;flex-shrink:0;}
 
 /* TABS CONTAINER - 3 TABS + ADD BUTTON STRICTLY ON ONE LINE */
-.med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:6px;margin:20px 0 12px;overflow-x:auto;padding-bottom:4px;}
-.med-tabs{display:flex;gap:6px;flex-wrap:nowrap;flex-shrink:0;}
-.med-tab{border:1px solid var(--border);background:white;padding:7px 10px;border-radius:8px;font-size:10px;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:4px;margin:20px 0 12px;width:100%;}
+.med-tabs{display:flex;gap:4px;flex-wrap:nowrap;flex-shrink:1;min-width:0;}
+.med-tab{border:1px solid var(--border);background:white;padding:6px 8px;border-radius:7px;font-size:9.5px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
 
 .empty{text-align:center;color:var(--muted);font-size:12px;padding:18px}
@@ -250,7 +250,7 @@ a{text-decoration:none;color:inherit}
       <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
     </div>
 
-    <!-- TABS & + ADD BUTTON STRICTLY ON ONE LINE WITH JUMP -->
+    <!-- TABS & + ADD BUTTON STRICTLY ON ONE LINE -->
     <div class="med-tabs-wrapper">
       <div class="med-tabs">
         <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
@@ -795,7 +795,7 @@ a{text-decoration:none;color:inherit}
       clearMedForm();
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
       renderAll();
-      window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
+      document.getElementById("medOverviewCard").scrollIntoView({behavior: "smooth", block: "start"});
       alert("Medicine saved successfully.");
     } catch(e) {
       alert("Error saving medicine: " + e.message);
@@ -836,7 +836,7 @@ a{text-decoration:none;color:inherit}
       document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
       clearMedForm();
       renderAll();
-      window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
+      document.getElementById("medOverviewCard").scrollIntoView({behavior: "smooth", block: "start"});
       alert("Medicine updated successfully.");
     } catch(e) {
       alert("Error updating: " + e.message);
@@ -860,17 +860,22 @@ a{text-decoration:none;color:inherit}
     const [h, m] = timeStr.split(":").map(Number);
     const medMinutes = h * 60 + m;
     const diff = currentMinutes - medMinutes;
+    // 2 hours before to 2 hours after
     return diff >= -120 && diff <= 120;
   }
 
   function todayItems(){
     const dateStr = todayDate();
     const result = [];
+    const nowHour = new Date().getHours();
     
     getActiveMedicines().forEach(m => {
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
+      let added = false;
+
+      // 1. Specific Clock Times (2 hours before to 2 hours after)
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -881,25 +886,41 @@ a{text-decoration:none;color:inherit}
               time: t, 
               category: 'clock' 
             });
+            added = true;
           }
         });
       }
 
-      const nowHour = new Date().getHours();
-      
+      // 2. Pattern Time Windows (Morning: 4 AM - 11 AM | Midday: 11 AM - 5 PM | Night: 5 PM - 12 AM)
       if(m.pattern === "Morning" && nowHour >= 4 && nowHour < 11) {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal || 'After meal'})`.trim(), time: "Morning", category: 'morning' });
+        added = true;
       } else if(m.pattern === "Midday" && nowHour >= 11 && nowHour < 17) {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal || 'After meal'})`.trim(), time: "Midday", category: 'midday' });
+        added = true;
       } else if(m.pattern === "Night" && nowHour >= 17 && nowHour < 24) {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal || 'After meal'})`.trim(), time: "Night", category: 'night' });
+        added = true;
       } else if(m.pattern === "1+1+1") {
         if(nowHour >= 4 && nowHour < 11) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
         if(nowHour >= 11 && nowHour < 17) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
         if(nowHour >= 17 && nowHour < 24) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        added = true;
       } else if(m.pattern === "1+0+1") {
         if(nowHour >= 4 && nowHour < 11) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
         if(nowHour >= 17 && nowHour < 24) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        added = true;
+      }
+
+      // 3. Fallback: যদি কোনো টাইম বা প্যাটার্ন সিলেক্ট করা না থাকে, তবুও যেন আজকের দিনে নরমাল শিডিউলে শো করে
+      if(!added && (!m.times || m.times.length === 0) && !m.pattern) {
+        result.push({ 
+          id: m.id, 
+          name: m.name, 
+          dose: `${m.dose || ''} (${m.meal || 'After meal'})`.trim(), 
+          time: "Anytime", 
+          category: 'clock' 
+        });
       }
     });
 
@@ -1091,10 +1112,8 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // ----------------------------------------------------
-    // ট্যাব এ ক্লিক করলেই স্ক্রিনশটের পজিশন (Overview Card) এ জাম্প করবে
-    // ----------------------------------------------------
-    document.getElementById("myOverviewSection").scrollIntoView({behavior: "smooth", block: "start"});
+    // জাম্প করে একদম Today's Overview (My Medication Overview কার্ড) এর ওপরের দিকে পজিশন নেবে
+    document.getElementById("medOverviewCard").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
   function renderContent(){
