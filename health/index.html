@@ -124,6 +124,7 @@ a{text-decoration:none;color:inherit}
 .med-skipped{background:#fff0e8;color:#d17c3c}
 .med-delete{background:#fff0f0;color:#d66}
 .med-edit{background:#e8f1ff;color:#4277c9}
+.med-add-jump{background:#e1f4f2;color:#087f83}
 .med-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 12px}
 .med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
@@ -169,7 +170,9 @@ a{text-decoration:none;color:inherit}
 
 <body>
 
-<div id="loading-message"><i class="fa-solid fa-spinner fa-spin"></i> যাচাই করা হচ্ছে... একটু অপেক্ষা করো 🎈</div>
+<div id="loading-message">
+  <i class="fa-solid fa-spinner fa-spin"></i> Verifying... Please wait
+</div>
 
 <div id="content-wrapper">
 <div class="wrapper">
@@ -185,61 +188,61 @@ a{text-decoration:none;color:inherit}
   <div class="header-date" id="currentDate"></div>
 </header>
 
+<!-- HERO SECTION WITH MY MEDICATION OVERVIEW INSIDE -->
 <section class="hero">
   <div class="hero-content">
     <div class="hero-label">YOUR HEALTH, YOUR PRIORITY</div>
     <h1>A Healthier Life Starts Here.</h1>
     <p>Your personal health space. Manage family medical records, explore medicines and access useful health tools — all in one place.</p>
+    
+    <!-- My Medication Overview inside Green Card -->
+    <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 20px; border-radius: 18px; margin-top: 22px; border: 1px solid rgba(255, 255, 255, 0.2);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="font-weight: 800; font-size: 16px; color: white;">My Medication Overview</div>
+        <div style="background: white; color: var(--primary); width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px;"><i class="fa-solid fa-capsules"></i></div>
+      </div>
+      <p style="font-size: 11px; color: #e1f4f2; margin-bottom: 15px;">Active schedules and daily dose tracker</p>
+
+      <div class="med-stats" style="margin: 10px 0;">
+        <div class="stat-box" style="background: rgba(255,255,255,0.9); color: var(--dark);"><span>Total Doses</span><strong id="totalStat">0</strong></div>
+        <div class="stat-box" style="background: rgba(255,255,255,0.9); color: var(--dark);"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
+        <div class="stat-box" style="background: rgba(255,255,255,0.9); color: var(--dark);"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
+      </div>
+
+      <div class="med-tabs" style="margin: 15px 0 10px 0;">
+        <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
+        <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
+        <button class="med-tab" onclick="setMedTab('history',this)">History</button>
+      </div>
+
+      <div id="medContent" style="color: var(--dark); background: white; border-radius: 14px; padding: 10px; margin-bottom: 5px;">
+        <div class="empty">No medicines scheduled today.</div>
+      </div>
+    </div>
+
+    <!-- Explore Medical Records Button in Green Card -->
     <a href="#records" class="hero-btn"><i class="fa-solid fa-folder-open"></i> Explore Medical Records</a>
   </div>
 </section>
 
-<!-- 1. TODAY'S OVERVIEW (MOVED TO TOP BEFORE HEALTH RESOURCES) -->
-<section class="section" id="myOverviewSection">
-  <div class="section-head">
-    <div><h3>My Medication Overview</h3><p>Active schedules and daily dose tracker</p></div>
-    <div class="section-icon"><i class="fa-solid fa-capsules"></i></div>
-  </div>
-
-  <div class="reminder-card">
-    
-    <!-- User Account Bar -->
-    <div class="user-bar">
-      <div class="user-info">
-        <div class="user-avatar" id="userAvatar"><i class="fa-solid fa-user"></i></div>
-        <div class="user-details">
-          <h4 id="displayUserName">Loading...</h4>
-          <p id="displayUserEmail"></p>
-        </div>
-      </div>
-
-      <!-- Admin Control Bar (Visible only to madina.manjeel@gmail.com) -->
-      <div class="admin-bar" id="adminControls">
-        <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
-        <select id="userSelector" class="admin-select" onchange="switchUserView()">
-          <!-- Populated dynamically -->
-        </select>
+<!-- USER BAR & ADMIN -->
+<section class="section" style="margin-top:25px;">
+  <div class="user-bar" style="margin-bottom:0;">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar"><i class="fa-solid fa-user"></i></div>
+      <div class="user-details">
+        <h4 id="displayUserName">Loading...</h4>
+        <p id="displayUserEmail"></p>
       </div>
     </div>
 
-    <h4>Today's Overview</h4>
-
-    <div class="med-stats">
-      <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
-      <div class="stat-box"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
-      <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
+    <!-- Admin Control Bar -->
+    <div class="admin-bar" id="adminControls">
+      <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
+      <select id="userSelector" class="admin-select" onchange="switchUserView()">
+        <!-- Populated dynamically -->
+      </select>
     </div>
-
-    <div class="med-tabs">
-      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
-      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
-      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
-    </div>
-
-    <div id="medContent" style="margin-bottom: 10px;">
-      <div class="empty">No medicines scheduled today.</div>
-    </div>
-
   </div>
 </section>
 
@@ -420,7 +423,7 @@ a{text-decoration:none;color:inherit}
 </div>
 </div>
 
-<!-- Firebase SDKs (Modular v11 matching your Kids App) -->
+<!-- Firebase SDKs (Modular v11) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
@@ -499,7 +502,7 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // AUTH STATE LISTENER (Same as your Kids page - No white screen, auto login)
+  // AUTH STATE LISTENER
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -664,7 +667,6 @@ a{text-decoration:none;color:inherit}
       clearMedForm();
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
       renderAll();
-      window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
       alert("Medicine saved successfully.");
     } catch(e) {
       alert("Error saving medicine: " + e.message);
@@ -694,7 +696,6 @@ a{text-decoration:none;color:inherit}
       document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
       clearMedForm();
       renderAll();
-      window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
       alert("Medicine updated successfully.");
     } catch(e) {
       alert("Error updating: " + e.message);
@@ -810,10 +811,21 @@ a{text-decoration:none;color:inherit}
           <button class="med-action med-delete" onclick="window.deleteMedicine('${m.id}')">
             <i class="fa-solid fa-trash"></i> Delete
           </button>
+          <button class="med-action med-add-jump" onclick="window.jumpToAddMedicine()">
+            <i class="fa-solid fa-plus"></i> Add
+          </button>
         </div>
       </div>
     `).join("");
   }
+
+  window.jumpToAddMedicine = function(){
+    editingId = null;
+    document.getElementById("formTitleText").textContent = "Add New Medicine";
+    document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+    clearMedForm();
+    document.getElementById("medicineManager").scrollIntoView({behavior: "smooth", block: "start"});
+  };
 
   function renderHistory(){
     const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
