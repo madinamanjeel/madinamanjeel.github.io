@@ -51,6 +51,20 @@ a{text-decoration:none;color:inherit}
 .section-head p{color:var(--muted);font-size:11px;margin-top:4px}
 .section-icon{width:38px;height:38px;background:#e1f4f2;color:var(--primary);display:grid;place-items:center;border-radius:12px}
 
+/* USER BAR & AUTH */
+.user-bar{background:#eaf7f5;padding:15px;border-radius:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border:1px solid #d2ece8}
+.user-info{display:flex;align-items:center;gap:11px}
+.user-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-weight:700;font-size:15px;overflow:hidden;flex-shrink:0}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-details h4{color:var(--primary);font-size:14px;font-weight:800}
+.user-details p{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all}
+.auth-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.switch-btn{background:white;color:var(--dark);border:1px solid #cce3e0;padding:8px 13px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+.switch-btn:hover{border-color:var(--primary);color:var(--primary)}
+.admin-bar{width:100%;padding-top:12px;border-top:1px dashed #c0e0dc;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.admin-bar span{font-size:11px;font-weight:700;color:#075c65}
+.admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--primary);font-size:11px;font-weight:600;background:white;color:var(--dark);outline:none;flex:1;max-width:280px}
+
 /* QUICK LINKS */
 .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .quick-card{background:white;padding:20px;border:1px solid var(--border);border-radius:17px;transition:.25s;box-shadow:var(--shadow);display:flex;align-items:center;gap:13px}
@@ -147,6 +161,7 @@ a{text-decoration:none;color:inherit}
  .med-stats{gap:6px}
  .stat-box{padding:11px}
  .stat-box strong{font-size:19px}
+ .admin-select{max-width:100%}
 }
 </style>
 </head>
@@ -174,7 +189,61 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- HEALTH RESOURCES -->
+<!-- 1. TODAY'S OVERVIEW (MOVED ABOVE HEALTH RESOURCES) -->
+<section class="section" id="myOverviewSection">
+  <div class="section-head">
+    <div><h3>My Medication Overview</h3><p>Active schedules and daily dose tracker</p></div>
+    <div class="section-icon"><i class="fa-solid fa-capsules"></i></div>
+  </div>
+
+  <div class="reminder-card">
+    <!-- User Account & Switch Account Bar -->
+    <div class="user-bar">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar"><i class="fa-solid fa-user"></i></div>
+        <div class="user-details">
+          <h4 id="displayUserName">Not Signed In</h4>
+          <p id="displayUserEmail">Sign in with Google to view your medicines</p>
+        </div>
+      </div>
+
+      <div class="auth-actions">
+        <button class="switch-btn" onclick="switchGoogleAccount()">
+          <i class="fa-brands fa-google" style="color:#087f83"></i>
+          <span id="authBtnText">Sign In / Switch Account</span>
+        </button>
+      </div>
+
+      <!-- Admin Control Bar (Visible only to madina.manjeel@gmail.com) -->
+      <div class="admin-bar" id="adminControls">
+        <span><i class="fa-solid fa-user-shield"></i> Admin Mode (Viewing Account):</span>
+        <select id="userSelector" class="admin-select" onchange="switchUserView()">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+    </div>
+
+    <h4>Today's Overview</h4>
+
+    <div class="med-stats">
+      <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
+      <div class="stat-box"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
+      <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
+    </div>
+
+    <div class="med-tabs">
+      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
+      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
+      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
+    </div>
+
+    <div id="medContent">
+      <div class="empty">Please sign in to view your scheduled medicines.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. HEALTH RESOURCES -->
 <section class="section">
   <div class="section-head">
     <div><h3>Health Resources</h3><p>Useful healthcare resources at your fingertips</p></div>
@@ -200,7 +269,7 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- FAMILY RECORDS -->
+<!-- 3. FAMILY RECORDS -->
 <section class="section" id="records">
   <div class="section-head">
     <div><h3>Family Medical Records</h3><p>Personal medical documents & reports</p></div>
@@ -235,7 +304,7 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- HEALTH CALCULATORS -->
+<!-- 4. HEALTH CALCULATORS -->
 <section class="section">
   <div class="section-head">
     <div><h3>Smart Health Tools</h3><p>Simple calculators for everyday health tracking</p></div>
@@ -273,56 +342,21 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- MEDICATION MANAGER (CLOUD SYNC) -->
+<!-- 5. ADD / MANAGE MEDICINE SECTION (AT THE BOTTOM) -->
 <section class="section" id="medicineManager">
   <div class="section-head">
-    <div><h3>Medication Manager</h3><p>Manage medicines, schedules and daily history</p></div>
-    <div class="section-icon"><i class="fa-solid fa-capsules"></i></div>
+    <div><h3>Add / Modify Medicine</h3><p>Add new medicine schedules to the selected account</p></div>
+    <div class="section-icon"><i class="fa-solid fa-plus"></i></div>
   </div>
 
   <div class="reminder-card">
-
-    <!-- User / Admin Header -->
-    <div id="userHeader" style="background: #eaf7f5; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <h4 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-user-circle"></i> <span id="displayUserName">Loading...</span></h4>
-        <p style="font-size: 11px; color: var(--muted); margin-top: 3px;" id="displayUserEmail"></p>
-      </div>
-      <div id="adminControls" style="display: none;">
-        <select id="userSelector" onchange="switchUserView()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--primary); font-size: 11px; background: white; color: var(--dark); outline: none;">
-          <!-- Options will be populated by JS -->
-        </select>
-      </div>
-    </div>
-
-    <!-- Active Medicines (Top) -->
-    <h4>Today's Overview</h4>
-
-    <div class="med-stats">
-      <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
-      <div class="stat-box"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
-      <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
-    </div>
-
-    <div class="med-tabs">
-      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
-      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
-      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
-    </div>
-
-    <div id="medContent" style="margin-bottom: 30px;">
-      <div class="empty">No medicines scheduled today.</div>
-    </div>
-
-    <div style="border-top:1px solid var(--border);margin:23px 0"></div>
-
-    <!-- Add New Medicine (Bottom) -->
-    <h4 style="margin-bottom:17px"><i class="fa-solid fa-plus-circle"></i> Add New Medicine</h4>
+    <h4 style="margin-bottom:6px"><i class="fa-solid fa-plus-circle"></i> <span id="formTitleText">Add New Medicine</span></h4>
+    <p id="targetAccountNote" style="font-size:11px;color:var(--primary);margin-bottom:17px;font-weight:600;"></p>
 
     <div class="med-form-grid">
       <div class="field full-field">
         <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Medicine name">
+        <input id="newMedName" placeholder="e.g. Napa Extend">
       </div>
 
       <div class="field">
@@ -358,7 +392,7 @@ a{text-decoration:none;color:inherit}
     </button>
 
     <!-- Notification Box -->
-    <div class="notification-box" style="margin-top: 30px;">
+    <div class="notification-box" style="margin-top: 25px;">
       <div style="font-size:12px;font-weight:700;color:#087f83">
         <i class="fa-solid fa-bell"></i> Notification Settings
       </div>
@@ -372,7 +406,6 @@ a{text-decoration:none;color:inherit}
       This is a personal tracking tool, not a prescription system.
       Always follow your doctor's instructions.
     </p>
-
   </div>
 </section>
 
@@ -385,8 +418,9 @@ a{text-decoration:none;color:inherit}
 
 </div>
 
-<!-- Firebase SDKs -->
+<!-- Firebase SDKs (App, Auth, Firestore) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
@@ -404,8 +438,8 @@ const firebaseConfig = {
   measurementId: "G-Y3RQ6BJT73"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.firestore();
 
 /* ===============================
@@ -452,16 +486,13 @@ function showResult(id,html){
 }
 
 /* ===============================
-   MEDICATION MANAGER (CLOUD SYNC)
+   AUTHENTICATION & USER SESSION
 =============================== */
-// Android WebView থেকে ইনজেক্ট করা হবে:
-// webView.evaluateJavascript("loggedInUser = { email: 'user@email.com', name: 'User Name' }; viewingEmail = 'user@email.com'; initUserSession();", null)
-let loggedInUser = {
-  email: "madina.manjeel@gmail.com", // Defaulting to Admin for testing
-  name: "Madina Manjeel"
-};
 const ADMIN_EMAIL = "madina.manjeel@gmail.com";
-let viewingEmail = loggedInUser.email;
+
+// ফ্যামিলির পরিচিত ইমেইল লিস্ট বা অ্যাডমিন যাতে নতুন কারো ইমেইল সিলেক্ট করতে পারে
+let loggedInUser = null;
+let viewingEmail = null;
 
 let allMedicines = []; 
 let allHistory = [];
@@ -475,16 +506,138 @@ function todayDate(){
 }
 
 function safeText(v){
-  return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
+  return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
 }
 
-// লোডিং ডাটা ফ্রম ফায়ারবেস
+// 1. Firebase Auth Listener (যখন ইউজার গুগল দিয়ে লগইন করবে)
+auth.onAuthStateChanged(user => {
+  if (user && user.email) {
+    setActiveUser({
+      email: user.email.toLowerCase().trim(),
+      name: user.displayName || user.email.split("@")[0],
+      photo: user.photoURL || ""
+    });
+  } else {
+    // যদি ব্রাউজার/ওয়েবভিউতে আগে থেকে লগইন সেশন সেভ থাকে
+    const cached = localStorage.getItem("hc_active_user");
+    if (cached) {
+      try {
+        setActiveUser(JSON.parse(cached));
+        return;
+      } catch(e) {}
+    }
+    setSignedOutState();
+  }
+});
+
+// 2. Android WebView থেকে সরাসরি ইউজার সেট করার গ্লোবাল ফাংশন (যদি অ্যাপ থেকে ইনজেক্ট করা হয়)
+window.setWebViewUser = function(email, name, photo = "") {
+  if (!email) return;
+  const u = {
+    email: String(email).toLowerCase().trim(),
+    name: name || String(email).split("@")[0],
+    photo: photo
+  };
+  localStorage.setItem("hc_active_user", JSON.stringify(u));
+  setActiveUser(u);
+};
+
+function setActiveUser(userObj) {
+  loggedInUser = userObj;
+  localStorage.setItem("hc_active_user", JSON.stringify(userObj));
+
+  // যদি আগে কোনো ভিউয়িং ইমেইল না থাকে বা ইউজার অ্যাডমিন না হয়, তবে নিজের ইমেইলই দেখবে
+  if (!viewingEmail || loggedInUser.email !== ADMIN_EMAIL) {
+    viewingEmail = loggedInUser.email;
+  }
+
+  document.getElementById("displayUserName").textContent = loggedInUser.name;
+  document.getElementById("displayUserEmail").textContent = loggedInUser.email;
+  document.getElementById("authBtnText").textContent = "Switch Account";
+
+  const avatarEl = document.getElementById("userAvatar");
+  if (loggedInUser.photo) {
+    avatarEl.innerHTML = `<img src="${safeText(loggedInUser.photo)}" alt="Avatar">`;
+  } else {
+    avatarEl.textContent = (loggedInUser.name || "U").charAt(0).toUpperCase();
+  }
+
+  if (loggedInUser.email === ADMIN_EMAIL) {
+    document.getElementById("adminControls").style.display = "flex";
+  } else {
+    document.getElementById("adminControls").style.display = "none";
+  }
+
+  updateTargetAccountNote();
+  loadDataFromFirebase();
+}
+
+function setSignedOutState() {
+  loggedInUser = null;
+  viewingEmail = null;
+  allMedicines = [];
+  allHistory = [];
+  document.getElementById("displayUserName").textContent = "Not Signed In";
+  document.getElementById("displayUserEmail").textContent = "Tap 'Sign In / Switch Account' to load your medicines";
+  document.getElementById("authBtnText").textContent = "Sign In with Google";
+  document.getElementById("userAvatar").innerHTML = `<i class="fa-solid fa-user"></i>`;
+  document.getElementById("adminControls").style.display = "none";
+  document.getElementById("targetAccountNote").textContent = "";
+  document.getElementById("totalStat").textContent = "0";
+  document.getElementById("takenStat").textContent = "0";
+  document.getElementById("pendingStat").textContent = "0";
+  document.getElementById("medContent").innerHTML = '<div class="empty">Please sign in with your Google account to view or add medicines.</div>';
+}
+
+// 3. Google Switch Account Button Handler
+async function switchGoogleAccount() {
+  // যদি আপনার Android App এ নিজস্ব জাভাস্ক্রিপ্ট ব্রিজ থাকে
+  if (window.Android && typeof window.Android.switchAccount === "function") {
+    window.Android.switchAccount();
+    return;
+  }
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  try {
+    await auth.signInWithPopup(provider);
+  } catch (popupErr) {
+    // WebView তে কখনো কখনো পপআপ ব্লক থাকলে Redirect কাজ করবে
+    if (popupErr.code === "auth/popup-blocked" || popupErr.code === "auth/operation-not-supported-in-this-environment") {
+      auth.signInWithRedirect(provider);
+    } else {
+      console.error("Google Sign-In Error:", popupErr);
+      alert("Sign-In failed: " + popupErr.message);
+    }
+  }
+}
+
+function updateTargetAccountNote() {
+  const note = document.getElementById("targetAccountNote");
+  if (!viewingEmail) {
+    note.textContent = "";
+    return;
+  }
+  if (loggedInUser && loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) {
+    note.textContent = `Admin Action: Adding/Editing medicine for ${viewingEmail}`;
+  } else {
+    note.textContent = `Saving to account: ${viewingEmail}`;
+  }
+}
+
+/* ===============================
+   CLOUD FIRESTORE SYNC
+=============================== */
 async function loadDataFromFirebase() {
-  document.getElementById("medContent").innerHTML = '<div class="empty">Loading data from cloud... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+  if (!loggedInUser || !loggedInUser.email) return;
+
+  document.getElementById("medContent").innerHTML = '<div class="empty">Loading your medicines... <i class="fa-solid fa-spinner fa-spin"></i></div>';
   
   try {
     let medSnapshot, historySnapshot;
     
+    // অ্যাডমিন হলে সবার ডাটা লোড করতে পারবে, সাধারণ ইউজার হলে শুধুমাত্র নিজের ইমেইলের ডাটা লোড হবে
     if (loggedInUser.email === ADMIN_EMAIL) {
       medSnapshot = await db.collection("medicines").get();
       historySnapshot = await db.collection("med_history").get();
@@ -496,45 +649,57 @@ async function loadDataFromFirebase() {
     allMedicines = medSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     allHistory = historySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-    if (loggedInUser.email === ADMIN_EMAIL) populateAdminDropdown();
+    if (loggedInUser.email === ADMIN_EMAIL) {
+      populateAdminDropdown();
+    }
     renderAll();
   } catch (error) {
     console.error("Error loading data: ", error);
-    document.getElementById("medContent").innerHTML = '<div class="empty" style="color:red;">Failed to load data. Please check connection or Firestore permissions.</div>';
+    document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check internet or Firestore Rules.</div>';
   }
-}
-
-function initUserSession() {
-  document.getElementById("displayUserName").textContent = loggedInUser.name;
-  document.getElementById("displayUserEmail").textContent = loggedInUser.email;
-  
-  if (loggedInUser.email === ADMIN_EMAIL) {
-    document.getElementById("adminControls").style.display = "block";
-  }
-  loadDataFromFirebase();
 }
 
 function populateAdminDropdown() {
-  const users = [...new Set(allMedicines.map(m => m.userEmail))];
-  if(!users.includes(ADMIN_EMAIL)) users.unshift(ADMIN_EMAIL);
-  
+  const usersSet = new Set(allMedicines.map(m => (m.userEmail || "").toLowerCase().trim()).filter(Boolean));
+  usersSet.add(ADMIN_EMAIL);
+  if (viewingEmail) usersSet.add(viewingEmail);
+
+  const users = Array.from(usersSet);
   const select = document.getElementById("userSelector");
+  
   select.innerHTML = users.map(email => 
-    `<option value="${email}" ${email === viewingEmail ? 'selected' : ''}>${email === ADMIN_EMAIL ? 'My Records' : email}</option>`
-  ).join("");
+    `<option value="${safeText(email)}" ${email === viewingEmail ? 'selected' : ''}>
+      ${email === ADMIN_EMAIL ? `My Account (${email})` : email}
+    </option>`
+  ).join("") + `<option value="__ADD_USER__">+ Add / View Another Gmail...</option>`;
 }
 
 function switchUserView() {
-  viewingEmail = document.getElementById("userSelector").value;
+  const select = document.getElementById("userSelector");
+  if (select.value === "__ADD_USER__") {
+    const customEmail = prompt("Enter family member's Gmail address:");
+    if (customEmail && customEmail.includes("@")) {
+      viewingEmail = customEmail.toLowerCase().trim();
+      populateAdminDropdown();
+    } else {
+      select.value = viewingEmail;
+      return;
+    }
+  } else {
+    viewingEmail = select.value;
+  }
+  updateTargetAccountNote();
   renderAll();
 }
 
 function getActiveMedicines() {
-  return allMedicines.filter(m => m.userEmail === viewingEmail);
+  if (!viewingEmail) return [];
+  return allMedicines.filter(m => (m.userEmail || "").toLowerCase().trim() === viewingEmail);
 }
 
 function getActiveHistory() {
-  return allHistory.filter(h => h.userEmail === viewingEmail);
+  if (!viewingEmail) return [];
+  return allHistory.filter(h => (h.userEmail || "").toLowerCase().trim() === viewingEmail);
 }
 
 /* TIMES MANAGEMENT */
@@ -561,8 +726,14 @@ function removeTime(i){
   renderTimes();
 }
 
-/* SAVE TO FIREBASE */
+/* SAVE & UPDATE MEDICINE */
 async function saveMedicine(){
+  if (!loggedInUser || !viewingEmail) {
+    alert("Please sign in with your Google account first!");
+    switchGoogleAccount();
+    return;
+  }
+
   if(editingId) return updateMedicine();
 
   const name=document.getElementById("newMedName").value.trim();
@@ -577,11 +748,12 @@ async function saveMedicine(){
 
   const saveBtn = document.getElementById("saveMedButton");
   saveBtn.disabled = true;
-  saveBtn.innerHTML = "Saving to Cloud...";
+  saveBtn.innerHTML = "Saving...";
 
   const newMed = {
-    userEmail: viewingEmail,
-    name, dose, start, end, times:[...pendingTimes]
+    userEmail: viewingEmail.toLowerCase().trim(),
+    name, dose, start, end, times:[...pendingTimes],
+    createdAt: new Date().toISOString()
   };
 
   try {
@@ -589,9 +761,10 @@ async function saveMedicine(){
     allMedicines.push({ id: docRef.id, ...newMed });
     
     clearMedForm();
+    if(loggedInUser.email === ADMIN_EMAIL) populateAdminDropdown();
     renderAll();
-    if(loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) populateAdminDropdown();
-    alert("Medicine saved online successfully.");
+    window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
+    alert("Medicine saved to " + viewingEmail);
   } catch(e) {
     alert("Error saving medicine: " + e.message);
   } finally {
@@ -616,10 +789,12 @@ async function updateMedicine() {
     if(m) Object.assign(m, updatedData);
 
     editingId = null;
+    document.getElementById("formTitleText").textContent = "Add New Medicine";
     document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
     clearMedForm();
     renderAll();
-    alert("Medicine updated online.");
+    window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
+    alert("Medicine updated successfully.");
   } catch(e) {
     alert("Error updating: " + e.message);
   }
@@ -640,18 +815,19 @@ function todayItems(){
   const result=[];
   getActiveMedicines().forEach(m => {
     if(date < m.start || date > m.end) return;
-    m.times.forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
+    (m.times || []).forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
   });
   return result.sort((a,b)=>a.time.localeCompare(b.time));
 }
 
 function statusOf(id,time,date=todayDate()){
-  return allHistory.find(h => h.medId === id && h.time === time && h.date === date)?.status || "pending";
+  return getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date)?.status || "pending";
 }
 
 async function markMedicine(id,time,status){
+  if (!viewingEmail) return;
   const date=todayDate();
-  let record = allHistory.find(h => h.medId === id && h.time === time && h.date === date);
+  let record = getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date);
   
   try {
     if(record){
@@ -659,7 +835,12 @@ async function markMedicine(id,time,status){
       await db.collection("med_history").doc(record.id).update({ status });
       record.status = status;
     } else {
-      const newHistory = { medId: id, userEmail: viewingEmail, time, date, status, recordedAt: new Date().toISOString() };
+      const newHistory = {
+        medId: id,
+        userEmail: viewingEmail.toLowerCase().trim(),
+        time, date, status,
+        recordedAt: new Date().toISOString()
+      };
       const docRef = await db.collection("med_history").add(newHistory);
       allHistory.push({ id: docRef.id, ...newHistory });
     }
@@ -671,6 +852,13 @@ async function markMedicine(id,time,status){
 
 /* RENDER VIEWS */
 function renderToday(){
+  if (!loggedInUser) {
+    document.getElementById("totalStat").textContent = "0";
+    document.getElementById("takenStat").textContent = "0";
+    document.getElementById("pendingStat").textContent = "0";
+    return '<div class="empty">Please sign in with Google to view your scheduled medicines.</div>';
+  }
+
   const items=todayItems();
   const taken=items.filter(x=>statusOf(x.id,x.time)==="taken").length;
   const pending=items.filter(x=>statusOf(x.id,x.time)==="pending").length;
@@ -679,7 +867,7 @@ function renderToday(){
   document.getElementById("takenStat").textContent=taken;
   document.getElementById("pendingStat").textContent=pending;
 
-  if(!items.length) return '<div class="empty">No medicines scheduled today.</div>';
+  if(!items.length) return '<div class="empty">No medicines scheduled today for this account.</div>';
 
   return items.map(item=>{
     const status=statusOf(item.id,item.time);
@@ -709,6 +897,7 @@ function renderToday(){
 }
 
 function renderMedicineList(){
+  if (!loggedInUser) return '<div class="empty">Please sign in first.</div>';
   const myMeds = getActiveMedicines();
   if(!myMeds.length) return '<div class="empty">No medicines found for this account.</div>';
   return myMeds.map(m=>`
@@ -718,7 +907,7 @@ function renderMedicineList(){
           <h4>${safeText(m.name)}</h4>
           <p>${safeText(m.dose||"Dosage not specified")}</p>
           <p>${safeText(m.start)} → ${safeText(m.end)}</p>
-          <p>Times: ${m.times.map(safeText).join(" · ")}</p>
+          <p>Times: ${(m.times||[]).map(safeText).join(" · ")}</p>
         </div>
       </div>
       <div class="med-buttons">
@@ -734,6 +923,7 @@ function renderMedicineList(){
 }
 
 function renderHistory(){
+  if (!loggedInUser) return '<div class="empty">Please sign in first.</div>';
   const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
   if(!records.length) return '<div class="empty">No history available for this account.</div>';
 
@@ -761,12 +951,13 @@ function editMedicine(id){
   document.getElementById("newMedDose").value=m.dose||"";
   document.getElementById("medStart").value=m.start;
   document.getElementById("medEnd").value=m.end;
-  pendingTimes=[...m.times];
+  pendingTimes=[...(m.times||[])];
   editingId=id;
   renderTimes();
   
-  document.getElementById("newMedName").scrollIntoView({behavior: "smooth", block: "center"});
+  document.getElementById("formTitleText").textContent = "Edit Medicine";
   document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-pen"></i> Update Medicine';
+  document.getElementById("medicineManager").scrollIntoView({behavior: "smooth", block: "start"});
 }
 
 async function deleteMedicine(id){
@@ -815,13 +1006,13 @@ async function enableMedNotifications(){
 }
 
 function checkMedicineAlerts(){
-  if(!("Notification" in window)||Notification.permission!=="granted") return;
+  if(!("Notification" in window)||Notification.permission!=="granted"||!loggedInUser) return;
   const date=todayDate();
   const now=new Date();
   const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
 
   getActiveMedicines().forEach(m=>{
-    if(date<m.start||date>m.end||!m.times.includes(time)) return;
+    if(date<m.start||date>m.end||!(m.times||[]).includes(time)) return;
     if(statusOf(m.id,time)!=="pending") return;
 
     const key="alert_"+m.id+"_"+date+"_"+time;
@@ -842,7 +1033,6 @@ if("Notification" in window){
 }
 
 renderTimes();
-initUserSession();
 checkMedicineAlerts();
 setInterval(checkMedicineAlerts, 15000);
 
