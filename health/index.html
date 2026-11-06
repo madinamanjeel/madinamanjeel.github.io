@@ -464,6 +464,12 @@ a{text-decoration:none;color:inherit}
         <label>End Date (Leave blank for Continuous)</label>
         <input type="date" id="medEnd">
       </div>
+
+      <!-- ADDITIONAL NOTE FIELD (New Feature) -->
+      <div class="field full-field">
+        <label>Additional Note (Optional)</label>
+        <input type="text" id="medNote" placeholder="e.g. Take with warm water, after 30 mins etc.">
+      </div>
     </div>
 
     <button class="action-btn" id="saveMedButton" onclick="saveMedicine()">
@@ -620,7 +626,7 @@ a{text-decoration:none;color:inherit}
   window.calculateBMI = function(){
     const w=Number(document.getElementById("weight").value);
     const h=Number(document.getElementById("height").value);
-    if(!w||!h||w<=0||h<50||h>250||w>500){alert("Enter valid weight and height.");return;}
+    if(!w||!h||w<=0||h<50||h>250||w>500){showToast("Enter valid weight and height.");return;}
     const bmi=w/Math.pow(h/100,2);
     let s=bmi<18.5?"Underweight":bmi<25?"Normal range":bmi<30?"Overweight":"Obesity range";
     showResult("bmiResult",`Your BMI<strong>${bmi.toFixed(1)}</strong>${s}<br><small>Adult screening categories, not a diagnosis.</small>`);
@@ -628,17 +634,17 @@ a{text-decoration:none;color:inherit}
 
   window.calculateWater = function(){
     const w=Number(document.getElementById("waterWeight").value);
-    if(!w||w<=0||w>500){alert("Enter valid weight.");return;}
+    if(!w||w<=0||w>500){showToast("Enter valid weight.");return;}
     const liters=w*.033;
     showResult("waterResult",`Estimated daily fluid amount<strong>${liters.toFixed(2)} L</strong>Approximately ${Math.round(liters*1000)} ml.<br><small>Rough estimate only. Individual needs vary.</small>`);
   };
 
   window.calculateAge = function(){
     const val=document.getElementById("birthDate").value;
-    if(!val){alert("Select your birth date.");return;}
+    if(!val){showToast("Select your birth date.");return;}
     const dob=new Date(val+"T00:00:00");
     const n=new Date();
-    if(dob>n){alert("Date cannot be in the future.");return;}
+    if(dob>n){showToast("Date cannot be in the future.");return;}
     let y=n.getFullYear()-dob.getFullYear();
     let m=n.getMonth()-dob.getMonth();
     let d=n.getDate()-dob.getDate();
@@ -781,8 +787,8 @@ a{text-decoration:none;color:inherit}
   window.addMedTime = function(){
     const input=document.getElementById("newMedTime");
     const time=input.value;
-    if(!time){alert("Select a time first.");return;}
-    if(pendingTimes.includes(time)){alert("Time already added.");return;}
+    if(!time){showToast("Select a time first.");return;}
+    if(pendingTimes.includes(time)){showToast("Time already added.");return;}
     pendingTimes.push(time);
     pendingTimes.sort();
     input.value="";
@@ -830,9 +836,10 @@ a{text-decoration:none;color:inherit}
     const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
     const end=document.getElementById("medEnd").value.trim();
+    const note=document.getElementById("medNote").value.trim(); // Added note saving
 
     if(!name){
-      alert("Please enter medicine name.");return;
+      showToast("Please enter medicine name.");return;
     }
 
     const newMed = {
@@ -843,6 +850,7 @@ a{text-decoration:none;color:inherit}
       meal: meal || "After meal",
       start: start || todayDate(), 
       end: end || "", 
+      note: note || "", // Save note
       times: [...pendingTimes],
       createdAt: new Date().toISOString()
     };
@@ -859,9 +867,9 @@ a{text-decoration:none;color:inherit}
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
-      showToast("Added successfully");
+      showToast("Medicine added successfully");
     } catch(e) {
-      alert("Error saving medicine: " + e.message);
+      showToast("Error saving medicine");
     }
   };
 
@@ -872,8 +880,9 @@ a{text-decoration:none;color:inherit}
     const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
     const end=document.getElementById("medEnd").value.trim();
+    const note=document.getElementById("medNote").value.trim(); // Update note
 
-    if(!name){alert("Please enter medicine name.");return;}
+    if(!name){showToast("Please enter medicine name.");return;}
 
     const updatedData = { 
       name, 
@@ -882,6 +891,7 @@ a{text-decoration:none;color:inherit}
       meal: meal || "After meal",
       start: start || todayDate(), 
       end: end || "", 
+      note: note || "", // Save updated note
       times: [...pendingTimes] 
     };
 
@@ -900,9 +910,9 @@ a{text-decoration:none;color:inherit}
       clearMedForm();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
-      showToast("Updated successfully");
+      showToast("Medicine updated successfully");
     } catch(e) {
-      alert("Error updating: " + e.message);
+      showToast("Error updating medicine");
     }
   }
 
@@ -913,6 +923,7 @@ a{text-decoration:none;color:inherit}
     document.getElementById("mealTiming").value="After meal";
     document.getElementById("medStart").value="";
     document.getElementById("medEnd").value="";
+    document.getElementById("medNote").value=""; // Clear note
     pendingTimes=[];
     renderTimes();
   }
@@ -936,36 +947,34 @@ a{text-decoration:none;color:inherit}
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
-      // নতুন লজিক: যদি ডোজ প্যাটার্ন (pattern) থাকে, তবে শিডিউল শুধুমাত্র প্যাটার্ন অনুযায়ী দেখাবে। রিমাইন্ডার টাইমের সাথে শিডিউলের কোনো সম্পর্ক থাকবে না।
       if(m.pattern && m.pattern.trim() !== "") {
         const isMorning = currentHM >= "04:00" && currentHM <= "11:59";
         const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
         const isNight = currentHM >= "16:00" && currentHM <= "23:59";
 
         if(m.pattern === "1+1+1") {
-          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Morning", category: 'morning', note: m.note });
+          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Midday", category: 'midday', note: m.note });
+          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Night", category: 'night', note: m.note });
         } else if(m.pattern === "1+0+1") {
-          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Morning", category: 'morning', note: m.note });
+          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Night", category: 'night', note: m.note });
         } else if(m.pattern === "1+0+0" && isMorning) {
-          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Morning", category: 'morning', note: m.note });
         } else if(m.pattern === "0+1+0" && isMidday) {
-          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Midday", category: 'midday', note: m.note });
         } else if(m.pattern === "0+0+1" && isNight) {
-          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Night", category: 'night', note: m.note });
         } else if(m.pattern === "1+1+0") {
-          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Morning", category: 'morning', note: m.note });
+          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Midday", category: 'midday', note: m.note });
         } else if(m.pattern === "0+1+1") {
-          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Midday", category: 'midday', note: m.note });
+          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Night", category: 'night', note: m.note });
         }
-        return;
+        return; 
       }
 
-      // প্যাটার্ন না থাকলে শুধুমাত্র কাস্টম রিমাইন্ডার টাইম (times) অনুযায়ী শিডিউলে দেখাবে
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -974,20 +983,21 @@ a{text-decoration:none;color:inherit}
               name: m.name, 
               dose: `${m.dose || ''} (${m.meal || 'After meal'})`.trim(), 
               time: t, 
-              category: 'clock' 
+              category: 'clock',
+              note: m.note
             });
           }
         });
         return;
       }
 
-      // Fallback
       result.push({ 
         id: m.id, 
         name: m.name, 
         dose: `${m.dose || ''} (${m.meal || 'After meal'})`.trim(), 
         time: "Anytime", 
-        category: 'clock' 
+        category: 'clock',
+        note: m.note
       });
     });
 
@@ -1019,7 +1029,7 @@ a{text-decoration:none;color:inherit}
       }
       renderAll();
     } catch(e) {
-      alert("Error saving record: " + e.message);
+      showToast("Error saving record");
     }
   };
 
@@ -1050,6 +1060,7 @@ a{text-decoration:none;color:inherit}
           <div>
             <h4>${safeText(item.name)}</h4>
             <p>${safeText(item.dose||"Dosage not specified")} · <i class="fa-regular fa-clock"></i> ${safeText(item.time)}</p>
+            ${item.note ? `<p style="font-size:10.5px;color:#087f83;margin-top:4px;font-weight:600;"><i class="fa-solid fa-note-sticky"></i> ${safeText(item.note)}</p>` : ''}
           </div>
           <span style="font-size:10px;font-weight:700;color:${color}">${label}</span>
         </div>
@@ -1086,6 +1097,7 @@ a{text-decoration:none;color:inherit}
             <h4>${safeText(m.name)}</h4>
             <p>${safeText(m.dose||"")} (${safeText(m.pattern||"Custom")}) - ${safeText(m.meal||"After meal")}</p>
             <p>${safeText(m.start)} → ${m.end ? safeText(m.end) : 'Continuous (No End Date)'}</p>
+            ${m.note ? `<p style="font-size:10.5px;color:#087f83;margin-top:4px;font-weight:600;"><i class="fa-solid fa-note-sticky"></i> ${safeText(m.note)}</p>` : ''}
           </div>
         </div>
         <div class="med-buttons">
@@ -1154,6 +1166,7 @@ a{text-decoration:none;color:inherit}
     document.getElementById("mealTiming").value=m.meal||"After meal";
     document.getElementById("medStart").value=m.start||"";
     document.getElementById("medEnd").value=m.end||"";
+    document.getElementById("medNote").value=m.note||""; // Edit Note
     pendingTimes=[...(m.times||[])];
     editingId=id;
     renderTimes();
@@ -1170,7 +1183,7 @@ a{text-decoration:none;color:inherit}
       allMedicines = allMedicines.filter(m => m.id !== id);
       renderAll();
     } catch(e) {
-      alert("Error deleting: " + e.message);
+      showToast("Error deleting medicine");
     }
   };
 
