@@ -90,10 +90,16 @@ a{text-decoration:none;color:inherit}
 .tool-icon{width:43px;height:43px;border-radius:13px;display:grid;place-items:center;font-size:18px}
 .tool-top h4{font-size:14px}
 .tool-top p{font-size:10px;color:var(--muted);margin-top:3px}
-.field{margin-bottom:12px}
+.field{margin-bottom:12px;position:relative}
 .field label{display:block;font-size:11px;color:#647d81;font-weight:600;margin-bottom:7px}
 .field input{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
 .field input:focus{border-color:var(--primary)}
+
+/* AUTO-COMPLETE SUGGESTIONS */
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
+.suggestion-item { padding: 9px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f5f5; }
+.suggestion-item:hover { background: #eaf7f5; color: var(--primary); font-weight: 600; }
+
 .action-btn{width:100%;background:var(--primary);color:white;border:0;border-radius:10px;padding:12px;font-size:12px;font-weight:700;cursor:pointer}
 .result{margin-top:13px;padding:13px;background:#eaf7f5;border-radius:11px;color:#087f83;font-size:12px;line-height:1.7;display:none}
 .result strong{font-size:19px;display:block}
@@ -129,6 +135,7 @@ a{text-decoration:none;color:inherit}
 .med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
 .empty{text-align:center;color:var(--muted);font-size:12px;padding:18px}
+.empty-add-container{text-align:center;padding:15px;}
 .notification-box{margin-top:20px;background:#eaf7f5;padding:15px;border-radius:12px}
 .notification-box p{font-size:11px;color:#587b7d;margin:7px 0 12px;line-height:1.7}
 .status-text{font-size:10px;margin-top:9px;color:#587b7d}
@@ -360,7 +367,8 @@ a{text-decoration:none;color:inherit}
     <div class="med-form-grid">
       <div class="field full-field">
         <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Napa Extra">
+        <input id="newMedName" placeholder="e.g. Napa Extra" autocomplete="off" oninput="handleMedInput(this.value)">
+        <div id="medSuggestions" class="suggestions-list"></div>
       </div>
 
       <div class="field">
@@ -427,7 +435,7 @@ a{text-decoration:none;color:inherit}
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
   import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -452,6 +460,44 @@ a{text-decoration:none;color:inherit}
   let pendingTimes = [];
   let currentTab = "today";
   let editingId = null;
+
+  // Common Medicine Database for Auto-suggestion
+  const commonMedicines = [
+    "Napa Extra", "Napa 500mg", "Paracetamol", "Ace", "Seclo 20mg", "Pantix", "Fexo 120mg", 
+    "Monas 10", "Montelukast", "Maxpro 20mg", "Esoral 20mg", "Azithromycin 500mg", "Ceftriaxone", 
+    "Amoxicillin", "Ceevit", "Calci-X", "Vitamin D3", "Zinc", "Orsaline", "Sergel 20mg", 
+    "Xylocard", "Amlong 5mg", "Bisocor 5mg", "Losan 50mg", "Metformin 500mg", "Glucophage"
+  ];
+
+  window.handleMedInput = function(val) {
+    const listEl = document.getElementById("medSuggestions");
+    if(!val || val.trim().length < 1) {
+      listEl.style.display = "none";
+      return;
+    }
+    const filtered = commonMedicines.filter(m => m.toLowerCase().includes(val.toLowerCase()));
+    if(filtered.length === 0) {
+      listEl.style.display = "none";
+      return;
+    }
+    listEl.innerHTML = filtered.map(name => `
+      <div class="suggestion-item" onclick="selectMedicineSuggestion('${name}')">${safeText(name)}</div>
+    `).join("");
+    listEl.style.display = "block";
+  };
+
+  window.selectMedicineSuggestion = function(name) {
+    document.getElementById("newMedName").value = name;
+    document.getElementById("medSuggestions").style.display = "none";
+  };
+
+  // Close suggestion box on outside click
+  document.addEventListener("click", function(e) {
+    if(!e.target.closest('#newMedName') && !e.target.closest('#medSuggestions')) {
+      const s = document.getElementById("medSuggestions");
+      if(s) s.style.display = "none";
+    }
+  });
 
   /* DATE & CALCULATORS */
   const now = new Date();
@@ -503,11 +549,7 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // AUTH STATE LISTENER & REDIRECT HANDLING (Optimized to prevent unnecessary re-logins)
-  getRedirectResult(auth).catch((error) => {
-    console.error("Redirect error:", error);
-  });
-
+  // OPTIMIZED AUTH STATE LISTENER (Prevents continuous redirect loops)
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -535,10 +577,10 @@ a{text-decoration:none;color:inherit}
       updateTargetAccountNote();
       loadDataFromFirebase();
     } else {
-      // Only redirect if no cached user session exists
+      // Trigger redirect only if not already attempting login
       document.getElementById('loading-message').style.display = 'block';
       document.getElementById('content-wrapper').style.display = 'none';
-      signInWithRedirect(auth, provider);
+      signInWithRedirect(auth, provider).catch(err => console.error("Auth redirect error:", err));
     }
   });
 
@@ -801,7 +843,16 @@ a{text-decoration:none;color:inherit}
 
   function renderMedicineList(){
     const myMeds = getActiveMedicines();
-    if(!myMeds.length) return '<div class="empty">No medicines found for this account.</div>';
+    if(!myMeds.length) {
+      return `
+        <div class="empty-add-container">
+          <div class="empty" style="padding-bottom:10px;">No medicines found for this account.</div>
+          <button class="med-action med-add-jump" style="padding: 10px 18px; font-size: 12px; margin: auto;" onclick="window.jumpToAddMedicine()">
+            <i class="fa-solid fa-plus"></i> Add New Medicine
+          </button>
+        </div>
+      `;
+    }
     return myMeds.map(m=>`
       <div class="med-row">
         <div class="med-row-top">
