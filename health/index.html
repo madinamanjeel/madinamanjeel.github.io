@@ -198,6 +198,26 @@ a{text-decoration:none;color:inherit}
   opacity: 1;
 }
 
+/* CUSTOM MODAL FOR ADDING EMAIL */
+#customPromptOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 99999;
+  display: none; justify-content: center; align-items: center;
+  backdrop-filter: blur(4px);
+}
+#customPromptBox {
+  background: white; padding: 25px; border-radius: 16px;
+  width: 90%; max-width: 320px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+#customPromptBox h4 { font-size: 16px; color: var(--dark); margin-bottom: 8px; }
+#customPromptBox p { font-size: 11px; color: var(--muted); margin-bottom: 15px; }
+#customPromptBox input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; margin-bottom: 15px; outline: none; }
+#customPromptBox input:focus { border-color: var(--primary); }
+.prompt-btns { display: flex; justify-content: flex-end; gap: 10px; }
+.prompt-btn { padding: 9px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 0; }
+.prompt-cancel { background: #f1f5f5; color: var(--muted); }
+.prompt-submit { background: var(--primary); color: white; }
+
 /* FOOTER */
 .footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
 .footer strong{color:var(--primary)}
@@ -234,6 +254,19 @@ a{text-decoration:none;color:inherit}
 </head>
 
 <body>
+
+<!-- Custom Prompt Modal -->
+<div id="customPromptOverlay">
+  <div id="customPromptBox">
+    <h4>Add Family Member</h4>
+    <p>Enter a valid Gmail address to view or manage their medicines.</p>
+    <input type="email" id="promptEmailInput" placeholder="e.g. member@gmail.com">
+    <div class="prompt-btns">
+      <button class="prompt-btn prompt-cancel" onclick="closeCustomPrompt(false)">Cancel</button>
+      <button class="prompt-btn prompt-submit" onclick="closeCustomPrompt(true)">Add Account</button>
+    </div>
+  </div>
+</div>
 
 <!-- Smart Toast Notification -->
 <div id="toast-notification"><i class="fa-solid fa-circle-check" style="color:#159968;"></i> <span id="toastText">Added successfully</span></div>
@@ -450,7 +483,7 @@ a{text-decoration:none;color:inherit}
 
       <!-- ঘড়ির টাইম সিস্টেম (Clock-wise) -->
       <div class="field">
-        <label>Reminder Time</label>
+        <label>Reminder Time (Optional)</label>
         <div class="med-time-row">
           <input type="time" id="newMedTime">
           <button class="action-btn" onclick="addMedTime()">+ Add</button>
@@ -550,12 +583,10 @@ a{text-decoration:none;color:inherit}
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  
   const provider = new GoogleAuthProvider();
-  // ফোর্স গুগল একাউন্ট চয়েস অপশন
-  provider.setCustomParameters({
-    prompt: 'select_account'
-  });
+  
+  // Force Account Selection every time provider is called
+  provider.setCustomParameters({ prompt: 'select_account' });
 
   const ADMIN_EMAIL = "madina.manjeel@gmail.com";
   let currentUser = null;
@@ -565,6 +596,9 @@ a{text-decoration:none;color:inherit}
   let pendingTimes = [];
   let currentTab = "today";
   let editingId = null;
+
+  // LocalStorage for saved admin emails
+  let addedEmails = JSON.parse(localStorage.getItem("hc_saved_emails") || "[]");
 
   const ALL_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
 
@@ -790,6 +824,9 @@ a{text-decoration:none;color:inherit}
     usersSet.add(ADMIN_EMAIL);
     if (viewingEmail) usersSet.add(viewingEmail);
 
+    // যুক্ত করা সমস্ত সেভ করা ইমেইলগুলো ড্রপডাউনে নিয়ে আসা
+    addedEmails.forEach(e => usersSet.add(e));
+
     const users = Array.from(usersSet);
     const select = document.getElementById("userSelector");
     
@@ -803,19 +840,37 @@ a{text-decoration:none;color:inherit}
   window.switchUserView = function() {
     const select = document.getElementById("userSelector");
     if (select.value === "__ADD_USER__") {
-      const customEmail = prompt("Enter family member's Gmail address:");
-      if (customEmail && customEmail.includes("@")) {
-        viewingEmail = customEmail.toLowerCase().trim();
-        populateAdminDropdown();
-      } else {
-        select.value = viewingEmail;
-        return;
-      }
+      document.getElementById("customPromptOverlay").style.display = "flex";
+      document.getElementById("promptEmailInput").value = "";
+      document.getElementById("promptEmailInput").focus();
+      // Select বক্সটাকে আগের ভ্যালুতেই রেখে দেওয়া হচ্ছে যাতে ক্যান্সেল করলে চেঞ্জ না হয়
+      select.value = viewingEmail; 
     } else {
       viewingEmail = select.value;
+      updateTargetAccountNote();
+      renderAll();
     }
-    updateTargetAccountNote();
-    renderAll();
+  };
+
+  window.closeCustomPrompt = function(isSubmit) {
+    document.getElementById("customPromptOverlay").style.display = "none";
+    if(isSubmit) {
+      const inputVal = document.getElementById("promptEmailInput").value.trim().toLowerCase();
+      if(inputVal && inputVal.includes("@")) {
+        // নতুন ইমেইল লোকাল স্টোরেজে সেভ করা হচ্ছে
+        if(!addedEmails.includes(inputVal)) {
+          addedEmails.push(inputVal);
+          localStorage.setItem("hc_saved_emails", JSON.stringify(addedEmails));
+        }
+        viewingEmail = inputVal;
+        populateAdminDropdown();
+        document.getElementById("userSelector").value = viewingEmail;
+        updateTargetAccountNote();
+        renderAll();
+      } else {
+        showToast("Please enter a valid email");
+      }
+    }
   };
 
   function getActiveMedicines() {
@@ -1017,7 +1072,7 @@ a{text-decoration:none;color:inherit}
           if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Midday", category: 'midday', note: m.note });
           if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Night", category: 'night', note: m.note });
         }
-        return; // প্যাটার্ন থাকলে এখানেই থমকে যাবে, ঘড়ির টাইম দিয়ে ডুপ্লিকেট রেন্ডার হবে না
+        return; 
       }
 
       // ২. প্যাটার্ন না থাকলে (অর্থাৎ ফাঁকা বা Custom Time Only হলে), শুধুমাত্র কাস্টম রিমাইন্ডার টাইম অনুযায়ী শিডিউলে দেখাবে
