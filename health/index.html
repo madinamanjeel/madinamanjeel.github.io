@@ -95,8 +95,8 @@ a{text-decoration:none;color:inherit}
 .field input{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
 .field input:focus{border-color:var(--primary)}
 
-/* AUTO-COMPLETE SUGGESTIONS */
-.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
+/* ONLINE AUTO-COMPLETE SUGGESTIONS */
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 160px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
 .suggestion-item { padding: 9px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f5f5; }
 .suggestion-item:hover { background: #eaf7f5; color: var(--primary); font-weight: 600; }
 
@@ -367,7 +367,7 @@ a{text-decoration:none;color:inherit}
     <div class="med-form-grid">
       <div class="field full-field">
         <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Napa Extra" autocomplete="off" oninput="handleMedInput(this.value)">
+        <input id="newMedName" placeholder="e.g. Paracetamol, Napa..." autocomplete="off" oninput="handleOnlineMedSearch(this.value)">
         <div id="medSuggestions" class="suggestions-list"></div>
       </div>
 
@@ -435,7 +435,7 @@ a{text-decoration:none;color:inherit}
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
   import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -460,33 +460,59 @@ a{text-decoration:none;color:inherit}
   let pendingTimes = [];
   let currentTab = "today";
   let editingId = null;
+  let searchTimeout = null;
 
-  // Common Medicine Database for Auto-suggestion
-  const commonMedicines = [
-    "Napa Extra", "Napa 500mg", "Paracetamol", "Ace", "Seclo 20mg", "Pantix", "Fexo 120mg", 
-    "Monas 10", "Montelukast", "Maxpro 20mg", "Esoral 20mg", "Azithromycin 500mg", "Ceftriaxone", 
-    "Amoxicillin", "Ceevit", "Calci-X", "Vitamin D3", "Zinc", "Orsaline", "Sergel 20mg", 
-    "Xylocard", "Amlong 5mg", "Bisocor 5mg", "Losan 50mg", "Metformin 500mg", "Glucophage"
-  ];
-
-  window.handleMedInput = function(val) {
+  /* ONLINE API MEDICINE SUGGESTIONS (OpenFDA Drug Library) */
+  window.handleOnlineMedSearch = function(val) {
     const listEl = document.getElementById("medSuggestions");
-    if(!val || val.trim().length < 1) {
+    if(!val || val.trim().length < 2) {
       listEl.style.display = "none";
       return;
     }
-    const filtered = commonMedicines.filter(m => m.toLowerCase().includes(val.toLowerCase()));
-    if(filtered.length === 0) {
-      listEl.style.display = "none";
-      return;
-    }
-    listEl.innerHTML = filtered.map(name => `
-      <div class="suggestion-item" onclick="selectMedicineSuggestion('${name}')">${safeText(name)}</div>
-    `).join("");
-    listEl.style.display = "block";
+
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      try {
+        const response = await fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:${encodeURIComponent(val)}*&limit=6`);
+        const data = await response.json();
+        
+        let suggestions = [];
+        if(data && data.results) {
+          data.results.forEach(item => {
+            if(item.openfda && item.openfda.brand_name) {
+              item.openfda.brand_name.forEach(name => {
+                if(!suggestions.includes(name)) suggestions.push(name);
+              });
+            }
+          });
+        }
+
+        if(suggestions.length === 0) {
+          listEl.style.display = "none";
+          return;
+        }
+
+        listEl.innerHTML = suggestions.map(name => `
+          <div class="suggestion-item" onclick="selectOnlineMedicine('${safeText(name)}')">${safeText(name)}</div>
+        `).join("");
+        listEl.style.display = "block";
+      } catch(e) {
+        // Fallback local lightweight common meds if offline or API limit reached
+        const fallbackMeds = ["Napa", "Paracetamol", "Napa Extra", "Seclo", "Pantix", "Fexo", "Monas", "Maxpro", "Azithromycin", "Amlong"];
+        const filtered = fallbackMeds.filter(m => m.toLowerCase().includes(val.toLowerCase()));
+        if(filtered.length > 0) {
+          listEl.innerHTML = filtered.map(name => `
+            <div class="suggestion-item" onclick="selectOnlineMedicine('${name}')">${name}</div>
+          `).join("");
+          listEl.style.display = "block";
+        } else {
+          listEl.style.display = "none";
+        }
+      }
+    }, 300);
   };
 
-  window.selectMedicineSuggestion = function(name) {
+  window.selectOnlineMedicine = function(name) {
     document.getElementById("newMedName").value = name;
     document.getElementById("medSuggestions").style.display = "none";
   };
@@ -549,7 +575,7 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // OPTIMIZED AUTH STATE LISTENER (Prevents continuous redirect loops)
+  // OPTIMIZED AUTH STATE LISTENER
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -577,7 +603,6 @@ a{text-decoration:none;color:inherit}
       updateTargetAccountNote();
       loadDataFromFirebase();
     } else {
-      // Trigger redirect only if not already attempting login
       document.getElementById('loading-message').style.display = 'block';
       document.getElementById('content-wrapper').style.display = 'none';
       signInWithRedirect(auth, provider).catch(err => console.error("Auth redirect error:", err));
