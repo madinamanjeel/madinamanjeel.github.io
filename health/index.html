@@ -117,6 +117,10 @@ a{text-decoration:none;color:inherit}
 .notification-box p{font-size:11px;color:#587b7d;margin:7px 0 12px;line-height:1.7}
 .status-text{font-size:10px;margin-top:9px;color:#587b7d}
 
+/* FOOTER */
+.footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
+.footer strong{color:var(--primary)}
+
 @media(max-width:850px){
  .quick-grid{grid-template-columns:repeat(2,1fr)}
  .records-grid{grid-template-columns:repeat(2,1fr)}
@@ -269,7 +273,7 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- MEDICATION MANAGER (UPDATED) -->
+<!-- MEDICATION MANAGER (CLOUD SYNC) -->
 <section class="section" id="medicineManager">
   <div class="section-head">
     <div><h3>Medication Manager</h3><p>Manage medicines, schedules and daily history</p></div>
@@ -277,7 +281,7 @@ a{text-decoration:none;color:inherit}
   </div>
 
   <div class="reminder-card">
-    
+
     <!-- User / Admin Header -->
     <div id="userHeader" style="background: #eaf7f5; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
       <div>
@@ -291,7 +295,7 @@ a{text-decoration:none;color:inherit}
       </div>
     </div>
 
-    <!-- Active Medicines -->
+    <!-- Active Medicines (Top) -->
     <h4>Today's Overview</h4>
 
     <div class="med-stats">
@@ -312,7 +316,7 @@ a{text-decoration:none;color:inherit}
 
     <div style="border-top:1px solid var(--border);margin:23px 0"></div>
 
-    <!-- Add New Medicine -->
+    <!-- Add New Medicine (Bottom) -->
     <h4 style="margin-bottom:17px"><i class="fa-solid fa-plus-circle"></i> Add New Medicine</h4>
 
     <div class="med-form-grid">
@@ -381,7 +385,29 @@ a{text-decoration:none;color:inherit}
 
 </div>
 
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script>
+/* ===============================
+   FIREBASE CONFIGURATION
+=============================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBqCgsnAfsz0WqRkk8Bx6X7f2OJjkPdc3U",
+  authDomain: "family-429c7.firebaseapp.com",
+  databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "family-429c7",
+  storageBucket: "family-429c7.firebasestorage.app",
+  messagingSenderId: "982876086618",
+  appId: "1:982876086618:web:af742e97fd22b4f1f2d363",
+  measurementId: "G-Y3RQ6BJT73"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 /* ===============================
    DATE & CALCULATORS
 =============================== */
@@ -426,11 +452,9 @@ function showResult(id,html){
 }
 
 /* ===============================
-   MEDICATION MANAGER (UPDATED)
+   MEDICATION MANAGER (CLOUD SYNC)
 =============================== */
-
-/* USER AUTHENTICATION MOCK */
-// Android WebView থেকে ইনজেক্ট করতে হবে:
+// Android WebView থেকে ইনজেক্ট করা হবে:
 // webView.evaluateJavascript("loggedInUser = { email: 'user@email.com', name: 'User Name' }; viewingEmail = 'user@email.com'; initUserSession();", null)
 let loggedInUser = {
   email: "madina.manjeel@gmail.com", // Defaulting to Admin for testing
@@ -439,36 +463,11 @@ let loggedInUser = {
 const ADMIN_EMAIL = "madina.manjeel@gmail.com";
 let viewingEmail = loggedInUser.email;
 
-const MED_KEY="health_medicines_v4";
-const HISTORY_KEY="health_history_v4";
-
 let allMedicines = []; 
 let allHistory = [];
 let pendingTimes = [];
 let currentTab = "today";
 let editingId = null;
-
-try {
-  allMedicines = JSON.parse(localStorage.getItem(MED_KEY) || "[]");
-  allHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-  if(!Array.isArray(allMedicines)) allMedicines=[];
-  if(!Array.isArray(allHistory)) allHistory=[];
-} catch(e) {
-  allMedicines = []; allHistory = [];
-}
-
-function saveData() {
-  localStorage.setItem(MED_KEY, JSON.stringify(allMedicines));
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(allHistory));
-}
-
-function getActiveMedicines() {
-  return allMedicines.filter(m => m.userEmail === viewingEmail);
-}
-
-function getActiveHistory() {
-  return allHistory.filter(h => h.userEmail === viewingEmail);
-}
 
 function todayDate(){
   const d=new Date();
@@ -479,15 +478,40 @@ function safeText(v){
   return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
 }
 
+// লোডিং ডাটা ফ্রম ফায়ারবেস
+async function loadDataFromFirebase() {
+  document.getElementById("medContent").innerHTML = '<div class="empty">Loading data from cloud... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+  
+  try {
+    let medSnapshot, historySnapshot;
+    
+    if (loggedInUser.email === ADMIN_EMAIL) {
+      medSnapshot = await db.collection("medicines").get();
+      historySnapshot = await db.collection("med_history").get();
+    } else {
+      medSnapshot = await db.collection("medicines").where("userEmail", "==", loggedInUser.email).get();
+      historySnapshot = await db.collection("med_history").where("userEmail", "==", loggedInUser.email).get();
+    }
+
+    allMedicines = medSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    allHistory = historySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    if (loggedInUser.email === ADMIN_EMAIL) populateAdminDropdown();
+    renderAll();
+  } catch (error) {
+    console.error("Error loading data: ", error);
+    document.getElementById("medContent").innerHTML = '<div class="empty" style="color:red;">Failed to load data. Please check connection or Firestore permissions.</div>';
+  }
+}
+
 function initUserSession() {
   document.getElementById("displayUserName").textContent = loggedInUser.name;
   document.getElementById("displayUserEmail").textContent = loggedInUser.email;
   
-  if(loggedInUser.email === ADMIN_EMAIL) {
+  if (loggedInUser.email === ADMIN_EMAIL) {
     document.getElementById("adminControls").style.display = "block";
-    populateAdminDropdown();
   }
-  renderAll();
+  loadDataFromFirebase();
 }
 
 function populateAdminDropdown() {
@@ -503,6 +527,14 @@ function populateAdminDropdown() {
 function switchUserView() {
   viewingEmail = document.getElementById("userSelector").value;
   renderAll();
+}
+
+function getActiveMedicines() {
+  return allMedicines.filter(m => m.userEmail === viewingEmail);
+}
+
+function getActiveHistory() {
+  return allHistory.filter(h => h.userEmail === viewingEmail);
 }
 
 /* TIMES MANAGEMENT */
@@ -529,8 +561,8 @@ function removeTime(i){
   renderTimes();
 }
 
-/* SAVE & UPDATE MEDICINE */
-function saveMedicine(){
+/* SAVE TO FIREBASE */
+async function saveMedicine(){
   if(editingId) return updateMedicine();
 
   const name=document.getElementById("newMedName").value.trim();
@@ -543,20 +575,32 @@ function saveMedicine(){
   }
   if(start>end){alert("End date cannot be before start date.");return;}
 
-  allMedicines.push({
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random(),
+  const saveBtn = document.getElementById("saveMedButton");
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = "Saving to Cloud...";
+
+  const newMed = {
     userEmail: viewingEmail,
     name, dose, start, end, times:[...pendingTimes]
-  });
+  };
 
-  saveData();
-  clearMedForm();
-  renderAll();
-  if(loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) populateAdminDropdown();
-  alert("Medicine saved successfully.");
+  try {
+    const docRef = await db.collection("medicines").add(newMed);
+    allMedicines.push({ id: docRef.id, ...newMed });
+    
+    clearMedForm();
+    renderAll();
+    if(loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) populateAdminDropdown();
+    alert("Medicine saved online successfully.");
+  } catch(e) {
+    alert("Error saving medicine: " + e.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+  }
 }
 
-function updateMedicine() {
+async function updateMedicine() {
   const name=document.getElementById("newMedName").value.trim();
   const dose=document.getElementById("newMedDose").value.trim();
   const start=document.getElementById("medStart").value;
@@ -564,17 +608,21 @@ function updateMedicine() {
 
   if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
 
-  const m = allMedicines.find(x => x.id === editingId);
-  if(!m) return;
-  
-  m.name = name; m.dose = dose; m.start = start; m.end = end; m.times = [...pendingTimes];
+  const updatedData = { name, dose, start, end, times: [...pendingTimes] };
 
-  editingId = null;
-  document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
-  clearMedForm();
-  saveData(); 
-  renderAll();
-  alert("Medicine updated.");
+  try {
+    await db.collection("medicines").doc(editingId).update(updatedData);
+    const m = allMedicines.find(x => x.id === editingId);
+    if(m) Object.assign(m, updatedData);
+
+    editingId = null;
+    document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+    clearMedForm();
+    renderAll();
+    alert("Medicine updated online.");
+  } catch(e) {
+    alert("Error updating: " + e.message);
+  }
 }
 
 function clearMedForm() {
@@ -586,7 +634,7 @@ function clearMedForm() {
   renderTimes();
 }
 
-/* TRACKING */
+/* TRACKING IN FIREBASE */
 function todayItems(){
   const date=todayDate();
   const result=[];
@@ -598,20 +646,27 @@ function todayItems(){
 }
 
 function statusOf(id,time,date=todayDate()){
-  return allHistory.find(h => h.id === id && h.time === time && h.date === date)?.status || "pending";
+  return allHistory.find(h => h.medId === id && h.time === time && h.date === date)?.status || "pending";
 }
 
-function markMedicine(id,time,status){
+async function markMedicine(id,time,status){
   const date=todayDate();
-  let record = allHistory.find(h => h.id === id && h.time === time && h.date === date);
-  if(record){
-    if(record.status!=="pending"){alert("Already recorded.");return;}
-    record.status = status;
-  }else{
-    allHistory.push({id, userEmail: viewingEmail, time, date, status, recordedAt: new Date().toISOString()});
+  let record = allHistory.find(h => h.medId === id && h.time === time && h.date === date);
+  
+  try {
+    if(record){
+      if(record.status !== "pending") { alert("Already recorded."); return; }
+      await db.collection("med_history").doc(record.id).update({ status });
+      record.status = status;
+    } else {
+      const newHistory = { medId: id, userEmail: viewingEmail, time, date, status, recordedAt: new Date().toISOString() };
+      const docRef = await db.collection("med_history").add(newHistory);
+      allHistory.push({ id: docRef.id, ...newHistory });
+    }
+    renderAll();
+  } catch(e) {
+    alert("Error saving record: " + e.message);
   }
-  saveData();
-  renderAll();
 }
 
 /* RENDER VIEWS */
@@ -683,7 +738,7 @@ function renderHistory(){
   if(!records.length) return '<div class="empty">No history available for this account.</div>';
 
   return records.slice(0,100).map(h=>{
-    const m = allMedicines.find(x=>x.id===h.id);
+    const m = allMedicines.find(x=>x.id===h.medId);
     return `<div class="med-row">
       <div class="med-row-top">
         <div>
@@ -714,12 +769,15 @@ function editMedicine(id){
   document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-pen"></i> Update Medicine';
 }
 
-function deleteMedicine(id){
-  if(!confirm("Delete this medicine and its history?")) return;
-  allMedicines = allMedicines.filter(m => m.id !== id);
-  allHistory = allHistory.filter(h => h.id !== id);
-  saveData();
-  renderAll();
+async function deleteMedicine(id){
+  if(!confirm("Delete this medicine?")) return;
+  try {
+    await db.collection("medicines").doc(id).delete();
+    allMedicines = allMedicines.filter(m => m.id !== id);
+    renderAll();
+  } catch(e) {
+    alert("Error deleting: " + e.message);
+  }
 }
 
 function setMedTab(tab,button){
@@ -758,7 +816,6 @@ async function enableMedNotifications(){
 
 function checkMedicineAlerts(){
   if(!("Notification" in window)||Notification.permission!=="granted") return;
-
   const date=todayDate();
   const now=new Date();
   const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
