@@ -127,7 +127,7 @@ a{text-decoration:none;color:inherit}
 
 .med-row-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .med-row h4{font-size:13px}
-.med-row p{font-size:10px;color:#64748b;margin-top:5px}
+.med-row p{font-size:10px;color:#647b86;margin-top:5px}
 .med-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
 .med-action{border:0;padding:9px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer}
 .med-action:disabled{opacity:.5;cursor:not-allowed}
@@ -137,7 +137,7 @@ a{text-decoration:none;color:inherit}
 .med-edit{background:#e8f1ff;color:#4277c9}
 .med-add-jump{background:#087f83;color:white;padding:6px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;border:0;white-space:nowrap;flex-shrink:0;}
 
-/* TABS CONTAINER - 3 TABS + ADD BUTTON STRICTLY ON ONE LINE */
+/* TABS CONTAINER */
 .med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:4px;margin:20px 0 12px;width:100%;}
 .med-tabs{display:flex;gap:4px;flex-wrap:nowrap;flex-shrink:1;min-width:0;}
 .med-tab{border:1px solid var(--border);background:white;padding:6px 8px;border-radius:7px;font-size:9.5px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -392,11 +392,24 @@ a{text-decoration:none;color:inherit}
         <input id="newMedDose" placeholder="e.g. 1 tablet">
       </div>
 
+      <!-- আগের মতো ঘড়ির টাইম সিস্টেম এবং ১+১+১ উভয় সিস্টেম ব্যাক আনা হয়েছে -->
       <div class="field">
-        <label>Dose Pattern & Timing</label>
+        <label>Reminder Time (Clock-wise)</label>
+        <div class="med-time-row">
+          <input type="time" id="newMedTime">
+          <button class="action-btn" onclick="addMedTime()">+ Add Time</button>
+        </div>
+      </div>
+
+      <div class="full-field">
+        <div id="selectedTimes" class="time-list"></div>
+      </div>
+
+      <div class="field">
+        <label>Or Dose Pattern & Timing (1+1+1)</label>
         <div style="display:flex;gap:8px;">
           <select id="dosePattern" style="flex:1;">
-            <option value="">Custom Time Only</option>
+            <option value="">-- Select Pattern --</option>
             <option value="Morning">Morning (04:00 - 10:59)</option>
             <option value="Midday">Midday (11:00 - 16:59)</option>
             <option value="Night">Night (17:00 - 23:59)</option>
@@ -409,18 +422,6 @@ a{text-decoration:none;color:inherit}
             <option value="With meal">With meal</option>
           </select>
         </div>
-      </div>
-
-      <div class="field">
-        <label>Reminder Time (Optional)</label>
-        <div class="med-time-row">
-          <input type="time" id="newMedTime">
-          <button class="action-btn" onclick="addMedTime()">+ Add</button>
-        </div>
-      </div>
-
-      <div class="full-field">
-        <div id="selectedTimes" class="time-list"></div>
       </div>
 
       <div class="field">
@@ -861,6 +862,7 @@ a{text-decoration:none;color:inherit}
     const [h, m] = timeStr.split(":").map(Number);
     const medMinutes = h * 60 + m;
     const diff = currentMinutes - medMinutes;
+    // 2 hours before to 2 hours after
     return diff >= -120 && diff <= 120;
   }
 
@@ -876,7 +878,7 @@ a{text-decoration:none;color:inherit}
 
       let added = false;
 
-      // 1. Specific Clock Times (2 hours before to 2 hours after)
+      // 1. Clock Times (2 hours before to 2 hours after)
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -893,9 +895,9 @@ a{text-decoration:none;color:inherit}
       }
 
       // 2. Strict Time Windows:
-      // Morning: 04:00 to 10:59:59 (Sky Blue)
-      // Midday: 11:00 to 16:59:59 (Dark Orange)
-      // Night: 17:00 to 23:59:59 (Ash)
+      // Morning: 04:00 to 10:59 (Sky Blue)
+      // Midday: 11:00 to 16:59 (Dark Orange)
+      // Night: 17:00 to 23:59 (Ash)
       if(m.pattern === "Morning" && currentHM >= "04:00" && currentHM <= "10:59") {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal || 'After meal'})`.trim(), time: "Morning", category: 'morning' });
         added = true;
@@ -916,7 +918,7 @@ a{text-decoration:none;color:inherit}
         added = true;
       }
 
-      // 3. Fallback: কোনো নির্দিষ্ট সময় বা প্যাটার্ন সেট করা না থাকলে অলওয়েজ শো করবে
+      // 3. Fallback: যদি কোনো টাইম বা প্যাটার্ন সেট করা না থাকে, তবুও যেন আজকের দিনে নরমাল শিডিউলে শো করে
       if(!added && (!m.times || m.times.length === 0) && !m.pattern) {
         result.push({ 
           id: m.id, 
@@ -1116,7 +1118,7 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ঠিক ওপর পর্যন্ত উঠবে (ইউজার অ্যাকাউন্ট বার বাদে)
+    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (একাউন্ট নেম বা ইউজার বার থাকবে না)
     document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
@@ -1171,7 +1173,6 @@ a{text-decoration:none;color:inherit}
     const dateStr = todayDate();
     const now = new Date();
     const currentHM = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    const nowHour = now.getHours();
 
     const userMeds = allMedicines.filter(m => (m.userEmail || "").toLowerCase().trim() === loggedInEmail);
     const userHist = allHistory.filter(h => (h.userEmail || "").toLowerCase().trim() === loggedInEmail);
@@ -1193,29 +1194,24 @@ a{text-decoration:none;color:inherit}
         }
       }
 
-      const patternTriggers = [];
-      if (m.pattern === "Morning" || m.pattern === "1+1+1" || m.pattern === "1+0+1") {
-        if (nowHour === 8 && now.getMinutes() === 0) patternTriggers.push("Morning");
-      }
-      if (m.pattern === "Midday" || m.pattern === "1+1+1") {
-        if (nowHour === 12 && now.getMinutes() === 0) patternTriggers.push("Midday");
-      }
-      if (m.pattern === "Night" || m.pattern === "1+1+1" || m.pattern === "1+0+1") {
-        if (nowHour === 18 && now.getMinutes() === 0) patternTriggers.push("Night");
-      }
+      // প্যাটার্ন ট্রিগার টাইম (Morning, Midday, Night এর নির্দিষ্ট শুরুতে নোটিফিকেশন)
+      let triggerWindowName = "";
+      if ((m.pattern === "Morning" || m.pattern === "1+1+1" || m.pattern === "1+0+1") && currentHM === "04:00") triggerWindowName = "Morning";
+      if ((m.pattern === "Midday" || m.pattern === "1+1+1") && currentHM === "11:00") triggerWindowName = "Midday";
+      if ((m.pattern === "Night" || m.pattern === "1+1+1" || m.pattern === "1+0+1") && currentHM === "17:00") triggerWindowName = "Night";
 
-      patternTriggers.forEach(pTime => {
-        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${pTime}`;
-        const isTaken = userHist.some(h => h.medId === m.id && h.time === pTime && h.date === dateStr);
+      if (triggerWindowName) {
+        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${triggerWindowName}`;
+        const isTaken = userHist.some(h => h.medId === m.id && h.time === triggerWindowName && h.date === dateStr);
 
         if (!localStorage.getItem(notifyKey) && !isTaken) {
           localStorage.setItem(notifyKey, "1");
           sendNativeOrBrowserNotification(
-            `${pTime} ডোজের সময় হয়েছে: ${m.name}`,
+            `${triggerWindowName} ডোজের সময় হয়েছে: ${m.name}`,
             `ডোজ: ${m.dose || 'নির্ধারিত পরিমাণ'} (${m.meal || 'After meal'})`
           );
         }
-      });
+      }
     });
   }
 
