@@ -405,7 +405,7 @@ a{text-decoration:none;color:inherit}
         <div id="selectedTimes" class="time-list"></div>
       </div>
 
-      <!-- ১+১+১ ফরম্যাট (সিলেক্ট করলেই অটো ডিফল্ট টাইম রিমাইন্ডার লিস্টে চিপ আকারে যুক্ত হবে) -->
+      <!-- ১+১+১ ফরম্যাট (প্যাটার্ন চেঞ্জ করলে আগের ডিফল্ট টাইম মুছে নতুনটা এড হবে) -->
       <div class="field">
         <label>Dose Pattern (1+1+1 Format)</label>
         <div style="display:flex;gap:8px;">
@@ -499,6 +499,9 @@ a{text-decoration:none;color:inherit}
   let pendingTimes = [];
   let currentTab = "today";
   let editingId = null;
+
+  // কোন কোন টাইমগুলো অটো-ডিফল্ট হিসেবে গণ্য হবে
+  const DEFAULT_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
 
   let globalMedicineNames = [
     "Paracetamol", "Napa", "Napa Extra", "Napa Extend", "Napa Drop", "Napa Syrup",
@@ -762,8 +765,12 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   };
 
-  // প্যাটার্ন সিলেক্ট করলেই অটো ডিফল্ট রিমাইন্ড টাইম চিপ আকারে লিস্টে যুক্ত হবে (ম্যনুয়ালের মতো)
+  // প্যাটার্ন চেঞ্জ করলে আগের ডিফল্ট টাইমগুলো মুছে নতুন সিলেক্ট করা প্যাটার্নের ডিফল্ট টাইম এড হবে
   window.onPatternChange = function(val) {
+    // ১. প্রথমে আগের অটো-জেনারেটেড ডিফল্ট টাইমগুলো ফিল্টার করে বাদ দেওয়া হবে (ম্যানুয়াল টাইম থাকলে তা থাকবে)
+    pendingTimes = pendingTimes.filter(t => !DEFAULT_PATTERN_TIMES.includes(t));
+
+    // ২. নতুন প্যাটার্ন অনুযায়ী ডিফল্ট টাইমগুলো ঠিক করা
     let timesToAdd = [];
     if(val === "1+1+1") timesToAdd = ["06:30", "13:00", "19:00"];
     else if(val === "1+0+1") timesToAdd = ["06:30", "19:00"];
@@ -883,6 +890,7 @@ a{text-decoration:none;color:inherit}
     const [h, m] = timeStr.split(":").map(Number);
     const medMinutes = h * 60 + m;
     const diff = currentMinutes - medMinutes;
+    // 2 hours before to 2 hours after
     return diff >= -120 && diff <= 120;
   }
 
@@ -1150,7 +1158,7 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার থাকবে না)
+    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার বা নাম থাকবে না)
     document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
