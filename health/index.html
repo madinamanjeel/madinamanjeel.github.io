@@ -135,12 +135,12 @@ a{text-decoration:none;color:inherit}
 .med-skipped{background:#d17c3c;color:white}
 .med-delete{background:#fff0f0;color:#d66}
 .med-edit{background:#e8f1ff;color:#4277c9}
-.med-add-jump{background:#087f83;color:white;padding:9px 14px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:0;}
+.med-add-jump{background:#087f83;color:white;padding:7px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:0;white-space:nowrap;}
 
-/* TABS CONTAINER */
-.med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:20px 0 12px}
-.med-tabs{display:flex;gap:8px;flex-wrap:wrap}
-.med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
+/* TABS CONTAINER - 3 TABS + ADD BUTTON STRICTLY ON ONE LINE */
+.med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:6px;margin:20px 0 12px;overflow-x:auto;padding-bottom:4px;}
+.med-tabs{display:flex;gap:6px;flex-wrap:nowrap;flex-shrink:0;}
+.med-tab{border:1px solid var(--border);background:white;padding:7px 10px;border-radius:8px;font-size:10px;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
 
 .empty{text-align:center;color:var(--muted);font-size:12px;padding:18px}
@@ -221,7 +221,7 @@ a{text-decoration:none;color:inherit}
     <div class="section-icon"><i class="fa-solid fa-capsules"></i></div>
   </div>
 
-  <div class="reminder-card">
+  <div class="reminder-card" id="medOverviewCard">
     
     <!-- User Account Bar -->
     <div class="user-bar">
@@ -250,7 +250,7 @@ a{text-decoration:none;color:inherit}
       <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
     </div>
 
-    <!-- TABS & EACH TAB HAS ITS OWN + ADD BUTTON -->
+    <!-- TABS & + ADD BUTTON STRICTLY ON ONE LINE WITH JUMP -->
     <div class="med-tabs-wrapper">
       <div class="med-tabs">
         <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
@@ -1091,6 +1091,10 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
+    // ----------------------------------------------------
+    // ট্যাব এ ক্লিক করলেই স্ক্রিনশটের পজিশন (Overview Card) এ জাম্প করবে
+    // ----------------------------------------------------
+    document.getElementById("myOverviewSection").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
   function renderContent(){
