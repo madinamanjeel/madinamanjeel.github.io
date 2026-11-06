@@ -528,7 +528,6 @@ a{text-decoration:none;color:inherit}
   let currentTab = "today";
   let editingId = null;
 
-  // সমস্ত সম্ভাব্য প্যাটার্ন ডিফল্ট টাইমগুলোর লিস্ট
   const ALL_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
 
   let globalMedicineNames = [
@@ -609,7 +608,6 @@ a{text-decoration:none;color:inherit}
   document.getElementById("currentDate").textContent = now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
   document.getElementById("year").textContent = now.getFullYear();
 
-  // Smart Toast Notification Function
   function showToast(message) {
     const toast = document.getElementById("toast-notification");
     document.getElementById("toastText").textContent = message;
@@ -803,9 +801,7 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   };
 
-  // প্যাটার্ন চেঞ্জ করলে আগের সমস্ত ডিফল্ট টাইম একেবারে মুছে যাবে এবং নতুন প্যাটার্নের টাইম এড হবে
   window.onPatternChange = function(val) {
-    // আগের সমস্ত ডিফল্ট প্যাটার্ন টাইমগুলো বাদ দেওয়া হচ্ছে (ম্যানুয়াল কাস্টম টাইমগুলো থাকবে)
     pendingTimes = pendingTimes.filter(t => !ALL_PATTERN_TIMES.includes(t));
 
     let timesToAdd = [];
@@ -927,7 +923,6 @@ a{text-decoration:none;color:inherit}
     const [h, m] = timeStr.split(":").map(Number);
     const medMinutes = h * 60 + m;
     const diff = currentMinutes - medMinutes;
-    // 2 hours before to 2 hours after
     return diff >= -120 && diff <= 120;
   }
 
@@ -941,9 +936,7 @@ a{text-decoration:none;color:inherit}
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
-      let added = false;
-
-      // 1. Clock Times (2 hours before to 2 hours after)
+      // শুদ্ধিকরণ: যদি নির্দিষ্ট ঘড়ির সময় (times) থাকে, তবে শুধু সেটিই রেন্ডার হবে। প্যাটার্ন থাকার কারণে বাড়তি এন্ট্রি হবে না।
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -954,12 +947,12 @@ a{text-decoration:none;color:inherit}
               time: t, 
               category: 'clock' 
             });
-            added = true;
           }
         });
+        return; 
       }
 
-      // 2. Exact 1+1+1 Format Time Windows:
+      // 2. Exact 1+1+1 Format Time Windows (যদি times না থাকে তবে প্যাটার্ন চেক করবে):
       // Morning (সকাল 04:00 - 11:59:59) -> Sky Blue
       // Midday (দুপুর 12:00 - 15:59:59) -> Dark Orange
       // Night (রাত 16:00 - 23:59:59) -> Ash
@@ -967,36 +960,33 @@ a{text-decoration:none;color:inherit}
       const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
       const isNight = currentHM >= "16:00" && currentHM <= "23:59";
 
+      let added = false;
       if(m.pattern === "1+1+1") {
-        if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+1+1 Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-        if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+1+1 Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-        if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+1+1 Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
-        added = true;
+        if(isMorning) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' }); added = true; }
+        if(isMidday) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' }); added = true; }
+        if(isNight) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' }); added = true; }
       } else if(m.pattern === "1+0+1") {
-        if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+0+1 Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-        if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+0+1 Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
-        added = true;
+        if(isMorning) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' }); added = true; }
+        if(isNight) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' }); added = true; }
       } else if(m.pattern === "1+0+0" && isMorning) {
-        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+0+0 Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
         added = true;
       } else if(m.pattern === "0+1+0" && isMidday) {
-        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (0+1+0 Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
         added = true;
       } else if(m.pattern === "0+0+1" && isNight) {
-        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (0+0+1 Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
         added = true;
       } else if(m.pattern === "1+1+0") {
-        if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+1+0 Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-        if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (1+1+0 Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-        added = true;
+        if(isMorning) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' }); added = true; }
+        if(isMidday) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' }); added = true; }
       } else if(m.pattern === "0+1+1") {
-        if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (0+1+1 Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-        if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (0+1+1 Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
-        added = true;
+        if(isMidday) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' }); added = true; }
+        if(isNight) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' }); added = true; }
       }
 
-      // 3. Fallback: কোনো নির্দিষ্ট সময় বা প্যাটার্ন সেট করা না থাকলে অলওয়েজ শো করবে
-      if(!added && (!m.times || m.times.length === 0) && !m.pattern) {
+      // 3. Fallback
+      if(!added && !m.pattern) {
         result.push({ 
           id: m.id, 
           name: m.name, 
@@ -1195,7 +1185,6 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার বা নাম থাকবে না)
     document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
