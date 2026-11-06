@@ -210,7 +210,7 @@ a{text-decoration:none;color:inherit}
   width: 90%; max-width: 320px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
 #customPromptBox h4 { font-size: 16px; color: var(--dark); margin-bottom: 8px; }
-#customPromptBox p { font-size: 11px; color: var(--muted); margin-bottom: 15px; }
+#customPromptBox p { font-size: 11px; color: var(--muted); margin-bottom: 15px; line-height:1.6; }
 #customPromptBox input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; margin-bottom: 15px; outline: none; }
 #customPromptBox input:focus { border-color: var(--primary); }
 .prompt-btns { display: flex; justify-content: flex-end; gap: 10px; }
@@ -263,7 +263,7 @@ a{text-decoration:none;color:inherit}
     <input type="email" id="promptEmailInput" placeholder="e.g. member@gmail.com">
     <div class="prompt-btns">
       <button class="prompt-btn prompt-cancel" onclick="closeCustomPrompt(false)">Cancel</button>
-      <button class="prompt-btn prompt-submit" onclick="closeCustomPrompt(true)">Add Account</button>
+      <button class="prompt-btn prompt-submit" onclick="closeCustomPrompt(true)">Add</button>
     </div>
   </div>
 </div>
@@ -583,9 +583,8 @@ a{text-decoration:none;color:inherit}
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
   
-  // Force Account Selection every time provider is called
+  const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
 
   const ADMIN_EMAIL = "madina.manjeel@gmail.com";
@@ -734,7 +733,6 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // Switch Google Account Function
   window.switchGoogleAccount = function() {
     document.getElementById('loading-message').style.display = 'block';
     document.getElementById('content-wrapper').style.display = 'none';
@@ -824,7 +822,6 @@ a{text-decoration:none;color:inherit}
     usersSet.add(ADMIN_EMAIL);
     if (viewingEmail) usersSet.add(viewingEmail);
 
-    // যুক্ত করা সমস্ত সেভ করা ইমেইলগুলো ড্রপডাউনে নিয়ে আসা
     addedEmails.forEach(e => usersSet.add(e));
 
     const users = Array.from(usersSet);
@@ -837,13 +834,13 @@ a{text-decoration:none;color:inherit}
     ).join("") + `<option value="__ADD_USER__">+ Add / View Another Gmail...</option>`;
   }
 
+  // কাস্টম ডায়ালগ শো করানো এবং ডিফল্ট prompt() বাতিল করা হয়েছে
   window.switchUserView = function() {
     const select = document.getElementById("userSelector");
     if (select.value === "__ADD_USER__") {
       document.getElementById("customPromptOverlay").style.display = "flex";
       document.getElementById("promptEmailInput").value = "";
       document.getElementById("promptEmailInput").focus();
-      // Select বক্সটাকে আগের ভ্যালুতেই রেখে দেওয়া হচ্ছে যাতে ক্যান্সেল করলে চেঞ্জ না হয়
       select.value = viewingEmail; 
     } else {
       viewingEmail = select.value;
@@ -857,7 +854,6 @@ a{text-decoration:none;color:inherit}
     if(isSubmit) {
       const inputVal = document.getElementById("promptEmailInput").value.trim().toLowerCase();
       if(inputVal && inputVal.includes("@")) {
-        // নতুন ইমেইল লোকাল স্টোরেজে সেভ করা হচ্ছে
         if(!addedEmails.includes(inputVal)) {
           addedEmails.push(inputVal);
           localStorage.setItem("hc_saved_emails", JSON.stringify(addedEmails));
@@ -1046,7 +1042,6 @@ a{text-decoration:none;color:inherit}
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
-      // ১. যদি প্যাটার্ন সিলেক্ট করা থাকে, তবে শিডিউলে শুধুমাত্র প্যাটার্ন অনুযায়ী দেখাবে। (রিমাইন্ডার টাইম চেক বা শো হবে না)
       if(m.pattern && m.pattern.trim() !== "") {
         const isMorning = currentHM >= "04:00" && currentHM <= "11:59";
         const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
@@ -1075,7 +1070,6 @@ a{text-decoration:none;color:inherit}
         return; 
       }
 
-      // ২. প্যাটার্ন না থাকলে (অর্থাৎ ফাঁকা বা Custom Time Only হলে), শুধুমাত্র কাস্টম রিমাইন্ডার টাইম অনুযায়ী শিডিউলে দেখাবে
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -1089,10 +1083,9 @@ a{text-decoration:none;color:inherit}
             });
           }
         });
-        return; 
+        return;
       }
 
-      // 3. Fallback: প্যাটার্ন বা টাইম কিছুই না থাকলে
       result.push({ 
         id: m.id, 
         name: m.name, 
