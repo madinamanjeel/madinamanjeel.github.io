@@ -242,7 +242,8 @@ a{text-decoration:none;color:inherit}
       </div>
     </div>
 
-    <h4>Today's Overview</h4>
+    <!-- জাম্প টার্গেট পয়েন্ট (Today's Overview হেডিং) -->
+    <h4 id="todaysOverviewHeading">Today's Overview</h4>
 
     <div class="med-stats">
       <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
@@ -396,9 +397,9 @@ a{text-decoration:none;color:inherit}
         <div style="display:flex;gap:8px;">
           <select id="dosePattern" style="flex:1;">
             <option value="">Custom Time Only</option>
-            <option value="Morning">Morning (4 AM - 11 AM)</option>
-            <option value="Midday">Midday (11 AM - 5 PM)</option>
-            <option value="Night">Night (5 PM - 12 AM)</option>
+            <option value="Morning">Morning (04:00 - 10:59)</option>
+            <option value="Midday">Midday (11:00 - 16:59)</option>
+            <option value="Night">Night (17:00 - 23:59)</option>
             <option value="1+1+1">1 + 1 + 1 (All times)</option>
             <option value="1+0+1">1 + 0 + 1 (Morning & Night)</option>
           </select>
@@ -795,7 +796,7 @@ a{text-decoration:none;color:inherit}
       clearMedForm();
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
       renderAll();
-      document.getElementById("medOverviewCard").scrollIntoView({behavior: "smooth", block: "start"});
+      document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
       alert("Medicine saved successfully.");
     } catch(e) {
       alert("Error saving medicine: " + e.message);
@@ -836,7 +837,7 @@ a{text-decoration:none;color:inherit}
       document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
       clearMedForm();
       renderAll();
-      document.getElementById("medOverviewCard").scrollIntoView({behavior: "smooth", block: "start"});
+      document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
       alert("Medicine updated successfully.");
     } catch(e) {
       alert("Error updating: " + e.message);
@@ -860,14 +861,14 @@ a{text-decoration:none;color:inherit}
     const [h, m] = timeStr.split(":").map(Number);
     const medMinutes = h * 60 + m;
     const diff = currentMinutes - medMinutes;
-    // 2 hours before to 2 hours after
     return diff >= -120 && diff <= 120;
   }
 
   function todayItems(){
     const dateStr = todayDate();
     const result = [];
-    const nowHour = new Date().getHours();
+    const now = new Date();
+    const currentHM = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     
     getActiveMedicines().forEach(m => {
       if(m.start && dateStr < m.start) return;
@@ -891,28 +892,31 @@ a{text-decoration:none;color:inherit}
         });
       }
 
-      // 2. Pattern Time Windows (Morning: 4 AM - 11 AM | Midday: 11 AM - 5 PM | Night: 5 PM - 12 AM)
-      if(m.pattern === "Morning" && nowHour >= 4 && nowHour < 11) {
+      // 2. Strict Time Windows:
+      // Morning: 04:00 to 10:59:59 (Sky Blue)
+      // Midday: 11:00 to 16:59:59 (Dark Orange)
+      // Night: 17:00 to 23:59:59 (Ash)
+      if(m.pattern === "Morning" && currentHM >= "04:00" && currentHM <= "10:59") {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal || 'After meal'})`.trim(), time: "Morning", category: 'morning' });
         added = true;
-      } else if(m.pattern === "Midday" && nowHour >= 11 && nowHour < 17) {
+      } else if(m.pattern === "Midday" && currentHM >= "11:00" && currentHM <= "16:59") {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal || 'After meal'})`.trim(), time: "Midday", category: 'midday' });
         added = true;
-      } else if(m.pattern === "Night" && nowHour >= 17 && nowHour < 24) {
+      } else if(m.pattern === "Night" && currentHM >= "17:00" && currentHM <= "23:59") {
         result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal || 'After meal'})`.trim(), time: "Night", category: 'night' });
         added = true;
       } else if(m.pattern === "1+1+1") {
-        if(nowHour >= 4 && nowHour < 11) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-        if(nowHour >= 11 && nowHour < 17) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-        if(nowHour >= 17 && nowHour < 24) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        if(currentHM >= "04:00" && currentHM <= "10:59") result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+        if(currentHM >= "11:00" && currentHM <= "16:59") result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+        if(currentHM >= "17:00" && currentHM <= "23:59") result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
         added = true;
       } else if(m.pattern === "1+0+1") {
-        if(nowHour >= 4 && nowHour < 11) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-        if(nowHour >= 17 && nowHour < 24) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        if(currentHM >= "04:00" && currentHM <= "10:59") result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+        if(currentHM >= "17:00" && currentHM <= "23:59") result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
         added = true;
       }
 
-      // 3. Fallback: যদি কোনো টাইম বা প্যাটার্ন সিলেক্ট করা না থাকে, তবুও যেন আজকের দিনে নরমাল শিডিউলে শো করে
+      // 3. Fallback: কোনো নির্দিষ্ট সময় বা প্যাটার্ন সেট করা না থাকলে অলওয়েজ শো করবে
       if(!added && (!m.times || m.times.length === 0) && !m.pattern) {
         result.push({ 
           id: m.id, 
@@ -1112,8 +1116,8 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // জাম্প করে একদম Today's Overview (My Medication Overview কার্ড) এর ওপরের দিকে পজিশন নেবে
-    document.getElementById("medOverviewCard").scrollIntoView({behavior: "smooth", block: "start"});
+    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ঠিক ওপর পর্যন্ত উঠবে (ইউজার অ্যাকাউন্ট বার বাদে)
+    document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
   function renderContent(){
@@ -1194,10 +1198,10 @@ a{text-decoration:none;color:inherit}
         if (nowHour === 8 && now.getMinutes() === 0) patternTriggers.push("Morning");
       }
       if (m.pattern === "Midday" || m.pattern === "1+1+1") {
-        if (nowHour === 13 && now.getMinutes() === 0) patternTriggers.push("Midday");
+        if (nowHour === 12 && now.getMinutes() === 0) patternTriggers.push("Midday");
       }
       if (m.pattern === "Night" || m.pattern === "1+1+1" || m.pattern === "1+0+1") {
-        if (nowHour === 21 && now.getMinutes() === 0) patternTriggers.push("Night");
+        if (nowHour === 18 && now.getMinutes() === 0) patternTriggers.push("Night");
       }
 
       patternTriggers.forEach(pTime => {
