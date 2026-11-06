@@ -149,6 +149,31 @@ a{text-decoration:none;color:inherit}
 .notification-box p{font-size:11px;color:#587b7d;margin:7px 0 12px;line-height:1.7}
 .status-text{font-size:10px;margin-top:9px;color:#587b7d}
 
+/* TOAST NOTIFICATION STYLING */
+#toast-notification {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--dark);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
 /* FOOTER */
 .footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
 .footer strong{color:var(--primary)}
@@ -185,6 +210,9 @@ a{text-decoration:none;color:inherit}
 </head>
 
 <body>
+
+<!-- Smart Toast Notification -->
+<div id="toast-notification"><i class="fa-solid fa-circle-check" style="color:#159968;"></i> <span id="toastText">Added successfully</span></div>
 
 <div id="loading-message">
   <div style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-notes-medical"></i></div>
@@ -405,7 +433,7 @@ a{text-decoration:none;color:inherit}
         <div id="selectedTimes" class="time-list"></div>
       </div>
 
-      <!-- ১+১+১ ফরম্যাট (প্যাটার্ন চেঞ্জ করলে আগের ডিফল্ট টাইম মুছে নতুনটা এড হবে) -->
+      <!-- ১+১+১ ফরম্যাট -->
       <div class="field">
         <label>Dose Pattern (1+1+1 Format)</label>
         <div style="display:flex;gap:8px;">
@@ -500,7 +528,7 @@ a{text-decoration:none;color:inherit}
   let currentTab = "today";
   let editingId = null;
 
-  // কোন কোন টাইমগুলো অটো-ডিফল্ট হিসেবে গণ্য হবে
+  // ডিফাইন করা ডিফল্ট প্যাটার্ন টাইমগুলো
   const DEFAULT_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
 
   let globalMedicineNames = [
@@ -580,6 +608,16 @@ a{text-decoration:none;color:inherit}
   const now = new Date();
   document.getElementById("currentDate").textContent = now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
   document.getElementById("year").textContent = now.getFullYear();
+
+  // Smart Toast Notification Function
+  function showToast(message) {
+    const toast = document.getElementById("toast-notification");
+    document.getElementById("toastText").textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2500);
+  }
 
   window.calculateBMI = function(){
     const w=Number(document.getElementById("weight").value);
@@ -765,12 +803,11 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   };
 
-  // প্যাটার্ন চেঞ্জ করলে আগের ডিফল্ট টাইমগুলো মুছে নতুন সিলেক্ট করা প্যাটার্নের ডিফল্ট টাইম এড হবে
+  // প্যাটার্ন চেঞ্জ করলে আগের ডিফল্ট টাইমগুলো একদম মুছে নতুন সিলেক্ট করা প্যাটার্নের টাইম এড হবে
   window.onPatternChange = function(val) {
-    // ১. প্রথমে আগের অটো-জেনারেটেড ডিফল্ট টাইমগুলো ফিল্টার করে বাদ দেওয়া হবে (ম্যানুয়াল টাইম থাকলে তা থাকবে)
+    // আগের ডিফল্ট টাইমগুলো ফিল্টার করে বাদ দেওয়া হচ্ছে যাতে আগেরগুলো মুছে যায়
     pendingTimes = pendingTimes.filter(t => !DEFAULT_PATTERN_TIMES.includes(t));
 
-    // ২. নতুন প্যাটার্ন অনুযায়ী ডিফল্ট টাইমগুলো ঠিক করা
     let timesToAdd = [];
     if(val === "1+1+1") timesToAdd = ["06:30", "13:00", "19:00"];
     else if(val === "1+0+1") timesToAdd = ["06:30", "19:00"];
@@ -826,7 +863,7 @@ a{text-decoration:none;color:inherit}
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
-      alert("Medicine saved successfully.");
+      showToast("Medicine added successfully");
     } catch(e) {
       alert("Error saving medicine: " + e.message);
     }
@@ -867,7 +904,7 @@ a{text-decoration:none;color:inherit}
       clearMedForm();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
-      alert("Medicine updated successfully.");
+      showToast("Medicine updated successfully");
     } catch(e) {
       alert("Error updating: " + e.message);
     }
