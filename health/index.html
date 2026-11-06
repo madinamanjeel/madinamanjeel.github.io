@@ -28,7 +28,7 @@ a{text-decoration:none;color:inherit}
 .wrapper{max-width:1180px;margin:auto;padding:24px}
 
 /* LOADING & AUTH STATE */
-#loading-message { text-align: center; padding-top: 150px; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+#loading-message { text-align: center; padding-top: 150px; font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 #content-wrapper { display: none; }
 
 /* HEADER */
@@ -124,6 +124,7 @@ a{text-decoration:none;color:inherit}
 .med-skipped{background:#fff0e8;color:#d17c3c}
 .med-delete{background:#fff0f0;color:#d66}
 .med-edit{background:#e8f1ff;color:#4277c9}
+.med-add-jump{background:#e1f4f2;color:#087f83}
 .med-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 12px}
 .med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
@@ -169,7 +170,10 @@ a{text-decoration:none;color:inherit}
 
 <body>
 
-<div id="loading-message"><i class="fa-solid fa-spinner fa-spin"></i> যাচাই করা হচ্ছে... একটু অপেক্ষা করো 🎈</div>
+<div id="loading-message">
+  <div style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-notes-medical"></i></div>
+  Verifying... Please wait
+</div>
 
 <div id="content-wrapper">
 <div class="wrapper">
@@ -194,7 +198,7 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- 1. TODAY'S OVERVIEW (MOVED TO TOP BEFORE HEALTH RESOURCES) -->
+<!-- 1. TODAY'S OVERVIEW -->
 <section class="section" id="myOverviewSection">
   <div class="section-head">
     <div><h3>My Medication Overview</h3><p>Active schedules and daily dose tracker</p></div>
@@ -213,7 +217,7 @@ a{text-decoration:none;color:inherit}
         </div>
       </div>
 
-      <!-- Admin Control Bar (Visible only to madina.manjeel@gmail.com) -->
+      <!-- Admin Control Bar -->
       <div class="admin-bar" id="adminControls">
         <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
         <select id="userSelector" class="admin-select" onchange="switchUserView()">
@@ -420,10 +424,10 @@ a{text-decoration:none;color:inherit}
 </div>
 </div>
 
-<!-- Firebase SDKs (Modular v11 matching your Kids App) -->
+<!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
   import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -499,7 +503,11 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // AUTH STATE LISTENER (Same as your Kids page - No white screen, auto login)
+  // AUTH STATE LISTENER & REDIRECT HANDLING (Optimized to prevent unnecessary re-logins)
+  getRedirectResult(auth).catch((error) => {
+    console.error("Redirect error:", error);
+  });
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -527,6 +535,7 @@ a{text-decoration:none;color:inherit}
       updateTargetAccountNote();
       loadDataFromFirebase();
     } else {
+      // Only redirect if no cached user session exists
       document.getElementById('loading-message').style.display = 'block';
       document.getElementById('content-wrapper').style.display = 'none';
       signInWithRedirect(auth, provider);
@@ -810,10 +819,21 @@ a{text-decoration:none;color:inherit}
           <button class="med-action med-delete" onclick="window.deleteMedicine('${m.id}')">
             <i class="fa-solid fa-trash"></i> Delete
           </button>
+          <button class="med-action med-add-jump" onclick="window.jumpToAddMedicine()">
+            <i class="fa-solid fa-plus"></i> Add
+          </button>
         </div>
       </div>
     `).join("");
   }
+
+  window.jumpToAddMedicine = function(){
+    editingId = null;
+    document.getElementById("formTitleText").textContent = "Add New Medicine";
+    document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+    clearMedForm();
+    document.getElementById("medicineManager").scrollIntoView({behavior: "smooth", block: "start"});
+  };
 
   function renderHistory(){
     const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
