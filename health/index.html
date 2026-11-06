@@ -284,7 +284,7 @@ a{text-decoration:none;color:inherit}
           <p id="displayUserEmail"></p>
         </div>
       </div>
-      <!-- New Switch Account Button -->
+      <!-- Switch Account Button -->
       <button class="switch-account-btn" onclick="switchGoogleAccount()" title="Switch Account">
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
@@ -450,7 +450,7 @@ a{text-decoration:none;color:inherit}
 
       <!-- ঘড়ির টাইম সিস্টেম (Clock-wise) -->
       <div class="field">
-        <label>Reminder Time (Optional)</label>
+        <label>Reminder Time</label>
         <div class="med-time-row">
           <input type="time" id="newMedTime">
           <button class="action-btn" onclick="addMedTime()">+ Add</button>
@@ -550,9 +550,9 @@ a{text-decoration:none;color:inherit}
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
   
-  // Force Account Selection every time provider is called
+  const provider = new GoogleAuthProvider();
+  // ফোর্স গুগল একাউন্ট চয়েস অপশন
   provider.setCustomParameters({
     prompt: 'select_account'
   });
@@ -991,6 +991,7 @@ a{text-decoration:none;color:inherit}
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
+      // ১. যদি প্যাটার্ন সিলেক্ট করা থাকে, তবে শিডিউলে শুধুমাত্র প্যাটার্ন অনুযায়ী দেখাবে। (রিমাইন্ডার টাইম চেক বা শো হবে না)
       if(m.pattern && m.pattern.trim() !== "") {
         const isMorning = currentHM >= "04:00" && currentHM <= "11:59";
         const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
@@ -1016,9 +1017,10 @@ a{text-decoration:none;color:inherit}
           if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Midday", category: 'midday', note: m.note });
           if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (${m.pattern} - ${m.meal})`.trim(), time: "Night", category: 'night', note: m.note });
         }
-        return; 
+        return; // প্যাটার্ন থাকলে এখানেই থমকে যাবে, ঘড়ির টাইম দিয়ে ডুপ্লিকেট রেন্ডার হবে না
       }
 
+      // ২. প্যাটার্ন না থাকলে (অর্থাৎ ফাঁকা বা Custom Time Only হলে), শুধুমাত্র কাস্টম রিমাইন্ডার টাইম অনুযায়ী শিডিউলে দেখাবে
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -1032,9 +1034,10 @@ a{text-decoration:none;color:inherit}
             });
           }
         });
-        return;
+        return; 
       }
 
+      // 3. Fallback: প্যাটার্ন বা টাইম কিছুই না থাকলে
       result.push({ 
         id: m.id, 
         name: m.name, 
