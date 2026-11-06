@@ -95,9 +95,9 @@ a{text-decoration:none;color:inherit}
 .field input{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
 .field input:focus{border-color:var(--primary)}
 
-/* ONLINE AUTO-COMPLETE SUGGESTIONS */
-.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 160px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
-.suggestion-item { padding: 9px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f5f5; }
+/* AUTO-COMPLETE SUGGESTIONS */
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
+.suggestion-item { padding: 9px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f5f5; color: var(--dark); }
 .suggestion-item:hover { background: #eaf7f5; color: var(--primary); font-weight: 600; }
 
 .action-btn{width:100%;background:var(--primary);color:white;border:0;border-radius:10px;padding:12px;font-size:12px;font-weight:700;cursor:pointer}
@@ -367,13 +367,13 @@ a{text-decoration:none;color:inherit}
     <div class="med-form-grid">
       <div class="field full-field">
         <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Paracetamol, Napa..." autocomplete="off" oninput="handleOnlineMedSearch(this.value)">
+        <input id="newMedName" placeholder="e.g. Paracetamol, Napa, Seclo..." autocomplete="off" oninput="handleCloudMedSearch(this.value)">
         <div id="medSuggestions" class="suggestions-list"></div>
       </div>
 
       <div class="field">
         <label>Dosage</label>
-        <input id="newMedDose" placeholder="e.g. 1 tablet">
+        <input id="newMedDose" placeholder="e.g. 1 tablet / 5ml">
       </div>
 
       <div class="field">
@@ -460,59 +460,71 @@ a{text-decoration:none;color:inherit}
   let pendingTimes = [];
   let currentTab = "today";
   let editingId = null;
-  let searchTimeout = null;
 
-  /* ONLINE API MEDICINE SUGGESTIONS (OpenFDA Drug Library) */
-  window.handleOnlineMedSearch = function(val) {
+  // Initial built-in broad list of common medicines
+  let globalMedicineNames = [
+    "Paracetamol", "Napa", "Napa Extra", "Napa Extend", "Napa Drop", "Napa Syrup",
+    "Ace", "Ace Plus", "Ace Drop", "Ace Syrup", "Tylenol", "Fexo", "Rinex",
+    "Ibuprofen", "Napa Fast", "Ketorol", "Diclofenac", "Naproxen", "Toradol",
+    "Tusca Syrup", "Ascoril LS", "Phensedyl", "Benadryl", "Boric Acid Ear Drop",
+    "Otrivin Nasal Drop", "Xylometazoline", "Monas 4", "Monas 5", "Monas 10", "Montelukast",
+    "Fexo 120", "Fexo 180", "Histacin", "Telfast", "Bilastine", "Ebast", "Atrizin",
+    "Metformin 500", "Glucophage", "Glycomet", "Glimepiride", "Diamicron MR",
+    "Januvia 100", "Jardiance 10", "Galvus", "Insulin Glargine", "Lantus", "Mixtard 30/70",
+    "Amlong 5", "Amlodipine", "Bisocor 5", "Bisoprolol", "Losan 50", "Losartan Potassium",
+    "Valsartan", "Olmesartan", "Cardace", "Ramipril", "Atorvastatin", "Rosuvastatin",
+    "Clopidogrel", "Ecosprin 75", "Concor", "Propranolol", "Nebivolol",
+    "Thyroxine 25 mcg", "Thyroxine 50 mcg", "Thyroxine 100 mcg", "Eltroxin", "Thyroid Tablet",
+    "Duphaston", "Dydrogesterone", "Folic Acid", "PregnaCare", "Gestone", "Progesterone",
+    "Ovagyl", "Metronidazole", "Clomiphene", "Letrozole", "Drospirenone", "Ethinylestradiol",
+    "Vaginal Suppository", "Miconazole", "Clotrimazole", "Tranexamic Acid", "Progynova",
+    "Napa Pediatric Drop", "Ace Drop", "Tusca Syrup", "Orsaline", "Zinc Drop",
+    "Ceevit Drop", "Amodis Suspension", "Cefixime Pediatric Drop", "Azithromycin Syrup",
+    "Amoxicillin Suspension", "Erythrocin Syrup", "Salbutamol Syrup", "Mucosolvan Syrup",
+    "Azithromycin 500", "Azithrocin", "Zithromax", "Cefixime 200", "Cefuroxime",
+    "Amoxicillin", "Augmentin 625", "Moxiclav", "Ciprofloxacin 500", "Levofloxacin 500",
+    "Doxycycline", "Ceftriaxone", "Erythromycin", "Clindamycin",
+    "Seclo 20", "Omeprazole", "Pantix 20", "Pantoprazole", "Maxpro 20", "Esomeprazole",
+    "Esoral 20", "Sergel 20", "Rabeprazole", "Antacid Syrup", "Mucaine Gel",
+    "Ceevit", "Vitamin C", "Calci-X", "Calcium D3", "Evion 400", "Vitamin E",
+    "B-Complex", "Neuro-B", "Becosules", "Multivitamin", "Iron Tablet", "Fefol"
+  ];
+
+  // Load custom global medicines added by users from Firestore
+  async function loadGlobalMedicines() {
+    try {
+      const snap = await getDocs(collection(db, "global_medicines"));
+      snap.forEach(docSnap => {
+        const medName = docSnap.data().name;
+        if(medName && !globalMedicineNames.includes(medName)) {
+          globalMedicineNames.push(medName);
+        }
+      });
+    } catch(e) {
+      console.error("Error loading global medicines:", e);
+    }
+  }
+
+  window.handleCloudMedSearch = function(val) {
     const listEl = document.getElementById("medSuggestions");
-    if(!val || val.trim().length < 2) {
+    if(!val || val.trim().length < 1) {
       listEl.style.display = "none";
       return;
     }
 
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-      try {
-        const response = await fetch(`https://api.fda.gov/drug/label.json?search=openfda.brand_name:${encodeURIComponent(val)}*&limit=6`);
-        const data = await response.json();
-        
-        let suggestions = [];
-        if(data && data.results) {
-          data.results.forEach(item => {
-            if(item.openfda && item.openfda.brand_name) {
-              item.openfda.brand_name.forEach(name => {
-                if(!suggestions.includes(name)) suggestions.push(name);
-              });
-            }
-          });
-        }
+    const filtered = globalMedicineNames.filter(m => m.toLowerCase().includes(val.toLowerCase()));
+    if(filtered.length === 0) {
+      listEl.style.display = "none";
+      return;
+    }
 
-        if(suggestions.length === 0) {
-          listEl.style.display = "none";
-          return;
-        }
-
-        listEl.innerHTML = suggestions.map(name => `
-          <div class="suggestion-item" onclick="selectOnlineMedicine('${safeText(name)}')">${safeText(name)}</div>
-        `).join("");
-        listEl.style.display = "block";
-      } catch(e) {
-        // Fallback local lightweight common meds if offline or API limit reached
-        const fallbackMeds = ["Napa", "Paracetamol", "Napa Extra", "Seclo", "Pantix", "Fexo", "Monas", "Maxpro", "Azithromycin", "Amlong"];
-        const filtered = fallbackMeds.filter(m => m.toLowerCase().includes(val.toLowerCase()));
-        if(filtered.length > 0) {
-          listEl.innerHTML = filtered.map(name => `
-            <div class="suggestion-item" onclick="selectOnlineMedicine('${name}')">${name}</div>
-          `).join("");
-          listEl.style.display = "block";
-        } else {
-          listEl.style.display = "none";
-        }
-      }
-    }, 300);
+    listEl.innerHTML = filtered.map(name => `
+      <div class="suggestion-item" onclick="selectMedicine('${safeText(name)}')">${safeText(name)}</div>
+    `).join("");
+    listEl.style.display = "block";
   };
 
-  window.selectOnlineMedicine = function(name) {
+  window.selectMedicine = function(name) {
     document.getElementById("newMedName").value = name;
     document.getElementById("medSuggestions").style.display = "none";
   };
@@ -625,6 +637,7 @@ a{text-decoration:none;color:inherit}
     document.getElementById("medContent").innerHTML = '<div class="empty">Loading your medicines... <i class="fa-solid fa-spinner fa-spin"></i></div>';
     
     try {
+      await loadGlobalMedicines();
       const medSnap = await getDocs(collection(db, "medicines"));
       const histSnap = await getDocs(collection(db, "med_history"));
 
@@ -736,6 +749,12 @@ a{text-decoration:none;color:inherit}
     try {
       const docRef = await addDoc(collection(db, "medicines"), newMed);
       allMedicines.push({ id: docRef.id, ...newMed });
+
+      // Auto-save new medicine name to global cloud dictionary so it appears in suggestions for everyone
+      if(!globalMedicineNames.some(m => m.toLowerCase() === name.toLowerCase())) {
+        globalMedicineNames.push(name);
+        await addDoc(collection(db, "global_medicines"), { name, addedBy: viewingEmail });
+      }
       
       clearMedForm();
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
@@ -764,6 +783,11 @@ a{text-decoration:none;color:inherit}
       await updateDoc(doc(db, "medicines", editingId), updatedData);
       const m = allMedicines.find(x => x.id === editingId);
       if(m) Object.assign(m, updatedData);
+
+      if(!globalMedicineNames.some(med => med.toLowerCase() === name.toLowerCase())) {
+        globalMedicineNames.push(name);
+        await addDoc(collection(db, "global_medicines"), { name, addedBy: viewingEmail });
+      }
 
       editingId = null;
       document.getElementById("formTitleText").textContent = "Add New Medicine";
