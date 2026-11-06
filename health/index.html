@@ -119,19 +119,25 @@ a{text-decoration:none;color:inherit}
 .stat-box{padding:14px;background:#f5f9f9;border-radius:12px}
 .stat-box span{font-size:10px;color:var(--muted)}
 .stat-box strong{display:block;font-size:22px;margin-top:5px}
+
 .med-row{background:#f9fbfb;border:1px solid #e9eeee;border-radius:13px;padding:14px;margin-top:10px}
+.med-row.morning{background:#e0f2fe;border-color:#bae6fd;} /* Sky Blue */
+.med-row.midday{background:#fef08a;border-color:#fde047;}  /* Dark Yellow */
+.med-row.night{background:#f1f5f9;border-color:#cbd5e1;}   /* Ash */
+
 .med-row-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .med-row h4{font-size:13px}
-.med-row p{font-size:10px;color:#82979b;margin-top:5px}
+.med-row p{font-size:10px;color:#64748b;margin-top:5px}
 .med-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
 .med-action{border:0;padding:9px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer}
 .med-action:disabled{opacity:.5;cursor:not-allowed}
-.med-taken{background:#e4f5ed;color:#159968}
-.med-skipped{background:#fff0e8;color:#d17c3c}
+.med-taken{background:#159968;color:white}
+.med-skipped{background:#d17c3c;color:white}
 .med-delete{background:#fff0f0;color:#d66}
 .med-edit{background:#e8f1ff;color:#4277c9}
 .med-add-jump{background:#e1f4f2;color:#087f83}
-.med-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 12px}
+.med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:20px 0 12px}
+.med-tabs{display:flex;gap:8px;flex-wrap:wrap}
 .med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
 .empty{text-align:center;color:var(--muted);font-size:12px;padding:18px}
@@ -241,10 +247,16 @@ a{text-decoration:none;color:inherit}
       <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
     </div>
 
-    <div class="med-tabs">
-      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
-      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
-      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
+    <!-- TABS & + ADD BUTTON CONTAINER -->
+    <div class="med-tabs-wrapper">
+      <div class="med-tabs">
+        <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
+        <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
+        <button class="med-tab" onclick="setMedTab('history',this)">History</button>
+      </div>
+      <button class="med-action med-add-jump" style="padding: 9px 14px; font-size: 11px;" onclick="window.jumpToAddMedicine()">
+        <i class="fa-solid fa-plus"></i> Add New Medicine
+      </button>
     </div>
 
     <div id="medContent" style="margin-bottom: 10px;">
@@ -377,15 +389,15 @@ a{text-decoration:none;color:inherit}
       </div>
 
       <div class="field">
-        <label>Dose Pattern (e.g. 1+1+1) & Timing</label>
+        <label>Dose Pattern & Timing</label>
         <div style="display:flex;gap:8px;">
           <select id="dosePattern" style="flex:1;">
             <option value="">Custom Time Only</option>
-            <option value="1+0+0">1 + 0 + 0 (Morning)</option>
-            <option value="0+1+0">0 + 1 + 0 (Midday)</option>
-            <option value="0+0+1">0 + 0 + 1 (Night)</option>
-            <option value="1+1+1">1 + 1 + 1 (Morning + Midday + Night)</option>
-            <option value="1+0+1">1 + 0 + 1 (Morning + Night)</option>
+            <option value="Morning">Morning (4 AM - 11 AM)</option>
+            <option value="Midday">Midday (11 AM - 5 PM)</option>
+            <option value="Night">Night (5 PM - 12 AM)</option>
+            <option value="1+1+1">1 + 1 + 1 (All times)</option>
+            <option value="1+0+1">1 + 0 + 1 (Morning & Night)</option>
           </select>
           <select id="mealTiming" style="width:130px;">
             <option value="After meal">After meal</option>
@@ -408,12 +420,12 @@ a{text-decoration:none;color:inherit}
       </div>
 
       <div class="field">
-        <label>Start Date (Optional)</label>
+        <label>Start Date</label>
         <input type="date" id="medStart">
       </div>
 
       <div class="field">
-        <label>End Date (Optional)</label>
+        <label>End Date (Leave blank for Continuous)</label>
         <input type="date" id="medEnd">
       </div>
     </div>
@@ -480,7 +492,6 @@ a{text-decoration:none;color:inherit}
   let currentTab = "today";
   let editingId = null;
 
-  // Built-in standard list of medicines
   let globalMedicineNames = [
     "Paracetamol", "Napa", "Napa Extra", "Napa Extend", "Napa Drop", "Napa Syrup",
     "Ace", "Ace Plus", "Ace Drop", "Ace Syrup", "Tylenol", "Fexo", "Rinex",
@@ -510,7 +521,6 @@ a{text-decoration:none;color:inherit}
     "Chlorhexidine Gluconate 0.2%"
   ];
 
-  // Shared Global Cloud Sync for all users (using existing user-data collection safely via shared query logic or user-generated logs)
   async function loadGlobalMedicines() {
     try {
       const snap = await getDocs(collection(db, "medicines"));
@@ -556,7 +566,6 @@ a{text-decoration:none;color:inherit}
     }
   });
 
-  /* DATE & CALCULATORS */
   const now = new Date();
   document.getElementById("currentDate").textContent = now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
   document.getElementById("year").textContent = now.getFullYear();
@@ -606,7 +615,6 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // AUTH STATE LISTENER
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
@@ -650,7 +658,6 @@ a{text-decoration:none;color:inherit}
     }
   }
 
-  /* CLOUD FIRESTORE SYNC */
   async function loadDataFromFirebase() {
     if (!currentUser) return;
     document.getElementById("medContent").innerHTML = '<div class="empty">Loading your medicines... <i class="fa-solid fa-spinner fa-spin"></i></div>';
@@ -717,7 +724,6 @@ a{text-decoration:none;color:inherit}
     return allHistory.filter(h => (h.userEmail || "").toLowerCase().trim() === viewingEmail);
   }
 
-  /* TIMES MANAGEMENT */
   window.addMedTime = function(){
     const input=document.getElementById("newMedTime");
     const time=input.value;
@@ -741,7 +747,6 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   };
 
-  /* SAVE & UPDATE MEDICINE */
   window.saveMedicine = async function(){
     if(!currentUser || !viewingEmail) return;
     if(editingId) return updateMedicine();
@@ -751,28 +756,21 @@ a{text-decoration:none;color:inherit}
     const pattern=document.getElementById("dosePattern").value;
     const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
-    const end=document.getElementById("medEnd").value;
+    const end=document.getElementById("medEnd").value.trim();
 
     if(!name){
       alert("Please enter medicine name.");return;
     }
 
-    let times = [...pendingTimes];
-    if(pattern === "1+0+0" && times.length === 0) times = ["08:00"];
-    if(pattern === "0+1+0" && times.length === 0) times = ["14:00"];
-    if(pattern === "0+0+1" && times.length === 0) times = ["21:00"];
-    if(pattern === "1+1+1" && times.length === 0) times = ["08:00", "14:00", "21:00"];
-    if(pattern === "1+0+1" && times.length === 0) times = ["08:00", "21:00"];
-
-    const fullDose = `${dose ? dose : ''} (${pattern ? pattern : 'Custom'}) - ${meal}`.trim();
-
-    const saveBtn = document.getElementById("saveMedButton");
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = "Saving...";
-
     const newMed = {
       userEmail: viewingEmail.toLowerCase().trim(),
-      name, dose: fullDose, start: start || todayDate(), end: end || todayDate(), times,
+      name, 
+      dose: dose || "", 
+      pattern: pattern || "",
+      meal: meal || "After meal",
+      start: start || todayDate(), 
+      end: end || "", 
+      times: [...pendingTimes],
       createdAt: new Date().toISOString()
     };
 
@@ -791,9 +789,6 @@ a{text-decoration:none;color:inherit}
       alert("Medicine saved successfully.");
     } catch(e) {
       alert("Error saving medicine: " + e.message);
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
     }
   };
 
@@ -803,19 +798,19 @@ a{text-decoration:none;color:inherit}
     const pattern=document.getElementById("dosePattern").value;
     const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
-    const end=document.getElementById("medEnd").value;
+    const end=document.getElementById("medEnd").value.trim();
 
     if(!name){alert("Please enter medicine name.");return;}
 
-    let times = [...pendingTimes];
-    if(pattern === "1+0+0" && times.length === 0) times = ["08:00"];
-    if(pattern === "0+1+0" && times.length === 0) times = ["14:00"];
-    if(pattern === "0+0+1" && times.length === 0) times = ["21:00"];
-    if(pattern === "1+1+1" && times.length === 0) times = ["08:00", "14:00", "21:00"];
-    if(pattern === "1+0+1" && times.length === 0) times = ["08:00", "21:00"];
-
-    const fullDose = `${dose ? dose : ''} (${pattern ? pattern : 'Custom'}) - ${meal}`.trim();
-    const updatedData = { name, dose: fullDose, start: start || todayDate(), end: end || todayDate(), times };
+    const updatedData = { 
+      name, 
+      dose: dose || "", 
+      pattern: pattern || "", 
+      meal: meal || "After meal",
+      start: start || todayDate(), 
+      end: end || "", 
+      times: [...pendingTimes] 
+    };
 
     try {
       await updateDoc(doc(db, "medicines", editingId), updatedData);
@@ -849,19 +844,60 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   }
 
-  /* TRACKING */
+  function isClockTimeActiveNow(timeStr) {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const [h, m] = timeStr.split(":").map(Number);
+    const medMinutes = h * 60 + m;
+    const diff = currentMinutes - medMinutes;
+    return diff >= -120 && diff <= 120;
+  }
+
   function todayItems(){
-    const date=todayDate();
-    const result=[];
+    const dateStr = todayDate();
+    const result = [];
+    
     getActiveMedicines().forEach(m => {
-      if(m.start && date < m.start) return;
-      if(m.end && date > m.end) return;
+      if(m.start && dateStr < m.start) return;
+      if(m.end && dateStr > m.end) return;
+
+      // 1. Specific Clock Times (2 hours before to 2 hours after)
       if(m.times && m.times.length > 0) {
-        m.times.forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
-      } else {
-        result.push({id:m.id, name:m.name, dose:m.dose, time: "Anytime"});
+        m.times.forEach(t => {
+          if(isClockTimeActiveNow(t)) {
+            result.push({ 
+              id: m.id, 
+              name: m.name, 
+              dose: `${m.dose || ''} (${m.meal || 'After meal'})`.trim(), 
+              time: t, 
+              category: 'clock' 
+            });
+          }
+        });
+      }
+
+      // 2. Pattern Time Windows with specific color categories:
+      // Morning: 4 AM to 11 AM (Sky Blue)
+      // Midday: 11 AM to 5 PM (Dark Yellow)
+      // Night: 5 PM to 12 AM (Ash)
+      const nowHour = new Date().getHours();
+      
+      if(m.pattern === "Morning" && nowHour >= 4 && nowHour < 11) {
+        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal || 'After meal'})`.trim(), time: "Morning", category: 'morning' });
+      } else if(m.pattern === "Midday" && nowHour >= 11 && nowHour < 17) {
+        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal || 'After meal'})`.trim(), time: "Midday", category: 'midday' });
+      } else if(m.pattern === "Night" && nowHour >= 17 && nowHour < 24) {
+        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal || 'After meal'})`.trim(), time: "Night", category: 'night' });
+      } else if(m.pattern === "1+1+1") {
+        if(nowHour >= 4 && nowHour < 11) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+        if(nowHour >= 11 && nowHour < 17) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+        if(nowHour >= 17 && nowHour < 24) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+      } else if(m.pattern === "1+0+1") {
+        if(nowHour >= 4 && nowHour < 11) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+        if(nowHour >= 17 && nowHour < 24) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
       }
     });
+
     return result.sort((a,b)=>a.time.localeCompare(b.time));
   }
 
@@ -876,7 +912,6 @@ a{text-decoration:none;color:inherit}
     
     try {
       if(record){
-        if(record.status !== "pending") { alert("Already recorded."); return; }
         await updateDoc(doc(db, "med_history", record.id), { status });
         record.status = status;
       } else {
@@ -895,7 +930,6 @@ a{text-decoration:none;color:inherit}
     }
   };
 
-  /* RENDER VIEWS */
   function renderToday(){
     const items=todayItems();
     const taken=items.filter(x=>statusOf(x.id,x.time)==="taken").length;
@@ -905,14 +939,21 @@ a{text-decoration:none;color:inherit}
     document.getElementById("takenStat").textContent=taken;
     document.getElementById("pendingStat").textContent=pending;
 
-    if(!items.length) return '<div class="empty">No medicines scheduled today.</div>';
+    if(!items.length) return '<div class="empty">No medicines scheduled for this exact time window.</div>';
 
     return items.map(item=>{
       const status=statusOf(item.id,item.time);
       const label=status==="taken"?"Taken":status==="skipped"?"Skipped":"Pending";
       const color=status==="taken"?"#159968":status==="skipped"?"#d17c3c":"#82979b";
+      
+      // Determine CSS class for background color based on category
+      let bgClass = "";
+      if(item.category === 'morning') bgClass = "morning";
+      else if(item.category === 'midday') bgClass = "midday";
+      else if(item.category === 'night') bgClass = "night";
+
       return `
-      <div class="med-row">
+      <div class="med-row ${bgClass}">
         <div class="med-row-top">
           <div>
             <h4>${safeText(item.name)}</h4>
@@ -921,11 +962,11 @@ a{text-decoration:none;color:inherit}
           <span style="font-size:10px;font-weight:700;color:${color}">${label}</span>
         </div>
         <div class="med-buttons">
-          <button class="med-action med-taken" ${status!=="pending"?"disabled":""}
+          <button class="med-action med-taken" ${status==="taken"?"disabled":""}
             onclick="window.markMedicine('${item.id}','${item.time}','taken')">
             <i class="fa-solid fa-check"></i> Taken
           </button>
-          <button class="med-action med-skipped" ${status!=="pending"?"disabled":""}
+          <button class="med-action med-skipped" ${status==="skipped"?"disabled":""}
             onclick="window.markMedicine('${item.id}','${item.time}','skipped')">
             <i class="fa-solid fa-forward"></i> Skipped
           </button>
@@ -951,9 +992,8 @@ a{text-decoration:none;color:inherit}
         <div class="med-row-top">
           <div>
             <h4>${safeText(m.name)}</h4>
-            <p>${safeText(m.dose||"Dosage not specified")}</p>
-            <p>${safeText(m.start)} → ${safeText(m.end)}</p>
-            <p>Times: ${(m.times||[]).map(safeText).join(" · ") || "None"}</p>
+            <p>${safeText(m.dose||"")} (${safeText(m.pattern||"Custom")}) - ${safeText(m.meal||"After meal")}</p>
+            <p>${safeText(m.start)} → ${m.end ? safeText(m.end) : 'Continuous (No End Date)'}</p>
           </div>
         </div>
         <div class="med-buttons">
@@ -980,20 +1020,36 @@ a{text-decoration:none;color:inherit}
   };
 
   function renderHistory(){
-    const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
-    if(!records.length) return '<div class="empty">No history available.</div>';
+    const d = new Date();
+    const pastDates = [];
+    for(let i=0; i<3; i++) {
+      const tempDate = new Date();
+      tempDate.setDate(d.getDate() - i);
+      pastDates.push(`${tempDate.getFullYear()}-${String(tempDate.getMonth()+1).padStart(2,"0")}-${String(tempDate.getDate()).padStart(2,"0")}`);
+    }
 
-    return records.slice(0,100).map(h=>{
+    const records = getActiveHistory().filter(h => pastDates.includes(h.date));
+    records.sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+
+    if(!records.length) return '<div class="empty">No history available for the last 3 days.</div>';
+
+    return records.map(h=>{
       const m = allMedicines.find(x=>x.id===h.medId);
+      const isTaken = h.status === "taken";
       return `<div class="med-row">
         <div class="med-row-top">
           <div>
             <h4>${safeText(m?.name||"Deleted medicine")}</h4>
             <p>${safeText(h.date)} · ${safeText(h.time)}</p>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${h.status==="taken"?"#159968":"#d17c3c"}">
-            ${h.status==="taken"?"Taken":"Skipped"}
+          <span style="font-size:11px;font-weight:700;color:${isTaken?"#159968":"#d17c3c"}">
+            ${isTaken?"Taken":"Skipped"}
           </span>
+        </div>
+        <div class="med-buttons">
+          <button class="med-action ${isTaken?'med-skipped':'med-taken'}" onclick="window.markMedicine('${h.medId}','${h.time}','${isTaken?'skipped':'taken'}')">
+            <i class="fa-solid fa-rotate"></i> Change to ${isTaken?'Skipped':'Taken'}
+          </button>
         </div>
       </div>`;
     }).join("");
@@ -1005,6 +1061,8 @@ a{text-decoration:none;color:inherit}
 
     document.getElementById("newMedName").value=m.name;
     document.getElementById("newMedDose").value=m.dose||"";
+    document.getElementById("dosePattern").value=m.pattern||"";
+    document.getElementById("mealTiming").value=m.meal||"After meal";
     document.getElementById("medStart").value=m.start||"";
     document.getElementById("medEnd").value=m.end||"";
     pendingTimes=[...(m.times||[])];
@@ -1046,7 +1104,6 @@ a{text-decoration:none;color:inherit}
     renderContent();
   }
 
-  /* NOTIFICATIONS */
   window.enableMedNotifications = async function(){
     const status=document.getElementById("notificationStatus");
     if(!("Notification" in window)){
@@ -1061,37 +1118,7 @@ a{text-decoration:none;color:inherit}
     }
   };
 
-  function checkMedicineAlerts(){
-    if(!("Notification" in window)||Notification.permission!=="granted"||!currentUser) return;
-    const date=todayDate();
-    const now=new Date();
-    const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
-
-    getActiveMedicines().forEach(m=>{
-      if(!m.times || m.times.length === 0) return;
-      if(m.start && date < m.start) return;
-      if(m.end && date > m.end) return;
-      if(!m.times.includes(time)) return;
-      if(statusOf(m.id,time)!=="pending") return;
-
-      const key="alert_"+m.id+"_"+date+"_"+time;
-      if(localStorage.getItem(key)) return;
-
-      new Notification("Medicine Reminder",{
-        body:"Time for "+m.name+(m.dose?" · "+m.dose:""),
-        tag:key
-      });
-      localStorage.setItem(key,"1");
-    });
-  }
-
-  if("Notification" in window){
-    document.getElementById("notificationStatus").textContent=
-      Notification.permission==="granted"?"Notifications enabled.":"Notifications not enabled.";
-  }
-
   renderTimes();
-  setInterval(checkMedicineAlerts, 15000);
 </script>
 </body>
 </html>
