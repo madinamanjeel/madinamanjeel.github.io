@@ -66,29 +66,20 @@ a{text-decoration:none;color:inherit}
 
 /* Switch Account Button Styling */
 .switch-account-btn {
-  background: white;
-  border: 1px solid #a8dcd6;
-  color: var(--primary);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(8, 127, 131, 0.1);
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  background: white; border: 1px solid #a8dcd6; color: var(--primary);
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  cursor: pointer; box-shadow: 0 4px 10px rgba(8, 127, 131, 0.1);
+  transition: all 0.2s ease; flex-shrink: 0;
 }
-.switch-account-btn:hover {
-  background: var(--primary);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(8, 127, 131, 0.2);
-}
+.switch-account-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(8, 127, 131, 0.2); }
 
 .admin-bar{width:100%;padding-top:12px;border-top:1px dashed #c0e0dc;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .admin-bar span{font-size:11px;font-weight:700;color:#075c65}
-.admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--primary);font-size:11px;font-weight:600;background:white;color:var(--dark);outline:none;flex:1;max-width:280px}
+
+/* কাস্টম অ্যাডমিন সিলেক্ট বাটন */
+.admin-select-btn {
+  padding:8px 12px; border-radius:8px; border:1px solid var(--primary); font-size:11px; font-weight:600; background:white; color:var(--dark); outline:none; flex:1; max-width:280px; text-align:left; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+}
 
 /* QUICK LINKS */
 .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -175,48 +166,47 @@ a{text-decoration:none;color:inherit}
 
 /* SMART TOAST NOTIFICATION */
 #toast-notification {
-  position: fixed;
-  bottom: 25px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--dark);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  opacity: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--dark); color: white; padding: 12px 24px; border-radius: 30px;
+  font-size: 12px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; z-index: 9999;
+  display: flex; align-items: center; gap: 8px;
 }
-#toast-notification.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
+#toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
 /* CUSTOM MODAL FOR ADDING EMAIL */
-#customPromptOverlay {
+.modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.5); z-index: 99999;
   display: none; justify-content: center; align-items: center;
   backdrop-filter: blur(4px);
 }
-#customPromptBox {
+.modal-box {
   background: white; padding: 25px; border-radius: 16px;
   width: 90%; max-width: 320px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
-#customPromptBox h4 { font-size: 16px; color: var(--dark); margin-bottom: 8px; }
-#customPromptBox p { font-size: 11px; color: var(--muted); margin-bottom: 15px; line-height:1.6; }
-#customPromptBox input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; margin-bottom: 15px; outline: none; }
-#customPromptBox input:focus { border-color: var(--primary); }
-.prompt-btns { display: flex; justify-content: flex-end; gap: 10px; }
-.prompt-btn { padding: 9px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 0; }
-.prompt-cancel { background: #f1f5f5; color: var(--muted); }
-.prompt-submit { background: var(--primary); color: white; }
+.modal-box h4 { font-size: 16px; color: var(--dark); margin-bottom: 8px; }
+.modal-box p { font-size: 11px; color: var(--muted); margin-bottom: 15px; line-height:1.6; }
+.modal-box input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; margin-bottom: 15px; outline: none; }
+.modal-box input:focus { border-color: var(--primary); }
+.modal-btns { display: flex; justify-content: flex-end; gap: 10px; }
+.modal-btn { padding: 9px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 0; }
+.modal-cancel { background: #f1f5f5; color: var(--muted); }
+.modal-submit { background: var(--primary); color: white; }
+
+/* CUSTOM MODAL FOR ACCOUNT SELECTOR */
+#accountSelectOverlay { z-index: 99998; align-items:flex-end; padding-bottom:30px; }
+#accountSelectBox { max-height: 70vh; display:flex; flex-direction:column; padding: 20px 15px; width: 92%; max-width: 350px;}
+#accountListContainer { overflow-y: auto; flex:1; margin-top:5px; }
+.account-item {
+  padding: 12px; border-bottom: 1px solid #f1f5f5; font-size: 13px; color: var(--dark);
+  cursor: pointer; display: flex; align-items: center; gap: 10px; transition: .2s;
+}
+.account-item:last-child { border-bottom: none; }
+.account-item:hover { background: #f3f8f8; color: var(--primary); }
+.account-item.active { background: #eaf7f5; color: var(--primary); font-weight: 700; border-radius: 8px; border-bottom: none; margin-bottom: 4px; }
+.account-item i { font-size:16px; color: #a8ced0; }
+.account-item.active i { color: var(--primary); }
 
 /* FOOTER */
 .footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
@@ -248,23 +238,31 @@ a{text-decoration:none;color:inherit}
  .med-stats{gap:6px}
  .stat-box{padding:11px}
  .stat-box strong{font-size:19px}
- .admin-select{max-width:100%}
+ .admin-select-btn{max-width:100%}
 }
 </style>
 </head>
 
 <body>
 
-<!-- Custom Prompt Modal -->
-<div id="customPromptOverlay">
-  <div id="customPromptBox">
+<!-- Custom Prompt Modal for Adding Email -->
+<div id="customPromptOverlay" class="modal-overlay">
+  <div class="modal-box">
     <h4>Add Family Member</h4>
     <p>Enter a valid Gmail address to view or manage their medicines.</p>
     <input type="email" id="promptEmailInput" placeholder="e.g. member@gmail.com">
-    <div class="prompt-btns">
-      <button class="prompt-btn prompt-cancel" onclick="closeCustomPrompt(false)">Cancel</button>
-      <button class="prompt-btn prompt-submit" onclick="closeCustomPrompt(true)">Add</button>
+    <div class="modal-btns">
+      <button class="modal-btn modal-cancel" onclick="closeCustomPrompt(false)">Cancel</button>
+      <button class="modal-btn modal-submit" onclick="closeCustomPrompt(true)">Add</button>
     </div>
+  </div>
+</div>
+
+<!-- Custom Account Selector Modal -->
+<div id="accountSelectOverlay" class="modal-overlay" onclick="closeAccountSelector(event)">
+  <div id="accountSelectBox" class="modal-box" onclick="event.stopPropagation()">
+    <h4 style="margin-left:5px">Select Account</h4>
+    <div id="accountListContainer"></div>
   </div>
 </div>
 
@@ -322,12 +320,12 @@ a{text-decoration:none;color:inherit}
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
 
-      <!-- Admin Control Bar -->
+      <!-- Admin Control Bar (Custom Button replaces Select) -->
       <div class="admin-bar" id="adminControls">
         <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
-        <select id="userSelector" class="admin-select" onchange="switchUserView()">
-          <!-- Populated dynamically -->
-        </select>
+        <button id="adminSelectBtn" class="admin-select-btn" onclick="openAccountSelector()">
+          Loading... <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>
+        </button>
       </div>
     </div>
 
@@ -821,34 +819,62 @@ a{text-decoration:none;color:inherit}
     const usersSet = new Set(allMedicines.map(m => (m.userEmail || "").toLowerCase().trim()).filter(Boolean));
     usersSet.add(ADMIN_EMAIL);
     if (viewingEmail) usersSet.add(viewingEmail);
-
     addedEmails.forEach(e => usersSet.add(e));
-
     const users = Array.from(usersSet);
-    const select = document.getElementById("userSelector");
-    
-    select.innerHTML = users.map(email => 
-      `<option value="${safeText(email)}" ${email === viewingEmail ? 'selected' : ''}>
-        ${email === ADMIN_EMAIL ? `My Account (${email})` : email}
-      </option>`
-    ).join("") + `<option value="__ADD_USER__">+ Add / View Another Gmail...</option>`;
+
+    // Update the custom button text
+    const btn = document.getElementById("adminSelectBtn");
+    if(btn) {
+      let displayName = viewingEmail === ADMIN_EMAIL ? "My Account" : viewingEmail;
+      // To keep it short on the button
+      if(displayName.length > 25) displayName = displayName.substring(0, 22) + "...";
+      btn.innerHTML = `${safeText(displayName)} <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>`;
+    }
+
+    // Populate the custom modal list
+    const container = document.getElementById("accountListContainer");
+    if(!container) return;
+
+    container.innerHTML = users.map(email => {
+      const isActive = email === viewingEmail;
+      const displayLabel = email === ADMIN_EMAIL ? `My Account <br><small style="font-weight:normal;color:gray;font-size:10px">${safeText(email)}</small>` : safeText(email);
+      return `
+        <div class="account-item ${isActive ? 'active' : ''}" onclick="selectCustomAccount('${safeText(email)}')">
+          <i class="fa-solid ${isActive ? 'fa-circle-check' : 'fa-circle'}"></i> 
+          <div style="flex:1;word-break:break-all;line-height:1.4">${displayLabel}</div>
+        </div>`;
+    }).join("") + `
+      <div class="account-item" style="color:var(--primary);font-weight:700;margin-top:8px;border-top:1px dashed #c0e0dc;border-bottom:none" onclick="selectCustomAccount('__ADD_USER__')">
+        <i class="fa-solid fa-plus-circle" style="color:var(--primary)"></i> + Add / View Another Gmail...
+      </div>
+    `;
   }
 
-  // কাস্টম ডায়ালগ শো করানো এবং ডিফল্ট prompt() বাতিল করা হয়েছে
-  window.switchUserView = function() {
-    const select = document.getElementById("userSelector");
-    if (select.value === "__ADD_USER__") {
+  // ওপেন কাস্টম সিলেক্টর মডাল
+  window.openAccountSelector = function() {
+    document.getElementById("accountSelectOverlay").style.display = "flex";
+  };
+  window.closeAccountSelector = function(e) {
+    if(e) e.stopPropagation();
+    document.getElementById("accountSelectOverlay").style.display = "none";
+  };
+
+  // কাস্টম লিস্ট থেকে অ্যাকাউন্ট সিলেক্ট করা
+  window.selectCustomAccount = function(val) {
+    closeAccountSelector();
+    if (val === "__ADD_USER__") {
       document.getElementById("customPromptOverlay").style.display = "flex";
       document.getElementById("promptEmailInput").value = "";
       document.getElementById("promptEmailInput").focus();
-      select.value = viewingEmail; 
     } else {
-      viewingEmail = select.value;
+      viewingEmail = val;
       updateTargetAccountNote();
+      populateAdminDropdown();
       renderAll();
     }
   };
 
+  // কাস্টম প্রম্পট (Add Email) সাবমিট করা
   window.closeCustomPrompt = function(isSubmit) {
     document.getElementById("customPromptOverlay").style.display = "none";
     if(isSubmit) {
@@ -860,7 +886,6 @@ a{text-decoration:none;color:inherit}
         }
         viewingEmail = inputVal;
         populateAdminDropdown();
-        document.getElementById("userSelector").value = viewingEmail;
         updateTargetAccountNote();
         renderAll();
       } else {
