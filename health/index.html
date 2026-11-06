@@ -30,6 +30,8 @@ a{text-decoration:none;color:inherit}
 /* LOADING & AUTH STATE */
 #loading-message { text-align: center; padding-top: 150px; font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 #content-wrapper { display: none; }
+.login-btn { background: var(--primary); color: white; border: 0; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(8,127,131,0.2); transition: .2s; }
+.login-btn:hover { background: #06696c; transform: translateY(-2px); }
 
 /* HEADER */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
@@ -39,7 +41,7 @@ a{text-decoration:none;color:inherit}
 .brand p{font-size:11px;color:var(--muted)}
 .header-date{font-size:12px;color:var(--muted);background:white;padding:11px 15px;border-radius:12px;border:1px solid var(--border)}
 
-/* HERO SECTION (HEIGHT REDUCED) */
+/* HERO SECTION */
 .hero{background:linear-gradient(115deg,#075c65,#087f83 60%,#13aaa1);border-radius:20px;padding:20px 24px;color:white;position:relative;overflow:hidden;box-shadow:0 10px 25px #087f8325}
 .hero:before{content:"";position:absolute;width:200px;height:200px;right:-50px;top:-100px;border:30px solid #ffffff12;border-radius:50%}
 .hero-content{position:relative;z-index:1}
@@ -64,7 +66,6 @@ a{text-decoration:none;color:inherit}
 .user-details h4{color:var(--primary);font-size:14px;font-weight:800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .user-details p{font-size:11px;color:var(--muted);margin-top:2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
-/* Switch Account Button Styling */
 .switch-account-btn {
   background: white; border: 1px solid #a8dcd6; color: var(--primary);
   width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
@@ -75,8 +76,6 @@ a{text-decoration:none;color:inherit}
 
 .admin-bar{width:100%;padding-top:12px;border-top:1px dashed #c0e0dc;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .admin-bar span{font-size:11px;font-weight:700;color:#075c65}
-
-/* NEW: Custom Admin Select Button (Replaced default select) */
 .admin-select-btn {
   padding:8px 12px; border-radius:8px; border:1px solid var(--primary); font-size:11px; font-weight:600; background:white; color:var(--dark); outline:none; flex:1; max-width:280px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:.2s;
 }
@@ -111,7 +110,7 @@ a{text-decoration:none;color:inherit}
 .field input, .field select{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
 .field input:focus, .field select:focus{border-color:var(--primary)}
 
-/* AUTO-COMPLETE SUGGESTIONS */
+/* AUTO-COMPLETE */
 .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 99; box-shadow: var(--shadow); display: none; }
 .suggestion-item { padding: 9px 12px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f5f5; color: var(--dark); }
 .suggestion-item:hover { background: #eaf7f5; color: var(--primary); font-weight: 600; }
@@ -137,9 +136,9 @@ a{text-decoration:none;color:inherit}
 .stat-box strong{display:block;font-size:22px;margin-top:5px}
 
 .med-row{background:#f9fbfb;border:1px solid #e9eeee;border-radius:13px;padding:14px;margin-top:10px}
-.med-row.morning{background:#e0f2fe;border-color:#bae6fd;} /* Sky Blue */
-.med-row.midday{background:#fed7aa;border-color:#fdba74;}  /* Dark Orange */
-.med-row.night{background:#f1f5f9;border-color:#cbd5e1;}   /* Ash */
+.med-row.morning{background:#e0f2fe;border-color:#bae6fd;} 
+.med-row.midday{background:#fed7aa;border-color:#fdba74;}  
+.med-row.night{background:#f1f5f9;border-color:#cbd5e1;}   
 
 .med-row-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .med-row h4{font-size:13px}
@@ -175,7 +174,7 @@ a{text-decoration:none;color:inherit}
 }
 #toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-/* MODALS STYLING (FOR PROMPT & SELECTOR) */
+/* MODALS STYLING */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.5); z-index: 99999;
@@ -213,23 +212,16 @@ a{text-decoration:none;color:inherit}
 .footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
 .footer strong{color:var(--primary)}
 
-@media(max-width:850px){
- .quick-grid{grid-template-columns:repeat(2,1fr)}
- .records-grid{grid-template-columns:repeat(2,1fr)}
- .tools-grid{grid-template-columns:repeat(2,1fr)}
-}
 @media(max-width:560px){
  .wrapper{padding:15px}
  .header{margin-bottom:20px}
  .brand h2{font-size:18px}
  .header-date{font-size:10px;padding:9px}
- /* Hero Section Mobile Tweaks */
  .hero{padding:18px 15px;border-radius:16px}
  .hero h1{font-size:22px;margin-bottom:6px}
  .hero p{font-size:11.5px;margin-bottom:8px;line-height:1.4}
  .hero-btn{margin-top:6px;padding:9px 14px}
- 
- .quick-grid{gap:10px}
+ .quick-grid{grid-template-columns:repeat(2,1fr); gap:10px}
  .quick-card{padding:14px 11px;gap:10px}
  .quick-icon{min-width:38px;height:38px;font-size:16px}
  .quick-card h4{font-size:11px}
@@ -276,7 +268,14 @@ a{text-decoration:none;color:inherit}
 
 <div id="loading-message">
   <div style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-notes-medical"></i></div>
-  Verifying... Please wait
+  <span id="loading-text">Verifying... Please wait</span>
+  <!-- Manual Google Login Button (Prevents Infinite Redirect Loop) -->
+  <div id="login-box" style="display: none; margin-top: 20px;">
+    <p style="font-size: 12px; color: #82979b; margin-bottom: 15px;">Please log in to access your portal</p>
+    <button onclick="doGoogleLogin()" class="login-btn">
+      <i class="fa-brands fa-google"></i> Login with Google
+    </button>
+  </div>
 </div>
 
 <div id="content-wrapper">
@@ -296,7 +295,6 @@ a{text-decoration:none;color:inherit}
 <section class="hero">
   <div class="hero-content">
     <div class="hero-label">YOUR HEALTH, YOUR PRIORITY</div>
-    
     <p>Your personal health space. Manage family medical records, explore medicines and access useful health tools — all in one place.</p>
     <a href="#records" class="hero-btn"><i class="fa-solid fa-folder-open"></i> Explore Medical Records</a>
   </div>
@@ -328,7 +326,7 @@ a{text-decoration:none;color:inherit}
       <!-- Admin Control Bar: Custom Button Instead of Select -->
       <div class="admin-bar" id="adminControls">
         <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
-        <!-- Completely Replaced <select> with Custom Button -->
+        <!-- Custom Button -->
         <div id="adminSelectBtn" class="admin-select-btn" onclick="openAccountSelector()">
           <span id="adminSelectText">Loading...</span> <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>
         </div>
@@ -344,7 +342,7 @@ a{text-decoration:none;color:inherit}
       <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
     </div>
 
-    <!-- TABS & + ADD BUTTON STRICTLY ON ONE LINE -->
+    <!-- TABS & + ADD BUTTON -->
     <div class="med-tabs-wrapper">
       <div class="med-tabs">
         <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
@@ -485,7 +483,6 @@ a{text-decoration:none;color:inherit}
         <input id="newMedDose" placeholder="e.g. 1 tablet">
       </div>
 
-      <!-- ঘড়ির টাইম সিস্টেম (Clock-wise) -->
       <div class="field">
         <label>Reminder Time (Optional)</label>
         <div class="med-time-row">
@@ -540,7 +537,6 @@ a{text-decoration:none;color:inherit}
       <i class="fa-solid fa-save"></i> Save Medicine
     </button>
 
-    <!-- Notification Box -->
     <div class="notification-box" style="margin-top: 25px;">
       <div style="font-size:12px;font-weight:700;color:#087f83">
         <i class="fa-solid fa-bell"></i> Notification Settings
@@ -572,7 +568,7 @@ a{text-decoration:none;color:inherit}
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
   import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -600,7 +596,6 @@ a{text-decoration:none;color:inherit}
   let currentTab = "today";
   let editingId = null;
 
-  // LocalStorage for saved admin emails
   let addedEmails = JSON.parse(localStorage.getItem("hc_saved_emails") || "[]");
 
   const ALL_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
@@ -737,9 +732,21 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
+  // ম্যানুয়াল লগিন ফাংশন (লুপ বন্ধ করতে)
+  window.doGoogleLogin = function() {
+    document.getElementById('loading-text').textContent = "Redirecting to Google...";
+    document.getElementById('login-box').style.display = 'none';
+    signInWithRedirect(auth, provider).catch(err => {
+       console.error("Login Error:", err);
+       showToast("Failed to initialize login");
+    });
+  };
+
   window.switchGoogleAccount = function() {
     document.getElementById('loading-message').style.display = 'block';
     document.getElementById('content-wrapper').style.display = 'none';
+    document.getElementById('loading-text').style.display = 'inline';
+    document.getElementById('login-box').style.display = 'none';
     signOut(auth).then(() => {
       signInWithRedirect(auth, provider);
     }).catch((error) => {
@@ -747,6 +754,13 @@ a{text-decoration:none;color:inherit}
       showToast("Error switching account");
     });
   };
+
+  // Redirect Error Handling (To catch manual cancelations)
+  getRedirectResult(auth).then((result) => {
+    // result will be valid if just redirected back successfully
+  }).catch((error) => {
+    console.error("Redirect Auth Error:", error);
+  });
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -781,9 +795,13 @@ a{text-decoration:none;color:inherit}
       updateTargetAccountNote();
       loadDataFromFirebase();
     } else {
+      // ইউজার লগিন না থাকলে ডিরেক্ট রিডাইরেক্ট হবে না (লুপ ফিক্স)
       document.getElementById('loading-message').style.display = 'block';
       document.getElementById('content-wrapper').style.display = 'none';
-      signInWithRedirect(auth, provider).catch(err => console.error("Auth redirect error:", err));
+      
+      // লোডিং টেক্সট লুকিয়ে ম্যানুয়াল লগিন বাটন দেখানো হচ্ছে
+      document.getElementById('loading-text').style.display = 'none';
+      document.getElementById('login-box').style.display = 'block';
     }
   });
 
