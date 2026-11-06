@@ -269,7 +269,6 @@ a{text-decoration:none;color:inherit}
 <div id="loading-message">
   <div style="font-size: 32px; color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-notes-medical"></i></div>
   <span id="loading-text">Verifying... Please wait</span>
-  <!-- Manual Google Login Button (Prevents Infinite Redirect Loop) -->
   <div id="login-box" style="display: none; margin-top: 20px;">
     <p style="font-size: 12px; color: #82979b; margin-bottom: 15px;">Please log in to access your portal</p>
     <button onclick="doGoogleLogin()" class="login-btn">
@@ -323,10 +322,9 @@ a{text-decoration:none;color:inherit}
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
 
-      <!-- Admin Control Bar: Custom Button Instead of Select -->
+      <!-- Admin Control Bar -->
       <div class="admin-bar" id="adminControls">
         <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
-        <!-- Custom Button -->
         <div id="adminSelectBtn" class="admin-select-btn" onclick="openAccountSelector()">
           <span id="adminSelectText">Loading...</span> <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>
         </div>
@@ -568,7 +566,7 @@ a{text-decoration:none;color:inherit}
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
   import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -732,13 +730,16 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // ম্যানুয়াল লগিন ফাংশন (লুপ বন্ধ করতে)
+  // পপআপ উইন্ডো দিয়ে লগিন (লুপ সমস্যা সমাধান)
   window.doGoogleLogin = function() {
-    document.getElementById('loading-text').textContent = "Redirecting to Google...";
-    document.getElementById('login-box').style.display = 'none';
-    signInWithRedirect(auth, provider).catch(err => {
-       console.error("Login Error:", err);
-       showToast("Failed to initialize login");
+    document.getElementById('loading-text').textContent = "Opening Google Sign-In...";
+    signInWithPopup(auth, provider).then((result) => {
+      // Successfully logged in
+    }).catch(err => {
+       console.error("Popup Login Error:", err);
+       showToast("Login cancelled or blocked");
+       document.getElementById('loading-text').textContent = "Verifying... Please wait";
+       document.getElementById('login-box').style.display = 'block';
     });
   };
 
@@ -748,19 +749,14 @@ a{text-decoration:none;color:inherit}
     document.getElementById('loading-text').style.display = 'inline';
     document.getElementById('login-box').style.display = 'none';
     signOut(auth).then(() => {
-      signInWithRedirect(auth, provider);
-    }).catch((error) => {
-      console.error("Sign Out Error", error);
-      showToast("Error switching account");
+      signInWithPopup(auth, provider).catch((error) => {
+        console.error("Switch Account Error", error);
+        showToast("Error switching account");
+        document.getElementById('loading-text').style.display = 'none';
+        document.getElementById('login-box').style.display = 'block';
+      });
     });
   };
-
-  // Redirect Error Handling (To catch manual cancelations)
-  getRedirectResult(auth).then((result) => {
-    // result will be valid if just redirected back successfully
-  }).catch((error) => {
-    console.error("Redirect Auth Error:", error);
-  });
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -795,11 +791,8 @@ a{text-decoration:none;color:inherit}
       updateTargetAccountNote();
       loadDataFromFirebase();
     } else {
-      // ইউজার লগিন না থাকলে ডিরেক্ট রিডাইরেক্ট হবে না (লুপ ফিক্স)
       document.getElementById('loading-message').style.display = 'block';
       document.getElementById('content-wrapper').style.display = 'none';
-      
-      // লোডিং টেক্সট লুকিয়ে ম্যানুয়াল লগিন বাটন দেখানো হচ্ছে
       document.getElementById('loading-text').style.display = 'none';
       document.getElementById('login-box').style.display = 'block';
     }
