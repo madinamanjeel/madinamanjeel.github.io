@@ -135,11 +135,14 @@ a{text-decoration:none;color:inherit}
 .med-skipped{background:#d17c3c;color:white}
 .med-delete{background:#fff0f0;color:#d66}
 .med-edit{background:#e8f1ff;color:#4277c9}
-.med-add-jump{background:#e1f4f2;color:#087f83}
+.med-add-jump{background:#087f83;color:white;padding:9px 14px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:0;}
+
+/* TABS CONTAINER */
 .med-tabs-wrapper{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:20px 0 12px}
 .med-tabs{display:flex;gap:8px;flex-wrap:wrap}
 .med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
 .med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
+
 .empty{text-align:center;color:var(--muted);font-size:12px;padding:18px}
 .empty-add-container{text-align:center;padding:15px;}
 .notification-box{margin-top:20px;background:#eaf7f5;padding:15px;border-radius:12px}
@@ -247,19 +250,19 @@ a{text-decoration:none;color:inherit}
       <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
     </div>
 
-    <!-- TABS & + ADD BUTTON CONTAINER -->
+    <!-- TABS & EACH TAB HAS ITS OWN + ADD BUTTON -->
     <div class="med-tabs-wrapper">
       <div class="med-tabs">
         <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
         <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
         <button class="med-tab" onclick="setMedTab('history',this)">History</button>
       </div>
-      <button class="med-action med-add-jump" style="padding: 9px 14px; font-size: 11px;" onclick="window.jumpToAddMedicine()">
-        <i class="fa-solid fa-plus"></i> Add New Medicine
+      <button class="med-add-jump" onclick="window.jumpToAddMedicine()">
+        <i class="fa-solid fa-plus"></i> Add
       </button>
     </div>
 
-    <div id="medContent" style="margin-bottom: 10px;">
+    <div id="medContent" style="margin-top: 15px; margin-bottom: 10px;">
       <div class="empty">No medicines scheduled today.</div>
     </div>
 
@@ -620,7 +623,6 @@ a{text-decoration:none;color:inherit}
       currentUser = user;
       viewingEmail = user.email.toLowerCase().trim();
 
-      // --- নতুন যোগ করা: লগইন করা ইউজারের আসল ইমেইলটি অ্যান্ড্রয়েড অ্যাপে পাঠানো হচ্ছে ---
       if (window.AndroidDownloader && window.AndroidDownloader.registerUserEmail) {
         window.AndroidDownloader.registerUserEmail(user.email.toLowerCase().trim());
         const statusEl = document.getElementById("notificationStatus");
@@ -682,7 +684,7 @@ a{text-decoration:none;color:inherit}
         populateAdminDropdown();
       }
       renderAll();
-      checkAndTriggerUserNotifications(); // ডাটা লোড হওয়ার সাথে সাথে একবার চেক করবে
+      checkAndTriggerUserNotifications();
     } catch (error) {
       console.error("Error loading data: ", error);
       document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check connection.</div>';
@@ -869,7 +871,6 @@ a{text-decoration:none;color:inherit}
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
-      // 1. Specific Clock Times (2 hours before to 2 hours after)
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -884,10 +885,6 @@ a{text-decoration:none;color:inherit}
         });
       }
 
-      // 2. Pattern Time Windows with specific color categories:
-      // Morning: 4 AM to 11 AM (Sky Blue)
-      // Midday: 11 AM to 5 PM (Dark Yellow)
-      // Night: 5 PM to 12 AM (Ash)
       const nowHour = new Date().getHours();
       
       if(m.pattern === "Morning" && nowHour >= 4 && nowHour < 11) {
@@ -954,7 +951,6 @@ a{text-decoration:none;color:inherit}
       const label=status==="taken"?"Taken":status==="skipped"?"Skipped":"Pending";
       const color=status==="taken"?"#159968":status==="skipped"?"#d17c3c":"#82979b";
       
-      // Determine CSS class for background color based on category
       let bgClass = "";
       if(item.category === 'morning') bgClass = "morning";
       else if(item.category === 'midday') bgClass = "midday";
@@ -1010,9 +1006,6 @@ a{text-decoration:none;color:inherit}
           </button>
           <button class="med-action med-delete" onclick="window.deleteMedicine('${m.id}')">
             <i class="fa-solid fa-trash"></i> Delete
-          </button>
-          <button class="med-action med-add-jump" onclick="window.jumpToAddMedicine()">
-            <i class="fa-solid fa-plus"></i> Add
           </button>
         </div>
       </div>
@@ -1112,7 +1105,6 @@ a{text-decoration:none;color:inherit}
     renderContent();
   }
 
-  // --- নতুন আপডেট করা নোটিফিকেশন ফাংশন ও ইউজার-ভিত্তিক অটো চেকার ---
   function sendNativeOrBrowserNotification(title, body) {
     if (window.AndroidDownloader && window.AndroidDownloader.showMedicineNotification) {
       window.AndroidDownloader.showMedicineNotification(title, body);
@@ -1148,7 +1140,6 @@ a{text-decoration:none;color:inherit}
 
   function checkAndTriggerUserNotifications() {
     if (!currentUser) return;
-    // শুধুমাত্র যে ইউজার নিজে লগইন করে আছেন তার ওষধ চেক করা হবে (অ্যাডমিন অন্যের একাউন্ট সিলেক্ট করলেও নিজের ফোনে অন্যের নোটিফিকেশন আসবে না)
     const loggedInEmail = currentUser.email.toLowerCase().trim();
     const dateStr = todayDate();
     const now = new Date();
@@ -1162,7 +1153,6 @@ a{text-decoration:none;color:inherit}
       if (m.start && dateStr < m.start) return;
       if (m.end && dateStr > m.end) return;
 
-      // ১. নির্দিষ্ট ঘড়ির সময় (যেমন: 08:30) চেক করা
       if (m.times && m.times.includes(currentHM)) {
         const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${currentHM}`;
         const isTaken = userHist.some(h => h.medId === m.id && h.time === currentHM && h.date === dateStr);
@@ -1176,7 +1166,6 @@ a{text-decoration:none;color:inherit}
         }
       }
 
-      // ২. প্যাটার্ন টাইম উইন্ডো (Morning / Midday / Night) এর শুরুতে নোটিফিকেশন
       const patternTriggers = [];
       if (m.pattern === "Morning" || m.pattern === "1+1+1" || m.pattern === "1+0+1") {
         if (nowHour === 8 && now.getMinutes() === 0) patternTriggers.push("Morning");
@@ -1203,7 +1192,6 @@ a{text-decoration:none;color:inherit}
     });
   }
 
-  // প্রতি ৩০ সেকেন্ড পর পর ইউজারের শিডিউল চেক করবে
   setInterval(checkAndTriggerUserNotifications, 30000);
 
   renderTimes();
