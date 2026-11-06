@@ -149,7 +149,7 @@ a{text-decoration:none;color:inherit}
 .notification-box p{font-size:11px;color:#587b7d;margin:7px 0 12px;line-height:1.7}
 .status-text{font-size:10px;margin-top:9px;color:#587b7d}
 
-/* TOAST NOTIFICATION STYLING */
+/* SMART TOAST NOTIFICATION */
 #toast-notification {
   position: fixed;
   bottom: 25px;
@@ -528,8 +528,8 @@ a{text-decoration:none;color:inherit}
   let currentTab = "today";
   let editingId = null;
 
-  // ডিফাইন করা ডিফল্ট প্যাটার্ন টাইমগুলো
-  const DEFAULT_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
+  // সমস্ত সম্ভাব্য প্যাটার্ন ডিফল্ট টাইমগুলোর লিস্ট
+  const ALL_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
 
   let globalMedicineNames = [
     "Paracetamol", "Napa", "Napa Extra", "Napa Extend", "Napa Drop", "Napa Syrup",
@@ -803,10 +803,10 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   };
 
-  // প্যাটার্ন চেঞ্জ করলে আগের ডিফল্ট টাইমগুলো একদম মুছে নতুন সিলেক্ট করা প্যাটার্নের টাইম এড হবে
+  // প্যাটার্ন চেঞ্জ করলে আগের সমস্ত ডিফল্ট টাইম একেবারে মুছে যাবে এবং নতুন প্যাটার্নের টাইম এড হবে
   window.onPatternChange = function(val) {
-    // আগের ডিফল্ট টাইমগুলো ফিল্টার করে বাদ দেওয়া হচ্ছে যাতে আগেরগুলো মুছে যায়
-    pendingTimes = pendingTimes.filter(t => !DEFAULT_PATTERN_TIMES.includes(t));
+    // আগের সমস্ত ডিফল্ট প্যাটার্ন টাইমগুলো বাদ দেওয়া হচ্ছে (ম্যানুয়াল কাস্টম টাইমগুলো থাকবে)
+    pendingTimes = pendingTimes.filter(t => !ALL_PATTERN_TIMES.includes(t));
 
     let timesToAdd = [];
     if(val === "1+1+1") timesToAdd = ["06:30", "13:00", "19:00"];
@@ -863,7 +863,7 @@ a{text-decoration:none;color:inherit}
       if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
-      showToast("Medicine added successfully");
+      showToast("Added successfully");
     } catch(e) {
       alert("Error saving medicine: " + e.message);
     }
@@ -904,7 +904,7 @@ a{text-decoration:none;color:inherit}
       clearMedForm();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
-      showToast("Medicine updated successfully");
+      showToast("Updated successfully");
     } catch(e) {
       alert("Error updating: " + e.message);
     }
