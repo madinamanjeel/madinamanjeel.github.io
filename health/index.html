@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#087f83">
 <title>HealthCare | Personal Health Portal</title>
 
@@ -22,10 +22,14 @@
   --shadow:0 8px 30px rgba(18,59,67,.055);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);-webkit-tap-highlight-color:transparent;}
 button,input,select{font-family:inherit}
 a{text-decoration:none;color:inherit}
 .wrapper{max-width:1180px;margin:auto;padding:24px}
+
+/* LOADING & AUTH STATE */
+#loading-message { text-align: center; padding-top: 150px; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+#content-wrapper { display: none; }
 
 /* HEADER */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
@@ -51,34 +55,16 @@ a{text-decoration:none;color:inherit}
 .section-head p{color:var(--muted);font-size:11px;margin-top:4px}
 .section-icon{width:38px;height:38px;background:#e1f4f2;color:var(--primary);display:grid;place-items:center;border-radius:12px}
 
-/* USER BAR & AUTH */
+/* USER BAR & ADMIN */
 .user-bar{background:#eaf7f5;padding:15px;border-radius:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border:1px solid #d2ece8}
 .user-info{display:flex;align-items:center;gap:11px}
 .user-avatar{width:42px;height:42px;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-weight:800;font-size:15px;overflow:hidden;flex-shrink:0}
 .user-avatar img{width:100%;height:100%;object-fit:cover}
 .user-details h4{color:var(--primary);font-size:14px;font-weight:800}
 .user-details p{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all}
-.auth-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.switch-btn{background:white;color:var(--dark);border:1px solid #cce3e0;padding:9px 13px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
-.switch-btn:hover{border-color:var(--primary);color:var(--primary)}
 .admin-bar{width:100%;padding-top:12px;border-top:1px dashed #c0e0dc;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .admin-bar span{font-size:11px;font-weight:700;color:#075c65}
 .admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--primary);font-size:11px;font-weight:600;background:white;color:var(--dark);outline:none;flex:1;max-width:280px}
-
-/* ACCOUNT SWITCHER MODAL (WEBVIEW SAFE) */
-.modal-backdrop{position:fixed;inset:0;background:rgba(18,59,67,0.55);backdrop-filter:blur(3px);z-index:9999;display:none;place-items:center;padding:16px}
-.modal-card{background:white;width:100%;max-width:400px;border-radius:20px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,0.2);animation:popIn .2s ease}
-@keyframes popIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.modal-head h4{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
-.modal-close{background:#f3f8f8;border:0;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--dark)}
-.acc-list{display:flex;flex-direction:column;gap:8px;margin:14px 0;max-height:240px;overflow-y:auto}
-.acc-item{display:flex;align-items:center;gap:11px;padding:11px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s;text-align:left;background:#fbfdfd;width:100%}
-.acc-item:hover{border-color:var(--primary);background:#eaf7f5}
-.acc-item-avatar{width:36px;height:36px;border-radius:50%;background:#e1f4f2;color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
-.acc-item-info{flex:1;min-width:0}
-.acc-item-info h5{font-size:13px;color:var(--dark);font-weight:700}
-.acc-item-info p{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 
 /* QUICK LINKS */
 .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -182,6 +168,10 @@ a{text-decoration:none;color:inherit}
 </head>
 
 <body>
+
+<div id="loading-message"><i class="fa-solid fa-spinner fa-spin"></i> যাচাই করা হচ্ছে... একটু অপেক্ষা করো 🎈</div>
+
+<div id="content-wrapper">
 <div class="wrapper">
 
 <header class="header">
@@ -204,7 +194,7 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- 1. TODAY'S OVERVIEW (TOP SECTION BEFORE HEALTH RESOURCES) -->
+<!-- 1. TODAY'S OVERVIEW (MOVED TO TOP BEFORE HEALTH RESOURCES) -->
 <section class="section" id="myOverviewSection">
   <div class="section-head">
     <div><h3>My Medication Overview</h3><p>Active schedules and daily dose tracker</p></div>
@@ -212,26 +202,20 @@ a{text-decoration:none;color:inherit}
   </div>
 
   <div class="reminder-card">
-    <!-- User Account & Switch Account Bar -->
+    
+    <!-- User Account Bar -->
     <div class="user-bar">
       <div class="user-info">
         <div class="user-avatar" id="userAvatar"><i class="fa-solid fa-user"></i></div>
         <div class="user-details">
-          <h4 id="displayUserName">Not Signed In</h4>
-          <p id="displayUserEmail">Tap 'Switch Account' to select your Gmail</p>
+          <h4 id="displayUserName">Loading...</h4>
+          <p id="displayUserEmail"></p>
         </div>
-      </div>
-
-      <div class="auth-actions">
-        <button class="switch-btn" onclick="openAccountModal()">
-          <i class="fa-brands fa-google" style="color:#087f83"></i>
-          <span id="authBtnText">Switch Account</span>
-        </button>
       </div>
 
       <!-- Admin Control Bar (Visible only to madina.manjeel@gmail.com) -->
       <div class="admin-bar" id="adminControls">
-        <span><i class="fa-solid fa-user-shield"></i> Admin Mode (Viewing Account):</span>
+        <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
         <select id="userSelector" class="admin-select" onchange="switchUserView()">
           <!-- Populated dynamically -->
         </select>
@@ -252,9 +236,10 @@ a{text-decoration:none;color:inherit}
       <button class="med-tab" onclick="setMedTab('history',this)">History</button>
     </div>
 
-    <div id="medContent">
-      <div class="empty">Please select your account to view scheduled medicines.</div>
+    <div id="medContent" style="margin-bottom: 10px;">
+      <div class="empty">No medicines scheduled today.</div>
     </div>
+
   </div>
 </section>
 
@@ -357,11 +342,11 @@ a{text-decoration:none;color:inherit}
   </div>
 </section>
 
-<!-- 5. ADD / MANAGE MEDICINE SECTION (BOTTOM) -->
+<!-- 5. ADD NEW MEDICINE SECTION (BOTTOM) -->
 <section class="section" id="medicineManager">
   <div class="section-head">
-    <div><h3>Add / Modify Medicine</h3><p>Add new medicine schedules to your account</p></div>
-    <div class="section-icon"><i class="fa-solid fa-plus"></i></div>
+    <div><h3>Add New Medicine</h3><p>Manage medicines and daily schedules</p></div>
+    <div class="section-icon"><i class="fa-solid fa-capsules"></i></div>
   </div>
 
   <div class="reminder-card">
@@ -371,7 +356,7 @@ a{text-decoration:none;color:inherit}
     <div class="med-form-grid">
       <div class="field full-field">
         <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Napa Extend">
+        <input id="newMedName" placeholder="e.g. Napa Extra">
       </div>
 
       <div class="field">
@@ -421,6 +406,7 @@ a{text-decoration:none;color:inherit}
       This is a personal tracking tool, not a prescription system.
       Always follow your doctor's instructions.
     </p>
+
   </div>
 </section>
 
@@ -432,720 +418,513 @@ a{text-decoration:none;color:inherit}
 </footer>
 
 </div>
-
-<!-- WEBVIEW-SAFE ACCOUNT SWITCHER MODAL -->
-<div class="modal-backdrop" id="accountModal">
-  <div class="modal-card">
-    <div class="modal-head">
-      <h4><i class="fa-brands fa-google" style="color:#087f83"></i> Choose an Account</h4>
-      <button class="modal-close" onclick="closeAccountModal()">×</button>
-    </div>
-    <p style="font-size:11px;color:var(--muted);line-height:1.5">Select your profile or enter your Gmail address to sync your personal medicines.</p>
-
-    <!-- Saved / Family Accounts List -->
-    <div class="acc-list" id="savedAccountsList"></div>
-
-    <div style="border-top:1px solid var(--border);margin:14px 0;padding-top:14px">
-      <div class="field">
-        <label>Your Name</label>
-        <input type="text" id="manualUserName" placeholder="e.g. Mashayekh Ahmed">
-      </div>
-      <div class="field">
-        <label>Your Gmail Address</label>
-        <input type="email" id="manualUserEmail" placeholder="e.g. example@gmail.com">
-      </div>
-      <button class="action-btn" onclick="saveManualAccount()">
-        <i class="fa-solid fa-check"></i> Continue with this Account
-      </button>
-    </div>
-  </div>
 </div>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Firebase SDKs (Modular v11 matching your Kids App) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-<script>
-/* ===============================
-   FIREBASE CONFIGURATION
-=============================== */
-const firebaseConfig = {
-  apiKey: "AIzaSyBqCgsnAfsz0WqRkk8Bx6X7f2OJjkPdc3U",
-  authDomain: "family-429c7.firebaseapp.com",
-  databaseURL: "https://family-429c7-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "family-429c7",
-  storageBucket: "family-429c7.firebasestorage.app",
-  messagingSenderId: "982876086618",
-  appId: "1:982876086618:web:af742e97fd22b4f1f2d363",
-  measurementId: "G-Y3RQ6BJT73"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-/* ===============================
-   DATE & CALCULATORS
-=============================== */
-const now = new Date();
-document.getElementById("currentDate").textContent = now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
-document.getElementById("year").textContent = now.getFullYear();
-
-function calculateBMI(){
-  const w=Number(document.getElementById("weight").value);
-  const h=Number(document.getElementById("height").value);
-  if(!w||!h||w<=0||h<50||h>250||w>500){alert("Enter valid weight and height.");return;}
-  const bmi=w/Math.pow(h/100,2);
-  let s=bmi<18.5?"Underweight":bmi<25?"Normal range":bmi<30?"Overweight":"Obesity range";
-  showResult("bmiResult",`Your BMI<strong>${bmi.toFixed(1)}</strong>${s}<br><small>Adult screening categories, not a diagnosis.</small>`);
-}
-
-function calculateWater(){
-  const w=Number(document.getElementById("waterWeight").value);
-  if(!w||w<=0||w>500){alert("Enter valid weight.");return;}
-  const liters=w*.033;
-  showResult("waterResult",`Estimated daily fluid amount<strong>${liters.toFixed(2)} L</strong>Approximately ${Math.round(liters*1000)} ml.<br><small>Rough estimate only. Individual needs vary.</small>`);
-}
-
-function calculateAge(){
-  const val=document.getElementById("birthDate").value;
-  if(!val){alert("Select your birth date.");return;}
-  const dob=new Date(val+"T00:00:00");
-  const n=new Date();
-  if(dob>n){alert("Date cannot be in the future.");return;}
-  let y=n.getFullYear()-dob.getFullYear();
-  let m=n.getMonth()-dob.getMonth();
-  let d=n.getDate()-dob.getDate();
-  if(d<0){m--;d+=new Date(n.getFullYear(),n.getMonth(),0).getDate();}
-  if(m<0){y--;m+=12;}
-  showResult("ageResult",`Your Age<strong>${y} Years</strong>${m} Months and ${d} Days`);
-}
-
-function showResult(id,html){
-  const el=document.getElementById(id);
-  el.innerHTML=html;
-  el.style.display="block";
-}
-
-/* ===============================
-   WEBVIEW-SAFE AUTHENTICATION
-=============================== */
-const ADMIN_EMAIL = "madina.manjeel@gmail.com";
-
-let loggedInUser = null;
-let viewingEmail = null;
-let allMedicines = []; 
-let allHistory = [];
-let pendingTimes = [];
-let currentTab = "today";
-let editingId = null;
-
-function todayDate(){
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
-
-function safeText(v){
-  return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
-}
-
-// 1. Auto-detect existing user from Firebase Auth, URL params, or LocalStorage
-auth.onAuthStateChanged(user => {
-  if (user && user.email) {
-    setActiveUser({
-      email: user.email.toLowerCase().trim(),
-      name: user.displayName || user.email.split("@")[0],
-      photo: user.photoURL || ""
-    });
-    return;
-  }
-  checkLocalOrUrlUser();
-});
-
-function checkLocalOrUrlUser() {
-  // Check URL parameters first (e.g., ?email=user@gmail.com&name=User)
-  const params = new URLSearchParams(window.location.search);
-  const urlEmail = params.get("email");
-  const urlName = params.get("name");
-  if (urlEmail && urlEmail.includes("@")) {
-    setActiveUser({ email: urlEmail.toLowerCase().trim(), name: urlName || urlEmail.split("@")[0], photo: "" });
-    return;
-  }
-
-  // Check saved user in localStorage
-  const cached = localStorage.getItem("hc_active_user");
-  if (cached) {
-    try {
-      const parsed = JSON.parse(cached);
-      if (parsed && parsed.email) {
-        setActiveUser(parsed);
-        return;
-      }
-    } catch(e) {}
-  }
-
-  // Search if Firebase Auth saved user in localStorage under firebase:authUser:...
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && k.startsWith("firebase:authUser:")) {
-      try {
-        const fbUser = JSON.parse(localStorage.getItem(k));
-        if (fbUser && fbUser.email) {
-          setActiveUser({
-            email: fbUser.email.toLowerCase().trim(),
-            name: fbUser.displayName || fbUser.email.split("@")[0],
-            photo: fbUser.photoURL || ""
-          });
-          return;
-        }
-      } catch(e) {}
-    }
-  }
-
-  setSignedOutState();
-}
-
-// Android WebView Bridge (যদি আপনার অ্যাপ থেকে কল করতে চান)
-window.setWebViewUser = function(email, name, photo = "") {
-  if (!email) return;
-  setActiveUser({
-    email: String(email).toLowerCase().trim(),
-    name: name || String(email).split("@")[0],
-    photo: photo
-  });
-};
-
-function setActiveUser(userObj) {
-  loggedInUser = userObj;
-  localStorage.setItem("hc_active_user", JSON.stringify(userObj));
-
-  // Save to recent accounts list on this device for 1-tap switching
-  let savedList = [];
-  try { savedList = JSON.parse(localStorage.getItem("hc_saved_accounts") || "[]"); } catch(e) {}
-  savedList = savedList.filter(a => a.email !== userObj.email);
-  savedList.unshift(userObj);
-  localStorage.setItem("hc_saved_accounts", JSON.stringify(savedList.slice(0, 8)));
-
-  viewingEmail = loggedInUser.email;
-
-  document.getElementById("displayUserName").textContent = loggedInUser.name;
-  document.getElementById("displayUserEmail").textContent = loggedInUser.email;
-  document.getElementById("authBtnText").textContent = "Switch Account";
-
-  const avatarEl = document.getElementById("userAvatar");
-  if (loggedInUser.photo) {
-    avatarEl.innerHTML = `<img src="${safeText(loggedInUser.photo)}" alt="Avatar">`;
-  } else {
-    avatarEl.textContent = (loggedInUser.name || "U").charAt(0).toUpperCase();
-  }
-
-  if (loggedInUser.email === ADMIN_EMAIL) {
-    document.getElementById("adminControls").style.display = "flex";
-  } else {
-    document.getElementById("adminControls").style.display = "none";
-  }
-
-  updateTargetAccountNote();
-  loadDataFromFirebase();
-}
-
-function setSignedOutState() {
-  loggedInUser = null;
-  viewingEmail = null;
-  allMedicines = [];
-  allHistory = [];
-  document.getElementById("displayUserName").textContent = "Not Signed In";
-  document.getElementById("displayUserEmail").textContent = "Tap 'Switch Account' to select your Gmail";
-  document.getElementById("authBtnText").textContent = "Sign In / Switch";
-  document.getElementById("userAvatar").innerHTML = `<i class="fa-solid fa-user"></i>`;
-  document.getElementById("adminControls").style.display = "none";
-  document.getElementById("targetAccountNote").textContent = "";
-  document.getElementById("totalStat").textContent = "0";
-  document.getElementById("takenStat").textContent = "0";
-  document.getElementById("pendingStat").textContent = "0";
-  document.getElementById("medContent").innerHTML = '<div class="empty">Please tap <b>Sign In / Switch</b> above to load your medicines.</div>';
-}
-
-/* ===============================
-   IN-PAGE ACCOUNT SWITCHER MODAL
-=============================== */
-function openAccountModal() {
-  renderSavedAccountsInModal();
-  document.getElementById("manualUserName").value = loggedInUser ? loggedInUser.name : "";
-  document.getElementById("manualUserEmail").value = loggedInUser ? loggedInUser.email : "";
-  document.getElementById("accountModal").style.display = "grid";
-}
-
-function closeAccountModal() {
-  document.getElementById("accountModal").style.display = "none";
-}
-
-function renderSavedAccountsInModal() {
-  let savedList = [];
-  try { savedList = JSON.parse(localStorage.getItem("hc_saved_accounts") || "[]"); } catch(e) {}
-
-  const box = document.getElementById("savedAccountsList");
-  if (!savedList.length) {
-    box.style.display = "none";
-    return;
-  }
-  box.style.display = "flex";
-  box.innerHTML = savedList.map(acc => `
-    <button class="acc-item" onclick="selectSavedAccount('${safeText(acc.email)}','${safeText(acc.name)}')">
-      <div class="acc-item-avatar">${safeText((acc.name||"U").charAt(0).toUpperCase())}</div>
-      <div class="acc-item-info">
-        <h5>${safeText(acc.name)}</h5>
-        <p>${safeText(acc.email)}</p>
-      </div>
-      <i class="fa-solid fa-chevron-right" style="color:#9db2b4;font-size:12px"></i>
-    </button>
-  `).join("");
-}
-
-function selectSavedAccount(email, name) {
-  setActiveUser({ email: email.toLowerCase().trim(), name: name, photo: "" });
-  closeAccountModal();
-}
-
-function saveManualAccount() {
-  const name = document.getElementById("manualUserName").value.trim();
-  const email = document.getElementById("manualUserEmail").value.trim().toLowerCase();
-
-  if (!email || !email.includes("@")) {
-    alert("Please enter a valid Gmail address.");
-    return;
-  }
-  const finalName = name || email.split("@")[0];
-  setActiveUser({ email, name: finalName, photo: "" });
-  closeAccountModal();
-}
-
-function updateTargetAccountNote() {
-  const note = document.getElementById("targetAccountNote");
-  if (!viewingEmail) {
-    note.textContent = "";
-    return;
-  }
-  if (loggedInUser && loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) {
-    note.textContent = `Admin Mode: Adding/Editing medicine for ${viewingEmail}`;
-  } else {
-    note.textContent = `Saving to account: ${viewingEmail}`;
-  }
-}
-
-/* ===============================
-   CLOUD FIRESTORE SYNC
-=============================== */
-async function loadDataFromFirebase() {
-  if (!loggedInUser || !loggedInUser.email) return;
-
-  document.getElementById("medContent").innerHTML = '<div class="empty">Loading your medicines... <i class="fa-solid fa-spinner fa-spin"></i></div>';
-  
-  try {
-    let medSnapshot, historySnapshot;
-    
-    if (loggedInUser.email === ADMIN_EMAIL) {
-      medSnapshot = await db.collection("medicines").get();
-      historySnapshot = await db.collection("med_history").get();
-    } else {
-      medSnapshot = await db.collection("medicines").where("userEmail", "==", loggedInUser.email).get();
-      historySnapshot = await db.collection("med_history").where("userEmail", "==", loggedInUser.email).get();
-    }
-
-    allMedicines = medSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    allHistory = historySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-    if (loggedInUser.email === ADMIN_EMAIL) {
-      populateAdminDropdown();
-    }
-    renderAll();
-  } catch (error) {
-    console.error("Error loading data: ", error);
-    document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check internet connection.</div>';
-  }
-}
-
-function populateAdminDropdown() {
-  const usersSet = new Set(allMedicines.map(m => (m.userEmail || "").toLowerCase().trim()).filter(Boolean));
-  usersSet.add(ADMIN_EMAIL);
-  if (viewingEmail) usersSet.add(viewingEmail);
-
-  const users = Array.from(usersSet);
-  const select = document.getElementById("userSelector");
-  
-  select.innerHTML = users.map(email => 
-    `<option value="${safeText(email)}" ${email === viewingEmail ? 'selected' : ''}>
-      ${email === ADMIN_EMAIL ? `My Account (${email})` : email}
-    </option>`
-  ).join("") + `<option value="__ADD_USER__">+ View / Add Another Gmail...</option>`;
-}
-
-function switchUserView() {
-  const select = document.getElementById("userSelector");
-  if (select.value === "__ADD_USER__") {
-    const customEmail = prompt("Enter family member's Gmail address:");
-    if (customEmail && customEmail.includes("@")) {
-      viewingEmail = customEmail.toLowerCase().trim();
-      populateAdminDropdown();
-    } else {
-      select.value = viewingEmail;
-      return;
-    }
-  } else {
-    viewingEmail = select.value;
-  }
-  updateTargetAccountNote();
-  renderAll();
-}
-
-function getActiveMedicines() {
-  if (!viewingEmail) return [];
-  return allMedicines.filter(m => (m.userEmail || "").toLowerCase().trim() === viewingEmail);
-}
-
-function getActiveHistory() {
-  if (!viewingEmail) return [];
-  return allHistory.filter(h => (h.userEmail || "").toLowerCase().trim() === viewingEmail);
-}
-
-/* TIMES MANAGEMENT */
-function addMedTime(){
-  const input=document.getElementById("newMedTime");
-  const time=input.value;
-  if(!time){alert("Select a time first.");return;}
-  if(pendingTimes.includes(time)){alert("Time already added.");return;}
-  pendingTimes.push(time);
-  pendingTimes.sort();
-  input.value="";
-  renderTimes();
-}
-
-function renderTimes(){
-  document.getElementById("selectedTimes").innerHTML=pendingTimes.map((t,i)=>`
-    <span class="time-chip">${safeText(t)}
-    <button onclick="removeTime(${i})">×</button></span>
-  `).join("");
-}
-
-function removeTime(i){
-  pendingTimes.splice(i,1);
-  renderTimes();
-}
-
-/* SAVE & UPDATE MEDICINE */
-async function saveMedicine(){
-  if (!loggedInUser || !viewingEmail) {
-    openAccountModal();
-    return;
-  }
-
-  if(editingId) return updateMedicine();
-
-  const name=document.getElementById("newMedName").value.trim();
-  const dose=document.getElementById("newMedDose").value.trim();
-  const start=document.getElementById("medStart").value;
-  const end=document.getElementById("medEnd").value;
-
-  if(!name||!start||!end||!pendingTimes.length){
-    alert("Fill medicine name, dates and at least one time.");return;
-  }
-  if(start>end){alert("End date cannot be before start date.");return;}
-
-  const saveBtn = document.getElementById("saveMedButton");
-  saveBtn.disabled = true;
-  saveBtn.innerHTML = "Saving...";
-
-  const newMed = {
-    userEmail: viewingEmail.toLowerCase().trim(),
-    name, dose, start, end, times:[...pendingTimes],
-    createdAt: new Date().toISOString()
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+    authDomain: "family-429c7.firebaseapp.com",
+    projectId: "family-429c7",
+    storageBucket: "family-429c7.firebasestorage.app",
+    messagingSenderId: "982876086618",
+    appId: "1:982876086618:web:97d56fd46148561cf2d363"
   };
 
-  try {
-    const docRef = await db.collection("medicines").add(newMed);
-    allMedicines.push({ id: docRef.id, ...newMed });
-    
-    clearMedForm();
-    if(loggedInUser.email === ADMIN_EMAIL) populateAdminDropdown();
-    renderAll();
-    window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
-    alert("Medicine saved for " + viewingEmail);
-  } catch(e) {
-    alert("Error saving medicine: " + e.message);
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  const ADMIN_EMAIL = "madina.manjeel@gmail.com";
+  let currentUser = null;
+  let viewingEmail = null;
+  let allMedicines = [];
+  let allHistory = [];
+  let pendingTimes = [];
+  let currentTab = "today";
+  let editingId = null;
+
+  /* DATE & CALCULATORS */
+  const now = new Date();
+  document.getElementById("currentDate").textContent = now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  document.getElementById("year").textContent = now.getFullYear();
+
+  window.calculateBMI = function(){
+    const w=Number(document.getElementById("weight").value);
+    const h=Number(document.getElementById("height").value);
+    if(!w||!h||w<=0||h<50||h>250||w>500){alert("Enter valid weight and height.");return;}
+    const bmi=w/Math.pow(h/100,2);
+    let s=bmi<18.5?"Underweight":bmi<25?"Normal range":bmi<30?"Overweight":"Obesity range";
+    showResult("bmiResult",`Your BMI<strong>${bmi.toFixed(1)}</strong>${s}<br><small>Adult screening categories, not a diagnosis.</small>`);
+  };
+
+  window.calculateWater = function(){
+    const w=Number(document.getElementById("waterWeight").value);
+    if(!w||w<=0||w>500){alert("Enter valid weight.");return;}
+    const liters=w*.033;
+    showResult("waterResult",`Estimated daily fluid amount<strong>${liters.toFixed(2)} L</strong>Approximately ${Math.round(liters*1000)} ml.<br><small>Rough estimate only. Individual needs vary.</small>`);
+  };
+
+  window.calculateAge = function(){
+    const val=document.getElementById("birthDate").value;
+    if(!val){alert("Select your birth date.");return;}
+    const dob=new Date(val+"T00:00:00");
+    const n=new Date();
+    if(dob>n){alert("Date cannot be in the future.");return;}
+    let y=n.getFullYear()-dob.getFullYear();
+    let m=n.getMonth()-dob.getMonth();
+    let d=n.getDate()-dob.getDate();
+    if(d<0){m--;d+=new Date(n.getFullYear(),n.getMonth(),0).getDate();}
+    if(m<0){y--;m+=12;}
+    showResult("ageResult",`Your Age<strong>${y} Years</strong>${m} Months and ${d} Days`);
+  };
+
+  function showResult(id,html){
+    const el=document.getElementById(id);
+    el.innerHTML=html;
+    el.style.display="block";
   }
-}
 
-async function updateMedicine() {
-  const name=document.getElementById("newMedName").value.trim();
-  const dose=document.getElementById("newMedDose").value.trim();
-  const start=document.getElementById("medStart").value;
-  const end=document.getElementById("medEnd").value;
-
-  if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
-
-  const updatedData = { name, dose, start, end, times: [...pendingTimes] };
-
-  try {
-    await db.collection("medicines").doc(editingId).update(updatedData);
-    const m = allMedicines.find(x => x.id === editingId);
-    if(m) Object.assign(m, updatedData);
-
-    editingId = null;
-    document.getElementById("formTitleText").textContent = "Add New Medicine";
-    document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
-    clearMedForm();
-    renderAll();
-    window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
-    alert("Medicine updated successfully.");
-  } catch(e) {
-    alert("Error updating: " + e.message);
+  function todayDate(){
+    const d=new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   }
-}
 
-function clearMedForm() {
-  document.getElementById("newMedName").value="";
-  document.getElementById("newMedDose").value="";
-  document.getElementById("medStart").value="";
-  document.getElementById("medEnd").value="";
-  pendingTimes=[];
-  renderTimes();
-}
+  function safeText(v){
+    return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
+  }
 
-/* TRACKING IN FIREBASE */
-function todayItems(){
-  const date=todayDate();
-  const result=[];
-  getActiveMedicines().forEach(m => {
-    if(date < m.start || date > m.end) return;
-    (m.times || []).forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
-  });
-  return result.sort((a,b)=>a.time.localeCompare(b.time));
-}
+  // AUTH STATE LISTENER (Same as your Kids page - No white screen, auto login)
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      viewingEmail = user.email.toLowerCase().trim();
 
-function statusOf(id,time,date=todayDate()){
-  return getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date)?.status || "pending";
-}
+      document.getElementById('loading-message').style.display = 'none';
+      document.getElementById('content-wrapper').style.display = 'block';
 
-async function markMedicine(id,time,status){
-  if (!viewingEmail) return;
-  const date=todayDate();
-  let record = getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date);
-  
-  try {
-    if(record){
-      if(record.status !== "pending") { alert("Already recorded."); return; }
-      await db.collection("med_history").doc(record.id).update({ status });
-      record.status = status;
+      document.getElementById("displayUserName").textContent = user.displayName || user.email.split("@")[0];
+      document.getElementById("displayUserEmail").textContent = user.email;
+
+      const avatarEl = document.getElementById("userAvatar");
+      if (user.photoURL) {
+        avatarEl.innerHTML = `<img src="${safeText(user.photoURL)}" alt="Avatar">`;
+      } else {
+        avatarEl.textContent = (user.displayName || "U").charAt(0).toUpperCase();
+      }
+
+      if (viewingEmail === ADMIN_EMAIL) {
+        document.getElementById("adminControls").style.display = "flex";
+      } else {
+        document.getElementById("adminControls").style.display = "none";
+      }
+
+      updateTargetAccountNote();
+      loadDataFromFirebase();
     } else {
-      const newHistory = {
-        medId: id,
-        userEmail: viewingEmail.toLowerCase().trim(),
-        time, date, status,
-        recordedAt: new Date().toISOString()
-      };
-      const docRef = await db.collection("med_history").add(newHistory);
-      allHistory.push({ id: docRef.id, ...newHistory });
+      document.getElementById('loading-message').style.display = 'block';
+      document.getElementById('content-wrapper').style.display = 'none';
+      signInWithRedirect(auth, provider);
     }
-    renderAll();
-  } catch(e) {
-    alert("Error saving record: " + e.message);
-  }
-}
-
-/* RENDER VIEWS */
-function renderToday(){
-  if (!loggedInUser) {
-    document.getElementById("totalStat").textContent = "0";
-    document.getElementById("takenStat").textContent = "0";
-    document.getElementById("pendingStat").textContent = "0";
-    return '<div class="empty">Please tap <b>Sign In / Switch</b> above to view your scheduled medicines.</div>';
-  }
-
-  const items=todayItems();
-  const taken=items.filter(x=>statusOf(x.id,x.time)==="taken").length;
-  const pending=items.filter(x=>statusOf(x.id,x.time)==="pending").length;
-
-  document.getElementById("totalStat").textContent=items.length;
-  document.getElementById("takenStat").textContent=taken;
-  document.getElementById("pendingStat").textContent=pending;
-
-  if(!items.length) return '<div class="empty">No medicines scheduled today for this account.</div>';
-
-  return items.map(item=>{
-    const status=statusOf(item.id,item.time);
-    const label=status==="taken"?"Taken":status==="skipped"?"Skipped":"Pending";
-    const color=status==="taken"?"#159968":status==="skipped"?"#d17c3c":"#82979b";
-    return `
-    <div class="med-row">
-      <div class="med-row-top">
-        <div>
-          <h4>${safeText(item.name)}</h4>
-          <p>${safeText(item.dose||"Dosage not specified")} · <i class="fa-regular fa-clock"></i> ${safeText(item.time)}</p>
-        </div>
-        <span style="font-size:10px;font-weight:700;color:${color}">${label}</span>
-      </div>
-      <div class="med-buttons">
-        <button class="med-action med-taken" ${status!=="pending"?"disabled":""}
-          onclick="markMedicine('${item.id}','${item.time}','taken')">
-          <i class="fa-solid fa-check"></i> Taken
-        </button>
-        <button class="med-action med-skipped" ${status!=="pending"?"disabled":""}
-          onclick="markMedicine('${item.id}','${item.time}','skipped')">
-          <i class="fa-solid fa-forward"></i> Skipped
-        </button>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-function renderMedicineList(){
-  if (!loggedInUser) return '<div class="empty">Please sign in first.</div>';
-  const myMeds = getActiveMedicines();
-  if(!myMeds.length) return '<div class="empty">No medicines found for this account.</div>';
-  return myMeds.map(m=>`
-    <div class="med-row">
-      <div class="med-row-top">
-        <div>
-          <h4>${safeText(m.name)}</h4>
-          <p>${safeText(m.dose||"Dosage not specified")}</p>
-          <p>${safeText(m.start)} → ${safeText(m.end)}</p>
-          <p>Times: ${(m.times||[]).map(safeText).join(" · ")}</p>
-        </div>
-      </div>
-      <div class="med-buttons">
-        <button class="med-action med-edit" onclick="editMedicine('${m.id}')">
-          <i class="fa-solid fa-pen"></i> Edit
-        </button>
-        <button class="med-action med-delete" onclick="deleteMedicine('${m.id}')">
-          <i class="fa-solid fa-trash"></i> Delete
-        </button>
-      </div>
-    </div>
-  `).join("");
-}
-
-function renderHistory(){
-  if (!loggedInUser) return '<div class="empty">Please sign in first.</div>';
-  const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
-  if(!records.length) return '<div class="empty">No history available for this account.</div>';
-
-  return records.slice(0,100).map(h=>{
-    const m = allMedicines.find(x=>x.id===h.medId);
-    return `<div class="med-row">
-      <div class="med-row-top">
-        <div>
-          <h4>${safeText(m?.name||"Deleted medicine")}</h4>
-          <p>${safeText(h.date)} · ${safeText(h.time)}</p>
-        </div>
-        <span style="font-size:11px;font-weight:700;color:${h.status==="taken"?"#159968":"#d17c3c"}">
-          ${h.status==="taken"?"Taken":"Skipped"}
-        </span>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-function editMedicine(id){
-  const m = allMedicines.find(x => x.id === id);
-  if(!m) return;
-
-  document.getElementById("newMedName").value=m.name;
-  document.getElementById("newMedDose").value=m.dose||"";
-  document.getElementById("medStart").value=m.start;
-  document.getElementById("medEnd").value=m.end;
-  pendingTimes=[...(m.times||[])];
-  editingId=id;
-  renderTimes();
-  
-  document.getElementById("formTitleText").textContent = "Edit Medicine";
-  document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-pen"></i> Update Medicine';
-  document.getElementById("medicineManager").scrollIntoView({behavior: "smooth", block: "start"});
-}
-
-async function deleteMedicine(id){
-  if(!confirm("Delete this medicine?")) return;
-  try {
-    await db.collection("medicines").doc(id).delete();
-    allMedicines = allMedicines.filter(m => m.id !== id);
-    renderAll();
-  } catch(e) {
-    alert("Error deleting: " + e.message);
-  }
-}
-
-function setMedTab(tab,button){
-  currentTab=tab;
-  document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
-  button.classList.add("active");
-  renderContent();
-}
-
-function renderContent(){
-  const box=document.getElementById("medContent");
-  if(currentTab==="today") box.innerHTML=renderToday();
-  if(currentTab==="all") box.innerHTML=renderMedicineList();
-  if(currentTab==="history") box.innerHTML=renderHistory();
-}
-
-function renderAll(){
-  renderToday();
-  renderContent();
-}
-
-/* NOTIFICATIONS */
-async function enableMedNotifications(){
-  const status=document.getElementById("notificationStatus");
-  if(!("Notification" in window)){
-    status.textContent="Notifications not supported.";
-    return;
-  }
-  try{
-    const permission=await Notification.requestPermission();
-    status.textContent=permission==="granted"?"Notifications enabled.":"Permission not granted.";
-  }catch(e){
-    status.textContent="Could not enable notifications.";
-  }
-}
-
-function checkMedicineAlerts(){
-  if(!("Notification" in window)||Notification.permission!=="granted"||!loggedInUser) return;
-  const date=todayDate();
-  const now=new Date();
-  const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
-
-  getActiveMedicines().forEach(m=>{
-    if(date<m.start||date>m.end||!(m.times||[]).includes(time)) return;
-    if(statusOf(m.id,time)!=="pending") return;
-
-    const key="alert_"+m.id+"_"+date+"_"+time;
-    if(localStorage.getItem(key)) return;
-
-    new Notification("Medicine Reminder",{
-      body:"Time for "+m.name+(m.dose?" · "+m.dose:""),
-      tag:key
-    });
-    localStorage.setItem(key,"1");
   });
-}
 
-/* INITIALIZATION */
-if("Notification" in window){
-  document.getElementById("notificationStatus").textContent=
-    Notification.permission==="granted"?"Notifications enabled.":"Notifications not enabled.";
-}
+  function updateTargetAccountNote() {
+    const note = document.getElementById("targetAccountNote");
+    if (!viewingEmail) return;
+    if (currentUser && currentUser.email.toLowerCase() === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) {
+      note.textContent = `Admin Mode: Managing medicines for ${viewingEmail}`;
+    } else {
+      note.textContent = `Managing medicines for: ${viewingEmail}`;
+    }
+  }
 
-renderTimes();
-checkMedicineAlerts();
-setInterval(checkMedicineAlerts, 15000);
+  /* CLOUD FIRESTORE SYNC */
+  async function loadDataFromFirebase() {
+    if (!currentUser) return;
+    document.getElementById("medContent").innerHTML = '<div class="empty">Loading your medicines... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+    
+    try {
+      const medSnap = await getDocs(collection(db, "medicines"));
+      const histSnap = await getDocs(collection(db, "med_history"));
 
-/* PWA SERVICE WORKER REGISTRATION */
-if("serviceWorker" in navigator && location.protocol==="https:"){
-  navigator.serviceWorker.register("./sw.js").catch(console.error);
-}
+      allMedicines = medSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      allHistory = histSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      if (currentUser.email.toLowerCase() === ADMIN_EMAIL) {
+        populateAdminDropdown();
+      }
+      renderAll();
+    } catch (error) {
+      console.error("Error loading data: ", error);
+      document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check connection.</div>';
+    }
+  }
+
+  function populateAdminDropdown() {
+    const usersSet = new Set(allMedicines.map(m => (m.userEmail || "").toLowerCase().trim()).filter(Boolean));
+    usersSet.add(ADMIN_EMAIL);
+    if (viewingEmail) usersSet.add(viewingEmail);
+
+    const users = Array.from(usersSet);
+    const select = document.getElementById("userSelector");
+    
+    select.innerHTML = users.map(email => 
+      `<option value="${safeText(email)}" ${email === viewingEmail ? 'selected' : ''}>
+        ${email === ADMIN_EMAIL ? `My Account (${email})` : email}
+      </option>`
+    ).join("") + `<option value="__ADD_USER__">+ Add / View Another Gmail...</option>`;
+  }
+
+  window.switchUserView = function() {
+    const select = document.getElementById("userSelector");
+    if (select.value === "__ADD_USER__") {
+      const customEmail = prompt("Enter family member's Gmail address:");
+      if (customEmail && customEmail.includes("@")) {
+        viewingEmail = customEmail.toLowerCase().trim();
+        populateAdminDropdown();
+      } else {
+        select.value = viewingEmail;
+        return;
+      }
+    } else {
+      viewingEmail = select.value;
+    }
+    updateTargetAccountNote();
+    renderAll();
+  };
+
+  function getActiveMedicines() {
+    if (!viewingEmail) return [];
+    return allMedicines.filter(m => (m.userEmail || "").toLowerCase().trim() === viewingEmail);
+  }
+
+  function getActiveHistory() {
+    if (!viewingEmail) return [];
+    return allHistory.filter(h => (h.userEmail || "").toLowerCase().trim() === viewingEmail);
+  }
+
+  /* TIMES MANAGEMENT */
+  window.addMedTime = function(){
+    const input=document.getElementById("newMedTime");
+    const time=input.value;
+    if(!time){alert("Select a time first.");return;}
+    if(pendingTimes.includes(time)){alert("Time already added.");return;}
+    pendingTimes.push(time);
+    pendingTimes.sort();
+    input.value="";
+    renderTimes();
+  };
+
+  function renderTimes(){
+    document.getElementById("selectedTimes").innerHTML=pendingTimes.map((t,i)=>`
+      <span class="time-chip">${safeText(t)}
+      <button onclick="window.removeTime(${i})">×</button></span>
+    `).join("");
+  }
+
+  window.removeTime = function(i){
+    pendingTimes.splice(i,1);
+    renderTimes();
+  };
+
+  /* SAVE & UPDATE MEDICINE */
+  window.saveMedicine = async function(){
+    if(!currentUser || !viewingEmail) return;
+    if(editingId) return updateMedicine();
+
+    const name=document.getElementById("newMedName").value.trim();
+    const dose=document.getElementById("newMedDose").value.trim();
+    const start=document.getElementById("medStart").value;
+    const end=document.getElementById("medEnd").value;
+
+    if(!name||!start||!end||!pendingTimes.length){
+      alert("Fill medicine name, dates and at least one time.");return;
+    }
+    if(start>end){alert("End date cannot be before start date.");return;}
+
+    const saveBtn = document.getElementById("saveMedButton");
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = "Saving...";
+
+    const newMed = {
+      userEmail: viewingEmail.toLowerCase().trim(),
+      name, dose, start, end, times:[...pendingTimes],
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, "medicines"), newMed);
+      allMedicines.push({ id: docRef.id, ...newMed });
+      
+      clearMedForm();
+      if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
+      renderAll();
+      window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
+      alert("Medicine saved successfully.");
+    } catch(e) {
+      alert("Error saving medicine: " + e.message);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+    }
+  };
+
+  async function updateMedicine() {
+    const name=document.getElementById("newMedName").value.trim();
+    const dose=document.getElementById("newMedDose").value.trim();
+    const start=document.getElementById("medStart").value;
+    const end=document.getElementById("medEnd").value;
+
+    if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
+
+    const updatedData = { name, dose, start, end, times: [...pendingTimes] };
+
+    try {
+      await updateDoc(doc(db, "medicines", editingId), updatedData);
+      const m = allMedicines.find(x => x.id === editingId);
+      if(m) Object.assign(m, updatedData);
+
+      editingId = null;
+      document.getElementById("formTitleText").textContent = "Add New Medicine";
+      document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+      clearMedForm();
+      renderAll();
+      window.scrollTo({top: document.getElementById("myOverviewSection").offsetTop - 15, behavior: "smooth"});
+      alert("Medicine updated successfully.");
+    } catch(e) {
+      alert("Error updating: " + e.message);
+    }
+  }
+
+  function clearMedForm() {
+    document.getElementById("newMedName").value="";
+    document.getElementById("newMedDose").value="";
+    document.getElementById("medStart").value="";
+    document.getElementById("medEnd").value="";
+    pendingTimes=[];
+    renderTimes();
+  }
+
+  /* TRACKING */
+  function todayItems(){
+    const date=todayDate();
+    const result=[];
+    getActiveMedicines().forEach(m => {
+      if(date < m.start || date > m.end) return;
+      (m.times || []).forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
+    });
+    return result.sort((a,b)=>a.time.localeCompare(b.time));
+  }
+
+  function statusOf(id,time,date=todayDate()){
+    return getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date)?.status || "pending";
+  }
+
+  window.markMedicine = async function(id,time,status){
+    if(!viewingEmail) return;
+    const date=todayDate();
+    let record = getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date);
+    
+    try {
+      if(record){
+        if(record.status !== "pending") { alert("Already recorded."); return; }
+        await updateDoc(doc(db, "med_history", record.id), { status });
+        record.status = status;
+      } else {
+        const newHistory = {
+          medId: id,
+          userEmail: viewingEmail.toLowerCase().trim(),
+          time, date, status,
+          recordedAt: new Date().toISOString()
+        };
+        const docRef = await addDoc(collection(db, "med_history"), newHistory);
+        allHistory.push({ id: docRef.id, ...newHistory });
+      }
+      renderAll();
+    } catch(e) {
+      alert("Error saving record: " + e.message);
+    }
+  };
+
+  /* RENDER VIEWS */
+  function renderToday(){
+    const items=todayItems();
+    const taken=items.filter(x=>statusOf(x.id,x.time)==="taken").length;
+    const pending=items.filter(x=>statusOf(x.id,x.time)==="pending").length;
+
+    document.getElementById("totalStat").textContent=items.length;
+    document.getElementById("takenStat").textContent=taken;
+    document.getElementById("pendingStat").textContent=pending;
+
+    if(!items.length) return '<div class="empty">No medicines scheduled today.</div>';
+
+    return items.map(item=>{
+      const status=statusOf(item.id,item.time);
+      const label=status==="taken"?"Taken":status==="skipped"?"Skipped":"Pending";
+      const color=status==="taken"?"#159968":status==="skipped"?"#d17c3c":"#82979b";
+      return `
+      <div class="med-row">
+        <div class="med-row-top">
+          <div>
+            <h4>${safeText(item.name)}</h4>
+            <p>${safeText(item.dose||"Dosage not specified")} · <i class="fa-regular fa-clock"></i> ${safeText(item.time)}</p>
+          </div>
+          <span style="font-size:10px;font-weight:700;color:${color}">${label}</span>
+        </div>
+        <div class="med-buttons">
+          <button class="med-action med-taken" ${status!=="pending"?"disabled":""}
+            onclick="window.markMedicine('${item.id}','${item.time}','taken')">
+            <i class="fa-solid fa-check"></i> Taken
+          </button>
+          <button class="med-action med-skipped" ${status!=="pending"?"disabled":""}
+            onclick="window.markMedicine('${item.id}','${item.time}','skipped')">
+            <i class="fa-solid fa-forward"></i> Skipped
+          </button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function renderMedicineList(){
+    const myMeds = getActiveMedicines();
+    if(!myMeds.length) return '<div class="empty">No medicines found for this account.</div>';
+    return myMeds.map(m=>`
+      <div class="med-row">
+        <div class="med-row-top">
+          <div>
+            <h4>${safeText(m.name)}</h4>
+            <p>${safeText(m.dose||"Dosage not specified")}</p>
+            <p>${safeText(m.start)} → ${safeText(m.end)}</p>
+            <p>Times: ${(m.times||[]).map(safeText).join(" · ")}</p>
+          </div>
+        </div>
+        <div class="med-buttons">
+          <button class="med-action med-edit" onclick="window.editMedicine('${m.id}')">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+          <button class="med-action med-delete" onclick="window.deleteMedicine('${m.id}')">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderHistory(){
+    const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+    if(!records.length) return '<div class="empty">No history available.</div>';
+
+    return records.slice(0,100).map(h=>{
+      const m = allMedicines.find(x=>x.id===h.medId);
+      return `<div class="med-row">
+        <div class="med-row-top">
+          <div>
+            <h4>${safeText(m?.name||"Deleted medicine")}</h4>
+            <p>${safeText(h.date)} · ${safeText(h.time)}</p>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:${h.status==="taken"?"#159968":"#d17c3c"}">
+            ${h.status==="taken"?"Taken":"Skipped"}
+          </span>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  window.editMedicine = function(id){
+    const m = allMedicines.find(x => x.id === id);
+    if(!m) return;
+
+    document.getElementById("newMedName").value=m.name;
+    document.getElementById("newMedDose").value=m.dose||"";
+    document.getElementById("medStart").value=m.start;
+    document.getElementById("medEnd").value=m.end;
+    pendingTimes=[...(m.times||[])];
+    editingId=id;
+    renderTimes();
+    
+    document.getElementById("formTitleText").textContent = "Edit Medicine";
+    document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-pen"></i> Update Medicine';
+    document.getElementById("medicineManager").scrollIntoView({behavior: "smooth", block: "start"});
+  };
+
+  window.deleteMedicine = async function(id){
+    if(!confirm("Delete this medicine?")) return;
+    try {
+      await deleteDoc(doc(db, "medicines", id));
+      allMedicines = allMedicines.filter(m => m.id !== id);
+      renderAll();
+    } catch(e) {
+      alert("Error deleting: " + e.message);
+    }
+  };
+
+  window.setMedTab = function(tab,button){
+    currentTab=tab;
+    document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
+    button.classList.add("active");
+    renderContent();
+  };
+
+  function renderContent(){
+    const box=document.getElementById("medContent");
+    if(currentTab==="today") box.innerHTML=renderToday();
+    if(currentTab==="all") box.innerHTML=renderMedicineList();
+    if(currentTab==="history") box.innerHTML=renderHistory();
+  }
+
+  function renderAll(){
+    renderToday();
+    renderContent();
+  }
+
+  /* NOTIFICATIONS */
+  window.enableMedNotifications = async function(){
+    const status=document.getElementById("notificationStatus");
+    if(!("Notification" in window)){
+      status.textContent="Notifications not supported.";
+      return;
+    }
+    try{
+      const permission=await Notification.requestPermission();
+      status.textContent=permission==="granted"?"Notifications enabled.":"Permission not granted.";
+    }catch(e){
+      status.textContent="Could not enable notifications.";
+    }
+  };
+
+  function checkMedicineAlerts(){
+    if(!("Notification" in window)||Notification.permission!=="granted"||!currentUser) return;
+    const date=todayDate();
+    const now=new Date();
+    const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+
+    getActiveMedicines().forEach(m=>{
+      if(date<m.start||date>m.end||!(m.times||[]).includes(time)) return;
+      if(statusOf(m.id,time)!=="pending") return;
+
+      const key="alert_"+m.id+"_"+date+"_"+time;
+      if(localStorage.getItem(key)) return;
+
+      new Notification("Medicine Reminder",{
+        body:"Time for "+m.name+(m.dose?" · "+m.dose:""),
+        tag:key
+      });
+      localStorage.setItem(key,"1");
+    });
+  }
+
+  if("Notification" in window){
+    document.getElementById("notificationStatus").textContent=
+      Notification.permission==="granted"?"Notifications enabled.":"Notifications not enabled.";
+  }
+
+  renderTimes();
+  setInterval(checkMedicineAlerts, 15000);
 </script>
 </body>
 </html>
