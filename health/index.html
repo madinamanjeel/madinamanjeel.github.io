@@ -56,12 +56,36 @@ a{text-decoration:none;color:inherit}
 .section-icon{width:38px;height:38px;background:#e1f4f2;color:var(--primary);display:grid;place-items:center;border-radius:12px}
 
 /* USER BAR & ADMIN */
-.user-bar{background:#eaf7f5;padding:15px;border-radius:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border:1px solid #d2ece8}
-.user-info{display:flex;align-items:center;gap:11px}
+.user-bar{background:#eaf7f5;padding:15px;border-radius:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border:1px solid #d2ece8; position: relative;}
+.user-info{display:flex;align-items:center;gap:11px; flex: 1; min-width: 0;}
 .user-avatar{width:42px;height:42px;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-weight:800;font-size:15px;overflow:hidden;flex-shrink:0}
 .user-avatar img{width:100%;height:100%;object-fit:cover}
-.user-details h4{color:var(--primary);font-size:14px;font-weight:800}
-.user-details p{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all}
+.user-details{flex: 1; min-width: 0; overflow: hidden;}
+.user-details h4{color:var(--primary);font-size:14px;font-weight:800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.user-details p{font-size:11px;color:var(--muted);margin-top:2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+/* Switch Account Button Styling */
+.switch-account-btn {
+  background: white;
+  border: 1px solid #a8dcd6;
+  color: var(--primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(8, 127, 131, 0.1);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.switch-account-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(8, 127, 131, 0.2);
+}
+
 .admin-bar{width:100%;padding-top:12px;border-top:1px dashed #c0e0dc;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .admin-bar span{font-size:11px;font-weight:700;color:#075c65}
 .admin-select{padding:8px 12px;border-radius:8px;border:1px solid var(--primary);font-size:11px;font-weight:600;background:white;color:var(--dark);outline:none;flex:1;max-width:280px}
@@ -251,7 +275,7 @@ a{text-decoration:none;color:inherit}
 
   <div class="reminder-card" id="medOverviewCard">
     
-    <!-- User Account Bar -->
+    <!-- User Account Bar with Switch Account Button -->
     <div class="user-bar">
       <div class="user-info">
         <div class="user-avatar" id="userAvatar"><i class="fa-solid fa-user"></i></div>
@@ -260,6 +284,10 @@ a{text-decoration:none;color:inherit}
           <p id="displayUserEmail"></p>
         </div>
       </div>
+      <!-- New Switch Account Button -->
+      <button class="switch-account-btn" onclick="switchGoogleAccount()" title="Switch Account">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
 
       <!-- Admin Control Bar -->
       <div class="admin-bar" id="adminControls">
@@ -422,7 +450,7 @@ a{text-decoration:none;color:inherit}
 
       <!-- ঘড়ির টাইম সিস্টেম (Clock-wise) -->
       <div class="field">
-        <label>Reminder Time</label>
+        <label>Reminder Time (Optional)</label>
         <div class="med-time-row">
           <input type="time" id="newMedTime">
           <button class="action-btn" onclick="addMedTime()">+ Add</button>
@@ -465,7 +493,6 @@ a{text-decoration:none;color:inherit}
         <input type="date" id="medEnd">
       </div>
 
-      <!-- ADDITIONAL NOTE FIELD (New Feature) -->
       <div class="field full-field">
         <label>Additional Note (Optional)</label>
         <input type="text" id="medNote" placeholder="e.g. Take with warm water, after 30 mins etc.">
@@ -508,7 +535,7 @@ a{text-decoration:none;color:inherit}
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
   import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -524,6 +551,11 @@ a{text-decoration:none;color:inherit}
   const auth = getAuth(app);
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
+  
+  // Force Account Selection every time provider is called
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  });
 
   const ADMIN_EMAIL = "madina.manjeel@gmail.com";
   let currentUser = null;
@@ -667,6 +699,18 @@ a{text-decoration:none;color:inherit}
   function safeText(v){
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
+
+  // Switch Google Account Function
+  window.switchGoogleAccount = function() {
+    document.getElementById('loading-message').style.display = 'block';
+    document.getElementById('content-wrapper').style.display = 'none';
+    signOut(auth).then(() => {
+      signInWithRedirect(auth, provider);
+    }).catch((error) => {
+      console.error("Sign Out Error", error);
+      showToast("Error switching account");
+    });
+  };
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -836,7 +880,7 @@ a{text-decoration:none;color:inherit}
     const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
     const end=document.getElementById("medEnd").value.trim();
-    const note=document.getElementById("medNote").value.trim(); // Added note saving
+    const note=document.getElementById("medNote").value.trim();
 
     if(!name){
       showToast("Please enter medicine name.");return;
@@ -850,7 +894,7 @@ a{text-decoration:none;color:inherit}
       meal: meal || "After meal",
       start: start || todayDate(), 
       end: end || "", 
-      note: note || "", // Save note
+      note: note || "", 
       times: [...pendingTimes],
       createdAt: new Date().toISOString()
     };
@@ -880,7 +924,7 @@ a{text-decoration:none;color:inherit}
     const meal=document.getElementById("mealTiming").value;
     const start=document.getElementById("medStart").value;
     const end=document.getElementById("medEnd").value.trim();
-    const note=document.getElementById("medNote").value.trim(); // Update note
+    const note=document.getElementById("medNote").value.trim();
 
     if(!name){showToast("Please enter medicine name.");return;}
 
@@ -891,7 +935,7 @@ a{text-decoration:none;color:inherit}
       meal: meal || "After meal",
       start: start || todayDate(), 
       end: end || "", 
-      note: note || "", // Save updated note
+      note: note || "", 
       times: [...pendingTimes] 
     };
 
@@ -923,7 +967,7 @@ a{text-decoration:none;color:inherit}
     document.getElementById("mealTiming").value="After meal";
     document.getElementById("medStart").value="";
     document.getElementById("medEnd").value="";
-    document.getElementById("medNote").value=""; // Clear note
+    document.getElementById("medNote").value=""; 
     pendingTimes=[];
     renderTimes();
   }
@@ -1166,7 +1210,7 @@ a{text-decoration:none;color:inherit}
     document.getElementById("mealTiming").value=m.meal||"After meal";
     document.getElementById("medStart").value=m.start||"";
     document.getElementById("medEnd").value=m.end||"";
-    document.getElementById("medNote").value=m.note||""; // Edit Note
+    document.getElementById("medNote").value=m.note||""; 
     pendingTimes=[...(m.times||[])];
     editingId=id;
     renderTimes();
