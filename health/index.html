@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,10 +117,6 @@ a{text-decoration:none;color:inherit}
 .notification-box p{font-size:11px;color:#587b7d;margin:7px 0 12px;line-height:1.7}
 .status-text{font-size:10px;margin-top:9px;color:#587b7d}
 
-/* FOOTER */
-.footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
-.footer strong{color:var(--primary)}
-
 @media(max-width:850px){
  .quick-grid{grid-template-columns:repeat(2,1fr)}
  .records-grid{grid-template-columns:repeat(2,1fr)}
@@ -182,22 +177,18 @@ a{text-decoration:none;color:inherit}
     <div class="section-icon"><i class="fa-solid fa-link"></i></div>
   </div>
   <div class="quick-grid">
-
     <a class="quick-card" href="https://medex.com.bd/" target="_blank" rel="noopener">
       <div class="quick-icon" style="background:#e4f5ed;color:#159968"><i class="fa-solid fa-pills"></i></div>
       <div><h4>Medicine Index</h4><p>Explore MedEx BD</p></div>
     </a>
-
     <a class="quick-card" href="https://www.who.int/" target="_blank" rel="noopener">
       <div class="quick-icon" style="background:#e8f1ff;color:#4285d4"><i class="fa-solid fa-globe"></i></div>
       <div><h4>WHO Health</h4><p>Global health information</p></div>
     </a>
-
     <a class="quick-card" href="https://www.mayoclinic.org/" target="_blank" rel="noopener">
       <div class="quick-icon" style="background:#fff1e6;color:#ed8a43"><i class="fa-solid fa-user-doctor"></i></div>
       <div><h4>Medical Guide</h4><p>Mayo Clinic</p></div>
     </a>
-
     <a class="quick-card" href="https://www.nhs.uk/" target="_blank" rel="noopener">
       <div class="quick-icon" style="background:#f1eaff;color:#8761d2"><i class="fa-solid fa-book-medical"></i></div>
       <div><h4>Health Library</h4><p>NHS Information</p></div>
@@ -211,39 +202,32 @@ a{text-decoration:none;color:inherit}
     <div><h3>Family Medical Records</h3><p>Personal medical documents & reports</p></div>
     <div class="section-icon"><i class="fa-solid fa-file-medical"></i></div>
   </div>
-
   <div class="records-grid">
-
     <a class="record-card" href="https://drive.google.com/drive/folders/17ooTudC1I8LXtHF1VMic-LzBL7W0IG24" target="_blank" rel="noopener">
       <div class="avatar" style="background:#e4efff;color:#4277c9">AK</div>
       <div class="record-info"><h4>Md Abdul Khaleque</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
       <i class="fa-solid fa-chevron-right record-arrow"></i>
     </a>
-
     <a class="record-card" href="https://drive.google.com/drive/folders/1Mxb0hfCT6gaTrw0fnT7girEPL_obFkKl" target="_blank" rel="noopener">
       <div class="avatar" style="background:#fce9f2;color:#d15c91">SM</div>
       <div class="record-info"><h4>Shariatunnesa Madina</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
       <i class="fa-solid fa-chevron-right record-arrow"></i>
     </a>
-
     <a class="record-card" href="https://drive.google.com/drive/folders/1eeHjhgVEVt4S920rRAuN0Vvnsw9d6tG1" target="_blank" rel="noopener">
       <div class="avatar" style="background:#e4f5ed;color:#159968">MA</div>
       <div class="record-info"><h4>Mashayekh Ahmed</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
       <i class="fa-solid fa-chevron-right record-arrow"></i>
     </a>
-
     <a class="record-card" href="https://drive.google.com/drive/folders/1P5K-8B0tOZ6atYHW1xNsMpqk2XYEVKU0" target="_blank" rel="noopener">
       <div class="avatar" style="background:#fff0df;color:#d58b37">LA</div>
       <div class="record-info"><h4>Lima Akter</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
       <i class="fa-solid fa-chevron-right record-arrow"></i>
     </a>
-
     <a class="record-card" href="https://drive.google.com/drive/folders/1NqXfXAhqvIeLEKgMHR3Bf_JX2EosmjLI" target="_blank" rel="noopener">
       <div class="avatar" style="background:#eeeaff;color:#8068c9">AM</div>
       <div class="record-info"><h4>Ahmad Muttaqeen</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
       <i class="fa-solid fa-chevron-right record-arrow"></i>
     </a>
-
   </div>
 </section>
 
@@ -253,9 +237,7 @@ a{text-decoration:none;color:inherit}
     <div><h3>Smart Health Tools</h3><p>Simple calculators for everyday health tracking</p></div>
     <div class="section-icon"><i class="fa-solid fa-calculator"></i></div>
   </div>
-
   <div class="tools-grid">
-
     <div class="tool-card">
       <div class="tool-top">
         <div class="tool-icon" style="background:#e5f3ff;color:#3984ce"><i class="fa-solid fa-weight-scale"></i></div>
@@ -266,7 +248,6 @@ a{text-decoration:none;color:inherit}
       <button class="action-btn" onclick="calculateBMI()">Calculate BMI</button>
       <div class="result" id="bmiResult"></div>
     </div>
-
     <div class="tool-card">
       <div class="tool-top">
         <div class="tool-icon" style="background:#e4f7f7;color:#079eac"><i class="fa-solid fa-glass-water"></i></div>
@@ -276,7 +257,6 @@ a{text-decoration:none;color:inherit}
       <button class="action-btn" onclick="calculateWater()">Calculate Intake</button>
       <div class="result" id="waterResult"></div>
     </div>
-
     <div class="tool-card">
       <div class="tool-top">
         <div class="tool-icon" style="background:#f3eaff;color:#9566c9"><i class="fa-solid fa-calendar-days"></i></div>
@@ -286,11 +266,10 @@ a{text-decoration:none;color:inherit}
       <button class="action-btn" onclick="calculateAge()">Calculate Age</button>
       <div class="result" id="ageResult"></div>
     </div>
-
   </div>
 </section>
 
-<!-- MEDICATION MANAGER -->
+<!-- MEDICATION MANAGER (UPDATED) -->
 <section class="section" id="medicineManager">
   <div class="section-head">
     <div><h3>Medication Manager</h3><p>Manage medicines, schedules and daily history</p></div>
@@ -298,8 +277,43 @@ a{text-decoration:none;color:inherit}
   </div>
 
   <div class="reminder-card">
+    
+    <!-- User / Admin Header -->
+    <div id="userHeader" style="background: #eaf7f5; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h4 style="color: var(--primary); font-size: 15px;"><i class="fa-solid fa-user-circle"></i> <span id="displayUserName">Loading...</span></h4>
+        <p style="font-size: 11px; color: var(--muted); margin-top: 3px;" id="displayUserEmail"></p>
+      </div>
+      <div id="adminControls" style="display: none;">
+        <select id="userSelector" onchange="switchUserView()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--primary); font-size: 11px; background: white; color: var(--dark); outline: none;">
+          <!-- Options will be populated by JS -->
+        </select>
+      </div>
+    </div>
 
-    <h4 style="margin-bottom:17px">Add New Medicine</h4>
+    <!-- Active Medicines -->
+    <h4>Today's Overview</h4>
+
+    <div class="med-stats">
+      <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
+      <div class="stat-box"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
+      <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
+    </div>
+
+    <div class="med-tabs">
+      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
+      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
+      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
+    </div>
+
+    <div id="medContent" style="margin-bottom: 30px;">
+      <div class="empty">No medicines scheduled today.</div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);margin:23px 0"></div>
+
+    <!-- Add New Medicine -->
+    <h4 style="margin-bottom:17px"><i class="fa-solid fa-plus-circle"></i> Add New Medicine</h4>
 
     <div class="med-form-grid">
       <div class="field full-field">
@@ -335,31 +349,12 @@ a{text-decoration:none;color:inherit}
       </div>
     </div>
 
-    <button class="action-btn" onclick="saveMedicine()">
-      <i class="fa-solid fa-plus"></i> Save Medicine
+    <button class="action-btn" id="saveMedButton" onclick="saveMedicine()">
+      <i class="fa-solid fa-save"></i> Save Medicine
     </button>
 
-    <div style="border-top:1px solid var(--border);margin:23px 0"></div>
-
-    <h4>Today's Overview</h4>
-
-    <div class="med-stats">
-      <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
-      <div class="stat-box"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
-      <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
-    </div>
-
-    <div class="med-tabs">
-      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
-      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
-      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
-    </div>
-
-    <div id="medContent">
-      <div class="empty">No medicines scheduled today.</div>
-    </div>
-
-    <div class="notification-box">
+    <!-- Notification Box -->
+    <div class="notification-box" style="margin-top: 30px;">
       <div style="font-size:12px;font-weight:700;color:#087f83">
         <i class="fa-solid fa-bell"></i> Notification Settings
       </div>
@@ -387,13 +382,13 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
-/* DATE */
+/* ===============================
+   DATE & CALCULATORS
+=============================== */
 const now = new Date();
-document.getElementById("currentDate").textContent =
-  now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+document.getElementById("currentDate").textContent = now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
 document.getElementById("year").textContent = now.getFullYear();
 
-/* BMI */
 function calculateBMI(){
   const w=Number(document.getElementById("weight").value);
   const h=Number(document.getElementById("height").value);
@@ -403,7 +398,6 @@ function calculateBMI(){
   showResult("bmiResult",`Your BMI<strong>${bmi.toFixed(1)}</strong>${s}<br><small>Adult screening categories, not a diagnosis.</small>`);
 }
 
-/* WATER */
 function calculateWater(){
   const w=Number(document.getElementById("waterWeight").value);
   if(!w||w<=0||w>500){alert("Enter valid weight.");return;}
@@ -411,7 +405,6 @@ function calculateWater(){
   showResult("waterResult",`Estimated daily fluid amount<strong>${liters.toFixed(2)} L</strong>Approximately ${Math.round(liters*1000)} ml.<br><small>Rough estimate only. Individual needs vary.</small>`);
 }
 
-/* AGE */
 function calculateAge(){
   const val=document.getElementById("birthDate").value;
   if(!val){alert("Select your birth date.");return;}
@@ -432,29 +425,49 @@ function showResult(id,html){
   el.style.display="block";
 }
 
-/* MEDICATION DATABASE */
-const MED_KEY="health_medicines_v3";
-const HISTORY_KEY="health_history_v3";
-const ALERT_KEY="health_alerts_v3";
+/* ===============================
+   MEDICATION MANAGER (UPDATED)
+=============================== */
 
-let medicines=[];
-let medHistory=[];
-let pendingTimes=[];
-let currentTab="today";
+/* USER AUTHENTICATION MOCK */
+// Android WebView থেকে ইনজেক্ট করতে হবে:
+// webView.evaluateJavascript("loggedInUser = { email: 'user@email.com', name: 'User Name' }; viewingEmail = 'user@email.com'; initUserSession();", null)
+let loggedInUser = {
+  email: "madina.manjeel@gmail.com", // Defaulting to Admin for testing
+  name: "Madina Manjeel"
+};
+const ADMIN_EMAIL = "madina.manjeel@gmail.com";
+let viewingEmail = loggedInUser.email;
 
-try{
-  medicines=JSON.parse(localStorage.getItem(MED_KEY)||"[]");
-  medHistory=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");
-  if(!Array.isArray(medicines))medicines=[];
-  if(!Array.isArray(medHistory))medHistory=[];
-}catch(e){
-  medicines=[];
-  medHistory=[];
+const MED_KEY="health_medicines_v4";
+const HISTORY_KEY="health_history_v4";
+
+let allMedicines = []; 
+let allHistory = [];
+let pendingTimes = [];
+let currentTab = "today";
+let editingId = null;
+
+try {
+  allMedicines = JSON.parse(localStorage.getItem(MED_KEY) || "[]");
+  allHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  if(!Array.isArray(allMedicines)) allMedicines=[];
+  if(!Array.isArray(allHistory)) allHistory=[];
+} catch(e) {
+  allMedicines = []; allHistory = [];
 }
 
-function saveData(){
-  localStorage.setItem(MED_KEY,JSON.stringify(medicines));
-  localStorage.setItem(HISTORY_KEY,JSON.stringify(medHistory));
+function saveData() {
+  localStorage.setItem(MED_KEY, JSON.stringify(allMedicines));
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(allHistory));
+}
+
+function getActiveMedicines() {
+  return allMedicines.filter(m => m.userEmail === viewingEmail);
+}
+
+function getActiveHistory() {
+  return allHistory.filter(h => h.userEmail === viewingEmail);
 }
 
 function todayDate(){
@@ -463,12 +476,36 @@ function todayDate(){
 }
 
 function safeText(v){
-  return String(v).replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  })[c]);
+  return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
 }
 
-/* ADD TIMES */
+function initUserSession() {
+  document.getElementById("displayUserName").textContent = loggedInUser.name;
+  document.getElementById("displayUserEmail").textContent = loggedInUser.email;
+  
+  if(loggedInUser.email === ADMIN_EMAIL) {
+    document.getElementById("adminControls").style.display = "block";
+    populateAdminDropdown();
+  }
+  renderAll();
+}
+
+function populateAdminDropdown() {
+  const users = [...new Set(allMedicines.map(m => m.userEmail))];
+  if(!users.includes(ADMIN_EMAIL)) users.unshift(ADMIN_EMAIL);
+  
+  const select = document.getElementById("userSelector");
+  select.innerHTML = users.map(email => 
+    `<option value="${email}" ${email === viewingEmail ? 'selected' : ''}>${email === ADMIN_EMAIL ? 'My Records' : email}</option>`
+  ).join("");
+}
+
+function switchUserView() {
+  viewingEmail = document.getElementById("userSelector").value;
+  renderAll();
+}
+
+/* TIMES MANAGEMENT */
 function addMedTime(){
   const input=document.getElementById("newMedTime");
   const time=input.value;
@@ -492,8 +529,10 @@ function removeTime(i){
   renderTimes();
 }
 
-/* SAVE MEDICINE */
+/* SAVE & UPDATE MEDICINE */
 function saveMedicine(){
+  if(editingId) return updateMedicine();
+
   const name=document.getElementById("newMedName").value.trim();
   const dose=document.getElementById("newMedDose").value.trim();
   const start=document.getElementById("medStart").value;
@@ -504,51 +543,78 @@ function saveMedicine(){
   }
   if(start>end){alert("End date cannot be before start date.");return;}
 
-  medicines.push({
-    id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),
-    name,dose,start,end,times:[...pendingTimes]
+  allMedicines.push({
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random(),
+    userEmail: viewingEmail,
+    name, dose, start, end, times:[...pendingTimes]
   });
 
   saveData();
+  clearMedForm();
+  renderAll();
+  if(loggedInUser.email === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) populateAdminDropdown();
+  alert("Medicine saved successfully.");
+}
+
+function updateMedicine() {
+  const name=document.getElementById("newMedName").value.trim();
+  const dose=document.getElementById("newMedDose").value.trim();
+  const start=document.getElementById("medStart").value;
+  const end=document.getElementById("medEnd").value;
+
+  if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
+
+  const m = allMedicines.find(x => x.id === editingId);
+  if(!m) return;
+  
+  m.name = name; m.dose = dose; m.start = start; m.end = end; m.times = [...pendingTimes];
+
+  editingId = null;
+  document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
+  clearMedForm();
+  saveData(); 
+  renderAll();
+  alert("Medicine updated.");
+}
+
+function clearMedForm() {
   document.getElementById("newMedName").value="";
   document.getElementById("newMedDose").value="";
   document.getElementById("medStart").value="";
   document.getElementById("medEnd").value="";
   pendingTimes=[];
   renderTimes();
-  renderAll();
-  alert("Medicine saved successfully.");
 }
 
-/* DAILY SCHEDULE */
+/* TRACKING */
 function todayItems(){
   const date=todayDate();
   const result=[];
-  medicines.forEach(m=>{
-    if(date<m.start||date>m.end)return;
-    m.times.forEach(time=>result.push({id:m.id,name:m.name,dose:m.dose,time}));
+  getActiveMedicines().forEach(m => {
+    if(date < m.start || date > m.end) return;
+    m.times.forEach(time => result.push({id:m.id, name:m.name, dose:m.dose, time}));
   });
   return result.sort((a,b)=>a.time.localeCompare(b.time));
 }
 
 function statusOf(id,time,date=todayDate()){
-  return medHistory.find(h=>h.id===id&&h.time===time&&h.date===date)?.status||"pending";
+  return allHistory.find(h => h.id === id && h.time === time && h.date === date)?.status || "pending";
 }
 
 function markMedicine(id,time,status){
   const date=todayDate();
-  let record=medHistory.find(h=>h.id===id&&h.time===time&&h.date===date);
+  let record = allHistory.find(h => h.id === id && h.time === time && h.date === date);
   if(record){
     if(record.status!=="pending"){alert("Already recorded.");return;}
-    record.status=status;
+    record.status = status;
   }else{
-    medHistory.push({id,time,date,status,recordedAt:new Date().toISOString()});
+    allHistory.push({id, userEmail: viewingEmail, time, date, status, recordedAt: new Date().toISOString()});
   }
   saveData();
   renderAll();
 }
 
-/* TODAY */
+/* RENDER VIEWS */
 function renderToday(){
   const items=todayItems();
   const taken=items.filter(x=>statusOf(x.id,x.time)==="taken").length;
@@ -558,7 +624,7 @@ function renderToday(){
   document.getElementById("takenStat").textContent=taken;
   document.getElementById("pendingStat").textContent=pending;
 
-  if(!items.length)return '<div class="empty">No medicines scheduled today.</div>';
+  if(!items.length) return '<div class="empty">No medicines scheduled today.</div>';
 
   return items.map(item=>{
     const status=statusOf(item.id,item.time);
@@ -587,10 +653,10 @@ function renderToday(){
   }).join("");
 }
 
-/* ALL MEDICINES */
 function renderMedicineList(){
-  if(!medicines.length)return '<div class="empty">No medicines added yet.</div>';
-  return medicines.map(m=>`
+  const myMeds = getActiveMedicines();
+  if(!myMeds.length) return '<div class="empty">No medicines found for this account.</div>';
+  return myMeds.map(m=>`
     <div class="med-row">
       <div class="med-row-top">
         <div>
@@ -612,67 +678,12 @@ function renderMedicineList(){
   `).join("");
 }
 
-/* EDIT MEDICINE */
-function editMedicine(id){
-  const m=medicines.find(x=>x.id===id);
-  if(!m)return;
-
-  document.getElementById("newMedName").value=m.name;
-  document.getElementById("newMedDose").value=m.dose||"";
-  document.getElementById("medStart").value=m.start;
-  document.getElementById("medEnd").value=m.end;
-  pendingTimes=[...m.times];
-  editingId=id;
-  renderTimes();
-  window.scrollTo({top:document.getElementById("medicineManager").offsetTop-15,behavior:"smooth"});
-  document.getElementById("saveMedButton").textContent="Update Medicine";
-}
-
-let editingId=null;
-
-/* UPDATE SAVE FUNCTION */
-const originalSaveMedicine=saveMedicine;
-saveMedicine=function(){
-  if(!editingId)return originalSaveMedicine();
-
-  const name=document.getElementById("newMedName").value.trim();
-  const dose=document.getElementById("newMedDose").value.trim();
-  const start=document.getElementById("medStart").value;
-  const end=document.getElementById("medEnd").value;
-
-  if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
-  if(start>end){alert("Invalid date range.");return;}
-
-  const m=medicines.find(x=>x.id===editingId);
-  if(!m)return;
-  m.name=name;m.dose=dose;m.start=start;m.end=end;m.times=[...pendingTimes];
-
-  editingId=null;
-  document.getElementById("saveMedButton").textContent="Save Medicine";
-  document.getElementById("newMedName").value="";
-  document.getElementById("newMedDose").value="";
-  document.getElementById("medStart").value="";
-  document.getElementById("medEnd").value="";
-  pendingTimes=[];
-  saveData();renderTimes();renderAll();
-  alert("Medicine updated.");
-};
-
-/* DELETE */
-function deleteMedicine(id){
-  if(!confirm("Delete this medicine and its history?"))return;
-  medicines=medicines.filter(m=>m.id!==id);
-  medHistory=medHistory.filter(h=>h.id!==id);
-  saveData();renderAll();
-}
-
-/* HISTORY */
 function renderHistory(){
-  const records=[...medHistory].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
-  if(!records.length)return '<div class="empty">No history available.</div>';
+  const records = [...getActiveHistory()].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  if(!records.length) return '<div class="empty">No history available for this account.</div>';
 
   return records.slice(0,100).map(h=>{
-    const m=medicines.find(x=>x.id===h.id);
+    const m = allMedicines.find(x=>x.id===h.id);
     return `<div class="med-row">
       <div class="med-row-top">
         <div>
@@ -687,7 +698,30 @@ function renderHistory(){
   }).join("");
 }
 
-/* TABS */
+function editMedicine(id){
+  const m = allMedicines.find(x => x.id === id);
+  if(!m) return;
+
+  document.getElementById("newMedName").value=m.name;
+  document.getElementById("newMedDose").value=m.dose||"";
+  document.getElementById("medStart").value=m.start;
+  document.getElementById("medEnd").value=m.end;
+  pendingTimes=[...m.times];
+  editingId=id;
+  renderTimes();
+  
+  document.getElementById("newMedName").scrollIntoView({behavior: "smooth", block: "center"});
+  document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-pen"></i> Update Medicine';
+}
+
+function deleteMedicine(id){
+  if(!confirm("Delete this medicine and its history?")) return;
+  allMedicines = allMedicines.filter(m => m.id !== id);
+  allHistory = allHistory.filter(h => h.id !== id);
+  saveData();
+  renderAll();
+}
+
 function setMedTab(tab,button){
   currentTab=tab;
   document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
@@ -697,21 +731,14 @@ function setMedTab(tab,button){
 
 function renderContent(){
   const box=document.getElementById("medContent");
-  if(currentTab==="today")box.innerHTML=renderToday();
-  if(currentTab==="all")box.innerHTML=renderMedicineList();
-  if(currentTab==="history")box.innerHTML=renderHistory();
+  if(currentTab==="today") box.innerHTML=renderToday();
+  if(currentTab==="all") box.innerHTML=renderMedicineList();
+  if(currentTab==="history") box.innerHTML=renderHistory();
 }
 
 function renderAll(){
   renderToday();
   renderContent();
-}
-
-/* HISTORY CLEAR */
-function clearOldHistory(){
-  if(!confirm("Delete all medication history?"))return;
-  medHistory=[];
-  saveData();renderAll();
 }
 
 /* NOTIFICATIONS */
@@ -730,18 +757,18 @@ async function enableMedNotifications(){
 }
 
 function checkMedicineAlerts(){
-  if(!("Notification" in window)||Notification.permission!=="granted")return;
+  if(!("Notification" in window)||Notification.permission!=="granted") return;
 
   const date=todayDate();
   const now=new Date();
   const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
 
-  medicines.forEach(m=>{
-    if(date<m.start||date>m.end||!m.times.includes(time))return;
-    if(statusOf(m.id,time)!=="pending")return;
+  getActiveMedicines().forEach(m=>{
+    if(date<m.start||date>m.end||!m.times.includes(time)) return;
+    if(statusOf(m.id,time)!=="pending") return;
 
     const key="alert_"+m.id+"_"+date+"_"+time;
-    if(localStorage.getItem(key))return;
+    if(localStorage.getItem(key)) return;
 
     new Notification("Medicine Reminder",{
       body:"Time for "+m.name+(m.dose?" · "+m.dose:""),
@@ -752,19 +779,15 @@ function checkMedicineAlerts(){
 }
 
 /* INITIALIZATION */
-document.getElementById("saveMedButton")?.remove();
-const saveButton=document.querySelector("#medicineManager .action-btn");
-if(saveButton)saveButton.id="saveMedButton";
-
 if("Notification" in window){
   document.getElementById("notificationStatus").textContent=
     Notification.permission==="granted"?"Notifications enabled.":"Notifications not enabled.";
 }
 
 renderTimes();
-renderAll();
+initUserSession();
 checkMedicineAlerts();
-setInterval(checkMedicineAlerts,15000);
+setInterval(checkMedicineAlerts, 15000);
 
 /* PWA SERVICE WORKER REGISTRATION */
 if("serviceWorker" in navigator && location.protocol==="https:"){
