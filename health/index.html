@@ -439,8 +439,8 @@ a{text-decoration:none;color:inherit}
       <div style="font-size:12px;font-weight:700;color:#087f83">
         <i class="fa-solid fa-bell"></i> Notification Settings
       </div>
-      <p>Enable browser notifications to receive medicine alerts while this page is open.</p>
-      <button class="action-btn" onclick="enableMedNotifications()">Enable Notifications</button>
+      <p>Enable notifications to receive medicine alerts on your device.</p>
+      <button class="action-btn" onclick="enableMedNotifications()">Enable / Test Notification</button>
       <p id="notificationStatus" class="status-text">Notification permission not checked.</p>
     </div>
 
@@ -620,6 +620,13 @@ a{text-decoration:none;color:inherit}
       currentUser = user;
       viewingEmail = user.email.toLowerCase().trim();
 
+      // --- নতুন যোগ করা: লগইন করা ইউজারের আসল ইমেইলটি অ্যান্ড্রয়েড অ্যাপে পাঠানো হচ্ছে ---
+      if (window.AndroidDownloader && window.AndroidDownloader.registerUserEmail) {
+        window.AndroidDownloader.registerUserEmail(user.email.toLowerCase().trim());
+        const statusEl = document.getElementById("notificationStatus");
+        if (statusEl) statusEl.textContent = "App notifications active for " + user.email;
+      }
+
       document.getElementById('loading-message').style.display = 'none';
       document.getElementById('content-wrapper').style.display = 'block';
 
@@ -675,6 +682,7 @@ a{text-decoration:none;color:inherit}
         populateAdminDropdown();
       }
       renderAll();
+      checkAndTriggerUserNotifications(); // ডাটা লোড হওয়ার সাথে সাথে একবার চেক করবে
     } catch (error) {
       console.error("Error loading data: ", error);
       document.getElementById("medContent").innerHTML = '<div class="empty" style="color:#d66;">Failed to load data. Please check connection.</div>';
@@ -1104,8 +1112,28 @@ a{text-decoration:none;color:inherit}
     renderContent();
   }
 
+  // --- নতুন আপডেট করা নোটিফিকেশন ফাংশন ও ইউজার-ভিত্তিক অটো চেকার ---
+  function sendNativeOrBrowserNotification(title, body) {
+    if (window.AndroidDownloader && window.AndroidDownloader.showMedicineNotification) {
+      window.AndroidDownloader.showMedicineNotification(title, body);
+    } else if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body });
+    }
+  }
+
   window.enableMedNotifications = async function(){
-    const status=document.getElementById("notificationStatus");
+    const status = document.getElementById("notificationStatus");
+    if (window.AndroidDownloader && window.AndroidDownloader.showMedicineNotification) {
+      if (currentUser && window.AndroidDownloader.registerUserEmail) {
+        window.AndroidDownloader.registerUserEmail(currentUser.email.toLowerCase().trim());
+      }
+      status.textContent = "App notifications are active!";
+      window.AndroidDownloader.showMedicineNotification(
+        "HealthCare Reminder Active",
+        "আপনার ওষধের নোটিফিকেশন সিস্টেম সচল রয়েছে।"
+      );
+      return;
+    }
     if(!("Notification" in window)){
       status.textContent="Notifications not supported.";
       return;
@@ -1117,6 +1145,66 @@ a{text-decoration:none;color:inherit}
       status.textContent="Could not enable notifications.";
     }
   };
+
+  function checkAndTriggerUserNotifications() {
+    if (!currentUser) return;
+    // শুধুমাত্র যে ইউজার নিজে লগইন করে আছেন তার ওষধ চেক করা হবে (অ্যাডমিন অন্যের একাউন্ট সিলেক্ট করলেও নিজের ফোনে অন্যের নোটিফিকেশন আসবে না)
+    const loggedInEmail = currentUser.email.toLowerCase().trim();
+    const dateStr = todayDate();
+    const now = new Date();
+    const currentHM = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const nowHour = now.getHours();
+
+    const userMeds = allMedicines.filter(m => (m.userEmail || "").toLowerCase().trim() === loggedInEmail);
+    const userHist = allHistory.filter(h => (h.userEmail || "").toLowerCase().trim() === loggedInEmail);
+
+    userMeds.forEach(m => {
+      if (m.start && dateStr < m.start) return;
+      if (m.end && dateStr > m.end) return;
+
+      // ১. নির্দিষ্ট ঘড়ির সময় (যেমন: 08:30) চেক করা
+      if (m.times && m.times.includes(currentHM)) {
+        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${currentHM}`;
+        const isTaken = userHist.some(h => h.medId === m.id && h.time === currentHM && h.date === dateStr);
+
+        if (!localStorage.getItem(notifyKey) && !isTaken) {
+          localStorage.setItem(notifyKey, "1");
+          sendNativeOrBrowserNotification(
+            `ওষধ খাওয়ার সময় হয়েছে: ${m.name}`,
+            `ডোজ: ${m.dose || 'নির্ধারিত পরিমাণ'} (${m.meal || 'After meal'}) · সময়: ${currentHM}`
+          );
+        }
+      }
+
+      // ২. প্যাটার্ন টাইম উইন্ডো (Morning / Midday / Night) এর শুরুতে নোটিফিকেশন
+      const patternTriggers = [];
+      if (m.pattern === "Morning" || m.pattern === "1+1+1" || m.pattern === "1+0+1") {
+        if (nowHour === 8 && now.getMinutes() === 0) patternTriggers.push("Morning");
+      }
+      if (m.pattern === "Midday" || m.pattern === "1+1+1") {
+        if (nowHour === 13 && now.getMinutes() === 0) patternTriggers.push("Midday");
+      }
+      if (m.pattern === "Night" || m.pattern === "1+1+1" || m.pattern === "1+0+1") {
+        if (nowHour === 21 && now.getMinutes() === 0) patternTriggers.push("Night");
+      }
+
+      patternTriggers.forEach(pTime => {
+        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${pTime}`;
+        const isTaken = userHist.some(h => h.medId === m.id && h.time === pTime && h.date === dateStr);
+
+        if (!localStorage.getItem(notifyKey) && !isTaken) {
+          localStorage.setItem(notifyKey, "1");
+          sendNativeOrBrowserNotification(
+            `${pTime} ডোজের সময় হয়েছে: ${m.name}`,
+            `ডোজ: ${m.dose || 'নির্ধারিত পরিমাণ'} (${m.meal || 'After meal'})`
+          );
+        }
+      });
+    });
+  }
+
+  // প্রতি ৩০ সেকেন্ড পর পর ইউজারের শিডিউল চেক করবে
+  setInterval(checkAndTriggerUserNotifications, 30000);
 
   renderTimes();
 </script>
