@@ -392,9 +392,9 @@ a{text-decoration:none;color:inherit}
         <input id="newMedDose" placeholder="e.g. 1 tablet">
       </div>
 
-      <!-- Reminder Time (Clock-wise) -->
+      <!-- ঘড়ির টাইম সিস্টেম (Clock-wise) -->
       <div class="field">
-        <label>Reminder Time</label>
+        <label>Reminder Time (Optional)</label>
         <div class="med-time-row">
           <input type="time" id="newMedTime">
           <button class="action-btn" onclick="addMedTime()">+ Add</button>
@@ -405,13 +405,13 @@ a{text-decoration:none;color:inherit}
         <div id="selectedTimes" class="time-list"></div>
       </div>
 
-      <!-- 1+1+1 Format Selection -->
+      <!-- ১+১+১ ফরম্যাট -->
       <div class="field">
         <label>Dose Pattern (1+1+1 Format)</label>
         <div style="display:flex;gap:8px;">
           <select id="dosePattern" style="flex:1;">
             <option value="">-- Select Pattern --</option>
-            <option value="1+1+1">1 + 1 + 1 (Morning, Midday, Night)</option>
+            <option value="1+1+1">1 + 1 + 1 (All times)</option>
             <option value="1+0+1">1 + 0 + 1 (Morning & Night)</option>
             <option value="1+0+0">1 + 0 + 0 (Morning Only)</option>
             <option value="0+1+0">0 + 1 + 0 (Midday Only)</option>
@@ -1133,7 +1133,7 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার বা নাম বাদ থাকবে)
+    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার বা নাম থাকবে না)
     document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
@@ -1209,13 +1209,22 @@ a{text-decoration:none;color:inherit}
         }
       }
 
+      // ডিফল্ট বাই-ডিফল্ট রিমাইন্ডার টাইম (যদি ম্যানুয়াল টাইম না দেওয়া থাকে): Morning = 06:30, Midday = 13:00, Night = 19:00
       let triggerWindowName = "";
-      if (currentHM === "04:00" && (["1+1+1", "1+0+1", "1+0+0", "1+1+0"].includes(m.pattern))) triggerWindowName = "Morning";
-      if (currentHM === "12:00" && (["1+1+1", "0+1+0", "1+1+0", "0+1+1"].includes(m.pattern))) triggerWindowName = "Midday";
-      if (currentHM === "16:00" && (["1+1+1", "1+0+1", "0+0+1", "0+1+1"].includes(m.pattern))) triggerWindowName = "Night";
+      let defaultTriggerTime = "";
 
-      if (triggerWindowName) {
-        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${triggerWindowName}`;
+      if (["1+1+1", "1+0+1", "1+0+0", "1+1+0"].includes(m.pattern)) {
+        if (currentHM === "06:30") { triggerWindowName = "Morning"; defaultTriggerTime = "06:30"; }
+      }
+      if (["1+1+1", "0+1+0", "1+1+0", "0+1+1"].includes(m.pattern)) {
+        if (currentHM === "13:00") { triggerWindowName = "Midday"; defaultTriggerTime = "13:00"; }
+      }
+      if (["1+1+1", "1+0+1", "0+0+1", "0+1+1"].includes(m.pattern)) {
+        if (currentHM === "19:00") { triggerWindowName = "Night"; defaultTriggerTime = "19:00"; }
+      }
+
+      if (triggerWindowName && (!m.times || m.times.length === 0)) {
+        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_def_${defaultTriggerTime}`;
         const isTaken = userHist.some(h => h.medId === m.id && h.time === triggerWindowName && h.date === dateStr);
 
         if (!localStorage.getItem(notifyKey) && !isTaken) {
