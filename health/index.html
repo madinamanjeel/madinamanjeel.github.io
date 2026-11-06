@@ -936,7 +936,36 @@ a{text-decoration:none;color:inherit}
       if(m.start && dateStr < m.start) return;
       if(m.end && dateStr > m.end) return;
 
-      // শুদ্ধিকরণ: যদি নির্দিষ্ট ঘড়ির সময় (times) থাকে, তবে শুধু সেটিই রেন্ডার হবে। প্যাটার্ন থাকার কারণে বাড়তি এন্ট্রি হবে না।
+      // নতুন লজিক: যদি ডোজ প্যাটার্ন (pattern) থাকে, তবে শিডিউল শুধুমাত্র প্যাটার্ন অনুযায়ী দেখাবে। রিমাইন্ডার টাইমের সাথে শিডিউলের কোনো সম্পর্ক থাকবে না।
+      if(m.pattern && m.pattern.trim() !== "") {
+        const isMorning = currentHM >= "04:00" && currentHM <= "11:59";
+        const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
+        const isNight = currentHM >= "16:00" && currentHM <= "23:59";
+
+        if(m.pattern === "1+1+1") {
+          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        } else if(m.pattern === "1+0+1") {
+          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        } else if(m.pattern === "1+0+0" && isMorning) {
+          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+        } else if(m.pattern === "0+1+0" && isMidday) {
+          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+        } else if(m.pattern === "0+0+1" && isNight) {
+          result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        } else if(m.pattern === "1+1+0") {
+          if(isMorning) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
+          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+        } else if(m.pattern === "0+1+1") {
+          if(isMidday) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
+          if(isNight) result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
+        }
+        return;
+      }
+
+      // প্যাটার্ন না থাকলে শুধুমাত্র কাস্টম রিমাইন্ডার টাইম (times) অনুযায়ী শিডিউলে দেখাবে
       if(m.times && m.times.length > 0) {
         m.times.forEach(t => {
           if(isClockTimeActiveNow(t)) {
@@ -949,52 +978,17 @@ a{text-decoration:none;color:inherit}
             });
           }
         });
-        return; 
+        return;
       }
 
-      // 2. Exact 1+1+1 Format Time Windows (যদি times না থাকে তবে প্যাটার্ন চেক করবে):
-      // Morning (সকাল 04:00 - 11:59:59) -> Sky Blue
-      // Midday (দুপুর 12:00 - 15:59:59) -> Dark Orange
-      // Night (রাত 16:00 - 23:59:59) -> Ash
-      const isMorning = currentHM >= "04:00" && currentHM <= "11:59";
-      const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
-      const isNight = currentHM >= "16:00" && currentHM <= "23:59";
-
-      let added = false;
-      if(m.pattern === "1+1+1") {
-        if(isMorning) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' }); added = true; }
-        if(isMidday) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' }); added = true; }
-        if(isNight) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' }); added = true; }
-      } else if(m.pattern === "1+0+1") {
-        if(isMorning) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' }); added = true; }
-        if(isNight) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' }); added = true; }
-      } else if(m.pattern === "1+0+0" && isMorning) {
-        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' });
-        added = true;
-      } else if(m.pattern === "0+1+0" && isMidday) {
-        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' });
-        added = true;
-      } else if(m.pattern === "0+0+1" && isNight) {
-        result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' });
-        added = true;
-      } else if(m.pattern === "1+1+0") {
-        if(isMorning) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Morning - ${m.meal})`.trim(), time: "Morning", category: 'morning' }); added = true; }
-        if(isMidday) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' }); added = true; }
-      } else if(m.pattern === "0+1+1") {
-        if(isMidday) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Midday - ${m.meal})`.trim(), time: "Midday", category: 'midday' }); added = true; }
-        if(isNight) { result.push({ id: m.id, name: m.name, dose: `${m.dose || ''} (Night - ${m.meal})`.trim(), time: "Night", category: 'night' }); added = true; }
-      }
-
-      // 3. Fallback
-      if(!added && !m.pattern) {
-        result.push({ 
-          id: m.id, 
-          name: m.name, 
-          dose: `${m.dose || ''} (${m.meal || 'After meal'})`.trim(), 
-          time: "Anytime", 
-          category: 'clock' 
-        });
-      }
+      // Fallback
+      result.push({ 
+        id: m.id, 
+        name: m.name, 
+        dose: `${m.dose || ''} (${m.meal || 'After meal'})`.trim(), 
+        time: "Anytime", 
+        category: 'clock' 
+      });
     });
 
     return result.sort((a,b)=>a.time.localeCompare(b.time));
