@@ -394,7 +394,7 @@ a{text-decoration:none;color:inherit}
 
       <!-- ঘড়ির টাইম সিস্টেম (Clock-wise) -->
       <div class="field">
-        <label>Reminder Time (Optional)</label>
+        <label>Reminder Time</label>
         <div class="med-time-row">
           <input type="time" id="newMedTime">
           <button class="action-btn" onclick="addMedTime()">+ Add</button>
@@ -405,7 +405,7 @@ a{text-decoration:none;color:inherit}
         <div id="selectedTimes" class="time-list"></div>
       </div>
 
-      <!-- ১+১+১ ফরম্যাট (অটো ডিফল্ট রিমাইন্ড টাইম যুক্ত সহ) -->
+      <!-- ১+১+১ ফরম্যাট (সিলেক্ট করলেই অটো ডিফল্ট টাইম রিমাইন্ডার লিস্টে চিপ আকারে যুক্ত হবে) -->
       <div class="field">
         <label>Dose Pattern (1+1+1 Format)</label>
         <div style="display:flex;gap:8px;">
@@ -762,7 +762,7 @@ a{text-decoration:none;color:inherit}
     renderTimes();
   };
 
-  // প্যাটার্ন সিলেক্ট করলে অটো ডিফল্ট রিমাইন্ড টাইম লিস্টে এড হয়ে যাবে
+  // প্যাটার্ন সিলেক্ট করলেই অটো ডিফল্ট রিমাইন্ড টাইম চিপ আকারে লিস্টে যুক্ত হবে (ম্যনুয়ালের মতো)
   window.onPatternChange = function(val) {
     let timesToAdd = [];
     if(val === "1+1+1") timesToAdd = ["06:30", "13:00", "19:00"];
@@ -915,9 +915,9 @@ a{text-decoration:none;color:inherit}
       }
 
       // 2. Exact 1+1+1 Format Time Windows:
-      // Morning (সকাল): 04:00 to 11:59:59 (Sky Blue)
-      // Midday (দুপুর): 12:00 to 15:59:59 (Dark Orange)
-      // Night (রাত): 16:00 to 23:59:59 (Ash)
+      // Morning (সকাল 04:00 - 11:59:59) -> Sky Blue
+      // Midday (দুপুর 12:00 - 15:59:59) -> Dark Orange
+      // Night (রাত 16:00 - 23:59:59) -> Ash
       const isMorning = currentHM >= "04:00" && currentHM <= "11:59";
       const isMidday = currentHM >= "12:00" && currentHM <= "15:59";
       const isNight = currentHM >= "16:00" && currentHM <= "23:59";
@@ -1150,7 +1150,7 @@ a{text-decoration:none;color:inherit}
     document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
     button.classList.add("active");
     renderContent();
-    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার বা নাম বাদ থাকবে)
+    // জাম্প করে ঠিক Today's Overview হেডিংয়ের ওপর পজিশন নেবে (ইউজার অ্যাকাউন্ট বার থাকবে না)
     document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
   };
 
@@ -1215,20 +1215,6 @@ a{text-decoration:none;color:inherit}
 
       if (m.times && m.times.includes(currentHM)) {
         const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_${currentHM}`;
-        const isTaken = userHist.some(h => h.medId === m.id && h.time === currentHM && h.date === dateStr);
-
-        if (!localStorage.getItem(notifyKey) && !isTaken) {
-          localStorage.setItem(notifyKey, "1");
-          sendNativeOrBrowserNotification(
-            `ওষধ খাওয়ার সময় হয়েছে: ${m.name}`,
-            `ডোজ: ${m.dose || 'নির্ধারিত পরিমাণ'} (${m.meal || 'After meal'}) · সময়: ${currentHM}`
-          );
-        }
-      }
-
-      // প্যাটার্ন থেকে স্বয়ংক্রিয়ভাবে এড হওয়া ডিফল্ট টাইম (Morning=06:30, Midday=13:00, Night=19:00) অনুযায়ী নোটিফিকেশন
-      if (m.times && m.times.includes(currentHM)) {
-        const notifyKey = `notified_${loggedInEmail}_${dateStr}_${m.id}_pat_${currentHM}`;
         const isTaken = userHist.some(h => h.medId === m.id && h.time === currentHM && h.date === dateStr);
 
         if (!localStorage.getItem(notifyKey) && !isTaken) {
