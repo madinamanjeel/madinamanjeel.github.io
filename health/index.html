@@ -1,144 +1,775 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Health Resources</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #ffffff;
-      color: #333;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f83">
+<title>HealthCare | Personal Health Portal</title>
 
-    header {
-      background-color: #e8f5e9;
-      padding: 20px 0;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #2e7d32;
-    }
+<style>
+:root {
+  --primary:#087f83;
+  --primary2:#13aaa1;
+  --dark:#123b43;
+  --bg:#f3f8f8;
+  --white:#fff;
+  --muted:#82979b;
+  --border:#e7eeee;
+  --shadow:0 8px 30px rgba(18,59,67,.055);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark)}
+button,input,select{font-family:inherit}
+a{text-decoration:none;color:inherit}
+.wrapper{max-width:1180px;margin:auto;padding:24px}
 
-    /* Arogga Search Box */
-    .search-container {
-      display: flex;
-      justify-content: center;
-      padding: 20px 10px;
-      background-color: #f1f8f4;
-    }
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:47px;height:47px;background:linear-gradient(135deg,#087f83,#13b5aa);color:white;display:grid;place-items:center;border-radius:15px;font-size:22px}
+.brand h2{font-size:21px;font-weight:800}
+.brand p{font-size:11px;color:var(--muted)}
+.header-date{font-size:12px;color:var(--muted);background:white;padding:11px 15px;border-radius:12px;border:1px solid var(--border)}
 
-    .search-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      max-width: 500px;
-      padding: 12px 20px;
-      font-size: 16px;
-      text-decoration: none;
-      color: #2e7d32;
-      background-color: #ffffff;
-      border: 1px solid #c8e6c9;
-      border-radius: 30px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      transition: background-color 0.3s;
-    }
+/* HERO */
+.hero{background:linear-gradient(115deg,#075c65,#087f83 60%,#13aaa1);border-radius:25px;padding:34px;color:white;position:relative;overflow:hidden;box-shadow:0 15px 35px #087f8325}
+.hero:before{content:"";position:absolute;width:260px;height:260px;right:-70px;top:-130px;border:35px solid #ffffff12;border-radius:50%}
+.hero-content{position:relative;z-index:1}
+.hero-label{font-size:11px;letter-spacing:2px;color:#b8e9e5;font-weight:700;margin-bottom:12px}
+.hero h1{font-size:clamp(25px,4vw,36px);line-height:1.3;max-width:550px;margin-bottom:10px}
+.hero p{color:#d4eeee;font-size:13px;line-height:1.8;max-width:480px}
+.hero-btn{display:inline-flex;align-items:center;gap:9px;background:white;color:var(--primary);padding:12px 18px;border-radius:11px;font-weight:700;font-size:12px;margin-top:20px}
 
-    .search-link:hover {
-      background-color: #e0f2f1;
-    }
+/* SECTIONS */
+.section{margin-top:35px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}
+.section-head h3{font-size:18px;font-weight:800}
+.section-head p{color:var(--muted);font-size:11px;margin-top:4px}
+.section-icon{width:38px;height:38px;background:#e1f4f2;color:var(--primary);display:grid;place-items:center;border-radius:12px}
 
-    .video-container {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-      width: 90%;
-      margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+/* QUICK LINKS */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.quick-card{background:white;padding:20px;border:1px solid var(--border);border-radius:17px;transition:.25s;box-shadow:var(--shadow);display:flex;align-items:center;gap:13px}
+.quick-card:hover,.record-card:hover{transform:translateY(-3px);border-color:#a8dcd6}
+.quick-icon{min-width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:19px}
+.quick-card h4{font-size:13px}
+.quick-card p{font-size:10px;color:var(--muted);margin-top:4px}
 
-    .video-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      border-radius: 10px;
-    }
+/* RECORDS */
+.records-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.record-card{background:white;border:1px solid var(--border);border-radius:18px;padding:19px;display:flex;align-items:center;gap:13px;transition:.2s;box-shadow:var(--shadow)}
+.avatar{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:18px;font-weight:800;flex-shrink:0}
+.record-info{flex:1;min-width:0}
+.record-info h4{font-size:13px;overflow-wrap:anywhere}
+.record-info p{color:var(--muted);font-size:10px;margin-top:5px}
+.record-arrow{color:#9db2b4;font-size:13px}
 
-    .links {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      padding: 20px;
-    }
+/* TOOLS */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tool-card{background:white;border:1px solid var(--border);border-radius:19px;padding:21px;box-shadow:var(--shadow)}
+.tool-top{display:flex;align-items:center;gap:12px;margin-bottom:17px}
+.tool-icon{width:43px;height:43px;border-radius:13px;display:grid;place-items:center;font-size:18px}
+.tool-top h4{font-size:14px}
+.tool-top p{font-size:10px;color:var(--muted);margin-top:3px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;color:#647d81;font-weight:600;margin-bottom:7px}
+.field input{width:100%;border:1px solid var(--border);background:#f8fbfb;padding:12px;border-radius:10px;outline:none;font-size:13px;color:var(--dark)}
+.field input:focus{border-color:var(--primary)}
+.action-btn{width:100%;background:var(--primary);color:white;border:0;border-radius:10px;padding:12px;font-size:12px;font-weight:700;cursor:pointer}
+.result{margin-top:13px;padding:13px;background:#eaf7f5;border-radius:11px;color:#087f83;font-size:12px;line-height:1.7;display:none}
+.result strong{font-size:19px;display:block}
 
-    .links a {
-      display: block;
-      width: 90%;
-      max-width: 500px;
-      padding: 14px 20px;
-      background-color: #a5d6a7;
-      color: #1b5e20;
-      text-align: center;
-      font-size: 18px;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: 0.3s ease;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
-    }
+/* MEDICATION MANAGER */
+.reminder-card{background:white;border:1px solid var(--border);border-radius:19px;padding:22px;box-shadow:var(--shadow)}
+.reminder-card h4{font-size:14px}
+.med-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.full-field{grid-column:1/-1}
+.med-time-row{display:flex;gap:9px}
+.med-time-row input{flex:1;min-width:0}
+.med-time-row button{width:auto;white-space:nowrap;padding:0 15px}
+.time-list{display:flex;gap:7px;flex-wrap:wrap;margin:5px 0 17px}
+.time-chip{display:inline-flex;align-items:center;gap:7px;background:#eaf7f5;color:#087f83;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700}
+.time-chip button{border:0;background:none;color:#d66;cursor:pointer}
+.med-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat-box{padding:14px;background:#f5f9f9;border-radius:12px}
+.stat-box span{font-size:10px;color:var(--muted)}
+.stat-box strong{display:block;font-size:22px;margin-top:5px}
+.med-row{background:#f9fbfb;border:1px solid #e9eeee;border-radius:13px;padding:14px;margin-top:10px}
+.med-row-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.med-row h4{font-size:13px}
+.med-row p{font-size:10px;color:#82979b;margin-top:5px}
+.med-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.med-action{border:0;padding:9px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer}
+.med-action:disabled{opacity:.5;cursor:not-allowed}
+.med-taken{background:#e4f5ed;color:#159968}
+.med-skipped{background:#fff0e8;color:#d17c3c}
+.med-delete{background:#fff0f0;color:#d66}
+.med-edit{background:#e8f1ff;color:#4277c9}
+.med-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 12px}
+.med-tab{border:1px solid var(--border);background:white;padding:9px 14px;border-radius:9px;font-size:11px;color:var(--muted);cursor:pointer}
+.med-tab.active{background:var(--primary);color:white;border-color:var(--primary)}
+.empty{text-align:center;color:var(--muted);font-size:12px;padding:18px}
+.notification-box{margin-top:20px;background:#eaf7f5;padding:15px;border-radius:12px}
+.notification-box p{font-size:11px;color:#587b7d;margin:7px 0 12px;line-height:1.7}
+.status-text{font-size:10px;margin-top:9px;color:#587b7d}
 
-    .links a:hover {
-      background-color: #81c784;
-      transform: scale(1.03);
-      box-shadow: 0 6px 15px rgba(0, 128, 0, 0.2);
-    }
+/* FOOTER */
+.footer{margin-top:40px;padding:25px 10px;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px;line-height:2}
+.footer strong{color:var(--primary)}
 
-    @media (max-width: 600px) {
-      .links a {
-        font-size: 16px;
-      }
-    }
-  </style>
+@media(max-width:850px){
+ .quick-grid{grid-template-columns:repeat(2,1fr)}
+ .records-grid{grid-template-columns:repeat(2,1fr)}
+ .tools-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+ .wrapper{padding:15px}
+ .header{margin-bottom:20px}
+ .brand h2{font-size:18px}
+ .header-date{font-size:10px;padding:9px}
+ .hero{padding:25px 22px;border-radius:20px}
+ .hero h1{font-size:26px}
+ .quick-grid{gap:10px}
+ .quick-card{padding:14px 11px;gap:10px}
+ .quick-icon{min-width:38px;height:38px;font-size:16px}
+ .quick-card h4{font-size:11px}
+ .quick-card p{font-size:9px}
+ .records-grid,.tools-grid{grid-template-columns:1fr}
+ .record-card{padding:15px}
+ .section{margin-top:29px}
+ .reminder-card{padding:16px}
+ .med-form-grid{grid-template-columns:1fr}
+ .full-field{grid-column:auto}
+ .med-stats{gap:6px}
+ .stat-box{padding:11px}
+ .stat-box strong{font-size:19px}
+}
+</style>
 </head>
-<body>
 
-  
-  <!-- Arogga Search -->
-  <div class="search-container">
-    <a href="https://m.arogga.com/search" target="_blank" class="search-link">
-      🔍 Search medicines
+<body>
+<div class="wrapper">
+
+<header class="header">
+  <div class="brand">
+    <div class="brand-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+    <div>
+      <h2>HealthCare</h2>
+      <p>PERSONAL HEALTH PORTAL</p>
+    </div>
+  </div>
+  <div class="header-date" id="currentDate"></div>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-label">YOUR HEALTH, YOUR PRIORITY</div>
+    <h1>A Healthier Life Starts Here.</h1>
+    <p>Your personal health space. Manage family medical records, explore medicines and access useful health tools — all in one place.</p>
+    <a href="#records" class="hero-btn"><i class="fa-solid fa-folder-open"></i> Explore Medical Records</a>
+  </div>
+</section>
+
+<!-- HEALTH RESOURCES -->
+<section class="section">
+  <div class="section-head">
+    <div><h3>Health Resources</h3><p>Useful healthcare resources at your fingertips</p></div>
+    <div class="section-icon"><i class="fa-solid fa-link"></i></div>
+  </div>
+  <div class="quick-grid">
+
+    <a class="quick-card" href="https://medex.com.bd/" target="_blank" rel="noopener">
+      <div class="quick-icon" style="background:#e4f5ed;color:#159968"><i class="fa-solid fa-pills"></i></div>
+      <div><h4>Medicine Index</h4><p>Explore MedEx BD</p></div>
+    </a>
+
+    <a class="quick-card" href="https://www.who.int/" target="_blank" rel="noopener">
+      <div class="quick-icon" style="background:#e8f1ff;color:#4285d4"><i class="fa-solid fa-globe"></i></div>
+      <div><h4>WHO Health</h4><p>Global health information</p></div>
+    </a>
+
+    <a class="quick-card" href="https://www.mayoclinic.org/" target="_blank" rel="noopener">
+      <div class="quick-icon" style="background:#fff1e6;color:#ed8a43"><i class="fa-solid fa-user-doctor"></i></div>
+      <div><h4>Medical Guide</h4><p>Mayo Clinic</p></div>
+    </a>
+
+    <a class="quick-card" href="https://www.nhs.uk/" target="_blank" rel="noopener">
+      <div class="quick-icon" style="background:#f1eaff;color:#8761d2"><i class="fa-solid fa-book-medical"></i></div>
+      <div><h4>Health Library</h4><p>NHS Information</p></div>
     </a>
   </div>
+</section>
 
-  <!-- YouTube Playlist -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/videoseries?list=PLCXExLfkjecr6sL_z8jPE9ta24GqjwGIP"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
+<!-- FAMILY RECORDS -->
+<section class="section" id="records">
+  <div class="section-head">
+    <div><h3>Family Medical Records</h3><p>Personal medical documents & reports</p></div>
+    <div class="section-icon"><i class="fa-solid fa-file-medical"></i></div>
   </div>
 
-  <!-- Important Links -->
-  <div class="links">
-    <a href="https://medex.com.bd/" target="_blank">💊 Medicine Index (Medex)</a>
-    <a href="https://youtube.com/@drjahangirkabir/videos" target="_blank">🩺 Dr Jahangir Kabir</a>
-    <a href="https://m.youtube.com/@DrSaklayenRussel/videos" target="_blank">👨‍⚕️ Dr Saklayen Russel</a>
-    <a href="https://youtube.com/@drtasnimjara/videos" target="_blank">👩‍⚕️ Dr Tasnim Jara</a>
-    <a href="https://youtube.com/@dr.ahmednazmulanam3684/videos" target="_blank">👨‍⚕️ Dr Ahmed Nazmul Anam</a>
+  <div class="records-grid">
+
+    <a class="record-card" href="https://drive.google.com/drive/folders/17ooTudC1I8LXtHF1VMic-LzBL7W0IG24" target="_blank" rel="noopener">
+      <div class="avatar" style="background:#e4efff;color:#4277c9">AK</div>
+      <div class="record-info"><h4>Md Abdul Khaleque</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
+      <i class="fa-solid fa-chevron-right record-arrow"></i>
+    </a>
+
+    <a class="record-card" href="https://drive.google.com/drive/folders/1Mxb0hfCT6gaTrw0fnT7girEPL_obFkKl" target="_blank" rel="noopener">
+      <div class="avatar" style="background:#fce9f2;color:#d15c91">SM</div>
+      <div class="record-info"><h4>Shariatunnesa Madina</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
+      <i class="fa-solid fa-chevron-right record-arrow"></i>
+    </a>
+
+    <a class="record-card" href="https://drive.google.com/drive/folders/1eeHjhgVEVt4S920rRAuN0Vvnsw9d6tG1" target="_blank" rel="noopener">
+      <div class="avatar" style="background:#e4f5ed;color:#159968">MA</div>
+      <div class="record-info"><h4>Mashayekh Ahmed</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
+      <i class="fa-solid fa-chevron-right record-arrow"></i>
+    </a>
+
+    <a class="record-card" href="https://drive.google.com/drive/folders/1P5K-8B0tOZ6atYHW1xNsMpqk2XYEVKU0" target="_blank" rel="noopener">
+      <div class="avatar" style="background:#fff0df;color:#d58b37">LA</div>
+      <div class="record-info"><h4>Lima Akter</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
+      <i class="fa-solid fa-chevron-right record-arrow"></i>
+    </a>
+
+    <a class="record-card" href="https://drive.google.com/drive/folders/1NqXfXAhqvIeLEKgMHR3Bf_JX2EosmjLI" target="_blank" rel="noopener">
+      <div class="avatar" style="background:#eeeaff;color:#8068c9">AM</div>
+      <div class="record-info"><h4>Ahmad Muttaqeen</h4><p><i class="fa-solid fa-folder-open"></i> Medical Records</p></div>
+      <i class="fa-solid fa-chevron-right record-arrow"></i>
+    </a>
+
+  </div>
+</section>
+
+<!-- HEALTH CALCULATORS -->
+<section class="section">
+  <div class="section-head">
+    <div><h3>Smart Health Tools</h3><p>Simple calculators for everyday health tracking</p></div>
+    <div class="section-icon"><i class="fa-solid fa-calculator"></i></div>
   </div>
 
+  <div class="tools-grid">
+
+    <div class="tool-card">
+      <div class="tool-top">
+        <div class="tool-icon" style="background:#e5f3ff;color:#3984ce"><i class="fa-solid fa-weight-scale"></i></div>
+        <div><h4>BMI Calculator</h4><p>Body Mass Index</p></div>
+      </div>
+      <div class="field"><label>Weight (KG)</label><input type="number" id="weight" placeholder="e.g. 70" min="1" max="500"></div>
+      <div class="field"><label>Height (CM)</label><input type="number" id="height" placeholder="e.g. 170" min="50" max="250"></div>
+      <button class="action-btn" onclick="calculateBMI()">Calculate BMI</button>
+      <div class="result" id="bmiResult"></div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-top">
+        <div class="tool-icon" style="background:#e4f7f7;color:#079eac"><i class="fa-solid fa-glass-water"></i></div>
+        <div><h4>Water Calculator</h4><p>Estimated daily fluid intake</p></div>
+      </div>
+      <div class="field"><label>Your Weight (KG)</label><input type="number" id="waterWeight" placeholder="e.g. 70" min="1" max="500"></div>
+      <button class="action-btn" onclick="calculateWater()">Calculate Intake</button>
+      <div class="result" id="waterResult"></div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-top">
+        <div class="tool-icon" style="background:#f3eaff;color:#9566c9"><i class="fa-solid fa-calendar-days"></i></div>
+        <div><h4>Age Calculator</h4><p>Calculate exact age</p></div>
+      </div>
+      <div class="field"><label>Date of Birth</label><input type="date" id="birthDate"></div>
+      <button class="action-btn" onclick="calculateAge()">Calculate Age</button>
+      <div class="result" id="ageResult"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MEDICATION MANAGER -->
+<section class="section" id="medicineManager">
+  <div class="section-head">
+    <div><h3>Medication Manager</h3><p>Manage medicines, schedules and daily history</p></div>
+    <div class="section-icon"><i class="fa-solid fa-capsules"></i></div>
+  </div>
+
+  <div class="reminder-card">
+
+    <h4 style="margin-bottom:17px">Add New Medicine</h4>
+
+    <div class="med-form-grid">
+      <div class="field full-field">
+        <label>Medicine Name</label>
+        <input id="newMedName" placeholder="e.g. Medicine name">
+      </div>
+
+      <div class="field">
+        <label>Dosage</label>
+        <input id="newMedDose" placeholder="e.g. 1 tablet">
+      </div>
+
+      <div class="field">
+        <label>Reminder Time</label>
+        <div class="med-time-row">
+          <input type="time" id="newMedTime">
+          <button class="action-btn" onclick="addMedTime()">+ Add</button>
+        </div>
+      </div>
+
+      <div class="full-field">
+        <div id="selectedTimes" class="time-list"></div>
+      </div>
+
+      <div class="field">
+        <label>Start Date</label>
+        <input type="date" id="medStart">
+      </div>
+
+      <div class="field">
+        <label>End Date</label>
+        <input type="date" id="medEnd">
+      </div>
+    </div>
+
+    <button class="action-btn" onclick="saveMedicine()">
+      <i class="fa-solid fa-plus"></i> Save Medicine
+    </button>
+
+    <div style="border-top:1px solid var(--border);margin:23px 0"></div>
+
+    <h4>Today's Overview</h4>
+
+    <div class="med-stats">
+      <div class="stat-box"><span>Total Doses</span><strong id="totalStat">0</strong></div>
+      <div class="stat-box"><span>Taken</span><strong id="takenStat" style="color:#159968">0</strong></div>
+      <div class="stat-box"><span>Pending</span><strong id="pendingStat" style="color:#d58b37">0</strong></div>
+    </div>
+
+    <div class="med-tabs">
+      <button class="med-tab active" onclick="setMedTab('today',this)">Today's Schedule</button>
+      <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
+      <button class="med-tab" onclick="setMedTab('history',this)">History</button>
+    </div>
+
+    <div id="medContent">
+      <div class="empty">No medicines scheduled today.</div>
+    </div>
+
+    <div class="notification-box">
+      <div style="font-size:12px;font-weight:700;color:#087f83">
+        <i class="fa-solid fa-bell"></i> Notification Settings
+      </div>
+      <p>Enable browser notifications to receive medicine alerts while this page is open.</p>
+      <button class="action-btn" onclick="enableMedNotifications()">Enable Notifications</button>
+      <p id="notificationStatus" class="status-text">Notification permission not checked.</p>
+    </div>
+
+    <p style="font-size:10px;color:#82979b;margin-top:16px;line-height:1.8">
+      <i class="fa-solid fa-circle-info"></i>
+      This is a personal tracking tool, not a prescription system.
+      Always follow your doctor's instructions.
+    </p>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <strong><i class="fa-solid fa-heart-pulse"></i> HealthCare</strong>
+  <p>Your Personal Family Health Portal</p>
+  <p>Stay Healthy. Stay Informed. Stay Safe.</p>
+  <p style="margin-top:10px">© <span id="year"></span> HealthCare Portal</p>
+</footer>
+
+</div>
+
+<script>
+/* DATE */
+const now = new Date();
+document.getElementById("currentDate").textContent =
+  now.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+document.getElementById("year").textContent = now.getFullYear();
+
+/* BMI */
+function calculateBMI(){
+  const w=Number(document.getElementById("weight").value);
+  const h=Number(document.getElementById("height").value);
+  if(!w||!h||w<=0||h<50||h>250||w>500){alert("Enter valid weight and height.");return;}
+  const bmi=w/Math.pow(h/100,2);
+  let s=bmi<18.5?"Underweight":bmi<25?"Normal range":bmi<30?"Overweight":"Obesity range";
+  showResult("bmiResult",`Your BMI<strong>${bmi.toFixed(1)}</strong>${s}<br><small>Adult screening categories, not a diagnosis.</small>`);
+}
+
+/* WATER */
+function calculateWater(){
+  const w=Number(document.getElementById("waterWeight").value);
+  if(!w||w<=0||w>500){alert("Enter valid weight.");return;}
+  const liters=w*.033;
+  showResult("waterResult",`Estimated daily fluid amount<strong>${liters.toFixed(2)} L</strong>Approximately ${Math.round(liters*1000)} ml.<br><small>Rough estimate only. Individual needs vary.</small>`);
+}
+
+/* AGE */
+function calculateAge(){
+  const val=document.getElementById("birthDate").value;
+  if(!val){alert("Select your birth date.");return;}
+  const dob=new Date(val+"T00:00:00");
+  const n=new Date();
+  if(dob>n){alert("Date cannot be in the future.");return;}
+  let y=n.getFullYear()-dob.getFullYear();
+  let m=n.getMonth()-dob.getMonth();
+  let d=n.getDate()-dob.getDate();
+  if(d<0){m--;d+=new Date(n.getFullYear(),n.getMonth(),0).getDate();}
+  if(m<0){y--;m+=12;}
+  showResult("ageResult",`Your Age<strong>${y} Years</strong>${m} Months and ${d} Days`);
+}
+
+function showResult(id,html){
+  const el=document.getElementById(id);
+  el.innerHTML=html;
+  el.style.display="block";
+}
+
+/* MEDICATION DATABASE */
+const MED_KEY="health_medicines_v3";
+const HISTORY_KEY="health_history_v3";
+const ALERT_KEY="health_alerts_v3";
+
+let medicines=[];
+let medHistory=[];
+let pendingTimes=[];
+let currentTab="today";
+
+try{
+  medicines=JSON.parse(localStorage.getItem(MED_KEY)||"[]");
+  medHistory=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");
+  if(!Array.isArray(medicines))medicines=[];
+  if(!Array.isArray(medHistory))medHistory=[];
+}catch(e){
+  medicines=[];
+  medHistory=[];
+}
+
+function saveData(){
+  localStorage.setItem(MED_KEY,JSON.stringify(medicines));
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(medHistory));
+}
+
+function todayDate(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function safeText(v){
+  return String(v).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[c]);
+}
+
+/* ADD TIMES */
+function addMedTime(){
+  const input=document.getElementById("newMedTime");
+  const time=input.value;
+  if(!time){alert("Select a time first.");return;}
+  if(pendingTimes.includes(time)){alert("Time already added.");return;}
+  pendingTimes.push(time);
+  pendingTimes.sort();
+  input.value="";
+  renderTimes();
+}
+
+function renderTimes(){
+  document.getElementById("selectedTimes").innerHTML=pendingTimes.map((t,i)=>`
+    <span class="time-chip">${safeText(t)}
+    <button onclick="removeTime(${i})">×</button></span>
+  `).join("");
+}
+
+function removeTime(i){
+  pendingTimes.splice(i,1);
+  renderTimes();
+}
+
+/* SAVE MEDICINE */
+function saveMedicine(){
+  const name=document.getElementById("newMedName").value.trim();
+  const dose=document.getElementById("newMedDose").value.trim();
+  const start=document.getElementById("medStart").value;
+  const end=document.getElementById("medEnd").value;
+
+  if(!name||!start||!end||!pendingTimes.length){
+    alert("Fill medicine name, dates and at least one time.");return;
+  }
+  if(start>end){alert("End date cannot be before start date.");return;}
+
+  medicines.push({
+    id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),
+    name,dose,start,end,times:[...pendingTimes]
+  });
+
+  saveData();
+  document.getElementById("newMedName").value="";
+  document.getElementById("newMedDose").value="";
+  document.getElementById("medStart").value="";
+  document.getElementById("medEnd").value="";
+  pendingTimes=[];
+  renderTimes();
+  renderAll();
+  alert("Medicine saved successfully.");
+}
+
+/* DAILY SCHEDULE */
+function todayItems(){
+  const date=todayDate();
+  const result=[];
+  medicines.forEach(m=>{
+    if(date<m.start||date>m.end)return;
+    m.times.forEach(time=>result.push({id:m.id,name:m.name,dose:m.dose,time}));
+  });
+  return result.sort((a,b)=>a.time.localeCompare(b.time));
+}
+
+function statusOf(id,time,date=todayDate()){
+  return medHistory.find(h=>h.id===id&&h.time===time&&h.date===date)?.status||"pending";
+}
+
+function markMedicine(id,time,status){
+  const date=todayDate();
+  let record=medHistory.find(h=>h.id===id&&h.time===time&&h.date===date);
+  if(record){
+    if(record.status!=="pending"){alert("Already recorded.");return;}
+    record.status=status;
+  }else{
+    medHistory.push({id,time,date,status,recordedAt:new Date().toISOString()});
+  }
+  saveData();
+  renderAll();
+}
+
+/* TODAY */
+function renderToday(){
+  const items=todayItems();
+  const taken=items.filter(x=>statusOf(x.id,x.time)==="taken").length;
+  const pending=items.filter(x=>statusOf(x.id,x.time)==="pending").length;
+
+  document.getElementById("totalStat").textContent=items.length;
+  document.getElementById("takenStat").textContent=taken;
+  document.getElementById("pendingStat").textContent=pending;
+
+  if(!items.length)return '<div class="empty">No medicines scheduled today.</div>';
+
+  return items.map(item=>{
+    const status=statusOf(item.id,item.time);
+    const label=status==="taken"?"Taken":status==="skipped"?"Skipped":"Pending";
+    const color=status==="taken"?"#159968":status==="skipped"?"#d17c3c":"#82979b";
+    return `
+    <div class="med-row">
+      <div class="med-row-top">
+        <div>
+          <h4>${safeText(item.name)}</h4>
+          <p>${safeText(item.dose||"Dosage not specified")} · <i class="fa-regular fa-clock"></i> ${safeText(item.time)}</p>
+        </div>
+        <span style="font-size:10px;font-weight:700;color:${color}">${label}</span>
+      </div>
+      <div class="med-buttons">
+        <button class="med-action med-taken" ${status!=="pending"?"disabled":""}
+          onclick="markMedicine('${item.id}','${item.time}','taken')">
+          <i class="fa-solid fa-check"></i> Taken
+        </button>
+        <button class="med-action med-skipped" ${status!=="pending"?"disabled":""}
+          onclick="markMedicine('${item.id}','${item.time}','skipped')">
+          <i class="fa-solid fa-forward"></i> Skipped
+        </button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ALL MEDICINES */
+function renderMedicineList(){
+  if(!medicines.length)return '<div class="empty">No medicines added yet.</div>';
+  return medicines.map(m=>`
+    <div class="med-row">
+      <div class="med-row-top">
+        <div>
+          <h4>${safeText(m.name)}</h4>
+          <p>${safeText(m.dose||"Dosage not specified")}</p>
+          <p>${safeText(m.start)} → ${safeText(m.end)}</p>
+          <p>Times: ${m.times.map(safeText).join(" · ")}</p>
+        </div>
+      </div>
+      <div class="med-buttons">
+        <button class="med-action med-edit" onclick="editMedicine('${m.id}')">
+          <i class="fa-solid fa-pen"></i> Edit
+        </button>
+        <button class="med-action med-delete" onclick="deleteMedicine('${m.id}')">
+          <i class="fa-solid fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* EDIT MEDICINE */
+function editMedicine(id){
+  const m=medicines.find(x=>x.id===id);
+  if(!m)return;
+
+  document.getElementById("newMedName").value=m.name;
+  document.getElementById("newMedDose").value=m.dose||"";
+  document.getElementById("medStart").value=m.start;
+  document.getElementById("medEnd").value=m.end;
+  pendingTimes=[...m.times];
+  editingId=id;
+  renderTimes();
+  window.scrollTo({top:document.getElementById("medicineManager").offsetTop-15,behavior:"smooth"});
+  document.getElementById("saveMedButton").textContent="Update Medicine";
+}
+
+let editingId=null;
+
+/* UPDATE SAVE FUNCTION */
+const originalSaveMedicine=saveMedicine;
+saveMedicine=function(){
+  if(!editingId)return originalSaveMedicine();
+
+  const name=document.getElementById("newMedName").value.trim();
+  const dose=document.getElementById("newMedDose").value.trim();
+  const start=document.getElementById("medStart").value;
+  const end=document.getElementById("medEnd").value;
+
+  if(!name||!start||!end||!pendingTimes.length){alert("Complete all required fields.");return;}
+  if(start>end){alert("Invalid date range.");return;}
+
+  const m=medicines.find(x=>x.id===editingId);
+  if(!m)return;
+  m.name=name;m.dose=dose;m.start=start;m.end=end;m.times=[...pendingTimes];
+
+  editingId=null;
+  document.getElementById("saveMedButton").textContent="Save Medicine";
+  document.getElementById("newMedName").value="";
+  document.getElementById("newMedDose").value="";
+  document.getElementById("medStart").value="";
+  document.getElementById("medEnd").value="";
+  pendingTimes=[];
+  saveData();renderTimes();renderAll();
+  alert("Medicine updated.");
+};
+
+/* DELETE */
+function deleteMedicine(id){
+  if(!confirm("Delete this medicine and its history?"))return;
+  medicines=medicines.filter(m=>m.id!==id);
+  medHistory=medHistory.filter(h=>h.id!==id);
+  saveData();renderAll();
+}
+
+/* HISTORY */
+function renderHistory(){
+  const records=[...medHistory].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  if(!records.length)return '<div class="empty">No history available.</div>';
+
+  return records.slice(0,100).map(h=>{
+    const m=medicines.find(x=>x.id===h.id);
+    return `<div class="med-row">
+      <div class="med-row-top">
+        <div>
+          <h4>${safeText(m?.name||"Deleted medicine")}</h4>
+          <p>${safeText(h.date)} · ${safeText(h.time)}</p>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:${h.status==="taken"?"#159968":"#d17c3c"}">
+          ${h.status==="taken"?"Taken":"Skipped"}
+        </span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* TABS */
+function setMedTab(tab,button){
+  currentTab=tab;
+  document.querySelectorAll(".med-tab").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  renderContent();
+}
+
+function renderContent(){
+  const box=document.getElementById("medContent");
+  if(currentTab==="today")box.innerHTML=renderToday();
+  if(currentTab==="all")box.innerHTML=renderMedicineList();
+  if(currentTab==="history")box.innerHTML=renderHistory();
+}
+
+function renderAll(){
+  renderToday();
+  renderContent();
+}
+
+/* HISTORY CLEAR */
+function clearOldHistory(){
+  if(!confirm("Delete all medication history?"))return;
+  medHistory=[];
+  saveData();renderAll();
+}
+
+/* NOTIFICATIONS */
+async function enableMedNotifications(){
+  const status=document.getElementById("notificationStatus");
+  if(!("Notification" in window)){
+    status.textContent="Notifications not supported.";
+    return;
+  }
+  try{
+    const permission=await Notification.requestPermission();
+    status.textContent=permission==="granted"?"Notifications enabled.":"Permission not granted.";
+  }catch(e){
+    status.textContent="Could not enable notifications.";
+  }
+}
+
+function checkMedicineAlerts(){
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
+
+  const date=todayDate();
+  const now=new Date();
+  const time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+
+  medicines.forEach(m=>{
+    if(date<m.start||date>m.end||!m.times.includes(time))return;
+    if(statusOf(m.id,time)!=="pending")return;
+
+    const key="alert_"+m.id+"_"+date+"_"+time;
+    if(localStorage.getItem(key))return;
+
+    new Notification("Medicine Reminder",{
+      body:"Time for "+m.name+(m.dose?" · "+m.dose:""),
+      tag:key
+    });
+    localStorage.setItem(key,"1");
+  });
+}
+
+/* INITIALIZATION */
+document.getElementById("saveMedButton")?.remove();
+const saveButton=document.querySelector("#medicineManager .action-btn");
+if(saveButton)saveButton.id="saveMedButton";
+
+if("Notification" in window){
+  document.getElementById("notificationStatus").textContent=
+    Notification.permission==="granted"?"Notifications enabled.":"Notifications not enabled.";
+}
+
+renderTimes();
+renderAll();
+checkMedicineAlerts();
+setInterval(checkMedicineAlerts,15000);
+
+/* PWA SERVICE WORKER REGISTRATION */
+if("serviceWorker" in navigator && location.protocol==="https:"){
+  navigator.serviceWorker.register("./sw.js").catch(console.error);
+}
+</script>
 </body>
 </html>
