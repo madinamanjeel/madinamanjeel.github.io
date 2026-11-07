@@ -5,18 +5,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2b">
-
+<meta name="description" content="Our Family Heritage - Family Tree">
 <title>Our Family Heritage</title>
 
 <style>
 :root {
   --bg: #101b2b;
-  --card: #19283b;
-  --card2: #20334a;
+  --card: #1b2c40;
+  --card2: #223950;
   --gold: #d6b36a;
   --text: #f1f5f9;
   --muted: #a8b5c5;
-  --line: #52647a;
+  --line: #657b91;
 }
 
 * {
@@ -28,63 +28,172 @@
 body {
   display: none;
   min-height: 100vh;
-  padding: 25px 15px 45px;
   background:
-    radial-gradient(ellipse at top, #243c55 0%, transparent 65%),
+    radial-gradient(ellipse at top, #263e58 0%, transparent 65%),
     var(--bg);
   color: var(--text);
   font-family: Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+button {
+  font-family: inherit;
+}
+
+/* AUTHENTICATION SCREEN */
+
+#auth-screen {
+  display: none;
+  min-height: 100vh;
+  width: 100%;
+  padding: 25px;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 390px;
+  padding: 35px 25px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid rgba(214,179,106,.3);
+  border-radius: 20px;
+  box-shadow: 0 15px 45px rgba(0,0,0,.25);
+}
+
+.auth-logo {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(214,179,106,.13);
+  border: 1px solid rgba(214,179,106,.5);
+  font-size: 32px;
+}
+
+.auth-card h2 {
+  color: var(--gold);
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.auth-card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+
+.auth-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--gold);
+  color: #172334;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auth-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.auth-button.secondary {
+  margin-top: 10px;
+  background: var(--card2);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+#auth-status {
+  display: none;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.spinner {
+  width: 23px;
+  height: 23px;
+  border: 3px solid rgba(214,179,106,.25);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* MAIN PAGE */
+
 .page {
   width: 100%;
-  max-width: 1150px;
+  max-width: 1200px;
   margin: auto;
+  padding: 28px 15px 35px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 42px;
+  margin-bottom: 45px;
 }
 
 .logo {
-  width: 65px;
-  height: 65px;
-  margin: 0 auto 15px;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 16px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: rgba(214,179,106,.13);
   border: 1px solid rgba(214,179,106,.45);
-  font-size: 29px;
+  font-size: 32px;
 }
 
 .header h1 {
   color: var(--gold);
-  font-size: clamp(24px, 5vw, 36px);
+  font-size: clamp(25px, 5vw, 38px);
   letter-spacing: 1px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .header p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 2px;
 }
 
 .heritage-link {
   display: inline-block;
-  margin-top: 17px;
-  padding: 9px 19px;
+  margin-top: 19px;
+  padding: 10px 20px;
   border: 1px solid rgba(214,179,106,.4);
   border-radius: 30px;
   color: var(--gold);
   text-decoration: none;
   font-size: 13px;
+  transition: .2s;
 }
 
-/* TREE */
+.heritage-link:hover {
+  background: rgba(214,179,106,.12);
+}
+
+/* TREE STRUCTURE */
 
 .tree-wrapper {
   width: 100%;
@@ -114,7 +223,7 @@ body {
   padding: 35px 13px 0;
 }
 
-/* Horizontal family connectors */
+/* CONNECTING LINES */
 
 .tree li::before,
 .tree li::after {
@@ -167,15 +276,15 @@ body {
   border-left: 1px solid var(--line);
 }
 
-/* FAMILY CARD */
+/* PERSON CARDS */
 
 .family-card {
-  width: 245px;
-  max-width: calc(100vw - 50px);
-  padding: 16px 12px;
-  background: linear-gradient(145deg, #20354c, #172638);
+  width: 250px;
+  max-width: calc(100vw - 40px);
+  padding: 17px 13px;
+  background: linear-gradient(145deg, #223950, #172638);
   border: 1px solid rgba(214,179,106,.3);
-  border-radius: 14px;
+  border-radius: 15px;
   box-shadow: 0 8px 25px rgba(0,0,0,.17);
   transition: transform .2s, border-color .2s;
 }
@@ -185,36 +294,37 @@ body {
   border-color: var(--gold);
 }
 
+.couple {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
 .person {
   display: inline-block;
   color: var(--text);
   font-size: 14px;
   font-weight: 700;
-  text-decoration: none;
   line-height: 1.5;
+  text-decoration: none;
   padding: 3px;
+  overflow-wrap: anywhere;
 }
 
 .person:hover {
   color: var(--gold);
 }
 
-.couple {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
 .heart {
   color: #e98b9e;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .generation {
   display: inline-block;
-  margin-top: 10px;
-  padding: 4px 10px;
+  margin-top: 11px;
+  padding: 5px 11px;
   border-radius: 20px;
   background: rgba(214,179,106,.12);
   color: var(--gold);
@@ -225,37 +335,43 @@ body {
 
 .child-label {
   display: block;
-  margin-top: 10px;
+  margin-top: 13px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
+  letter-spacing: 1px;
 }
 
 .single-child {
   display: block;
-  margin-top: 7px;
+  margin-top: 8px;
+  padding: 6px 4px;
+  border-top: 1px solid rgba(255,255,255,.07);
 }
+
+/* FOOTER */
 
 .footer {
   text-align: center;
-  padding: 28px 10px;
+  padding: 30px 10px;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.8;
 }
 
 .footer span {
   color: var(--gold);
 }
 
-/* MOBILE TREE */
+/* MOBILE RESPONSIVE */
 
 @media(max-width: 650px) {
 
-  body {
-    padding: 20px 10px 30px;
+  .page {
+    padding: 23px 12px 25px;
   }
 
   .header {
-    margin-bottom: 28px;
+    margin-bottom: 30px;
   }
 
   .tree-wrapper {
@@ -264,8 +380,8 @@ body {
   }
 
   .tree {
+    display: block;
     min-width: 0;
-    justify-content: flex-start;
   }
 
   .tree > ul {
@@ -282,6 +398,7 @@ body {
   }
 
   .tree li {
+    display: block;
     text-align: left;
     padding: 0 0 20px 15px;
   }
@@ -317,11 +434,6 @@ body {
     border: 0;
   }
 
-  .family-card {
-    width: 100%;
-    max-width: 100%;
-  }
-
   .tree > ul > li {
     padding-left: 0;
   }
@@ -333,39 +445,30 @@ body {
   .tree ul {
     margin-left: 8px;
   }
+
+  .family-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
 }
 
-/* ACCESS STATUS */
+/* SMALL MOBILE */
 
-#access-message {
-  display: none;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 25px;
-  color: var(--text);
-}
+@media(max-width: 360px) {
 
-#access-message.show {
-  display: flex;
-}
+  .header h1 {
+    font-size: 24px;
+  }
 
-#access-message .message-box {
-  max-width: 400px;
-  padding: 25px;
-  background: var(--card);
-  border-radius: 15px;
-}
+  .family-card {
+    padding: 14px 10px;
+  }
 
-#access-message button {
-  margin-top: 15px;
-  padding: 10px 18px;
-  background: var(--gold);
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+  .person {
+    font-size: 13px;
+  }
+
 }
 
 </style>
@@ -373,19 +476,47 @@ body {
 
 <body>
 
-<div id="access-message">
-  <div class="message-box">
-    <h2 id="message-title">Access Verification</h2>
-    <p id="message-text" style="margin-top:12px;color:#a8b5c5">
-      Please wait...
+<!-- LOGIN SCREEN -->
+
+<section id="auth-screen">
+
+  <div class="auth-card">
+
+    <div class="auth-logo">♛</div>
+
+    <h2 id="auth-title">Family Heritage</h2>
+
+    <p id="auth-description">
+      Sign in with your authorized Google account to access our family tree.
     </p>
-    <button id="retry-button" style="display:none">
+
+    <button id="login-button" class="auth-button">
+      <span>G</span>
+      Continue with Google
+    </button>
+
+    <button id="retry-button"
+            class="auth-button secondary"
+            style="display:none">
       Retry Verification
     </button>
-  </div>
-</div>
 
-<main class="page" id="main-content">
+    <button id="switch-button"
+            class="auth-button secondary"
+            style="display:none">
+      Use Another Google Account
+    </button>
+
+    <div id="auth-status"></div>
+
+  </div>
+
+</section>
+
+
+<!-- FAMILY TREE -->
+
+<main class="page" id="main-content" style="display:none">
 
   <header class="header">
 
@@ -402,11 +533,13 @@ body {
 
   </header>
 
+
   <section class="tree-wrapper">
 
     <div class="tree">
 
       <ul>
+
         <li>
 
           <!-- FIRST GENERATION -->
@@ -417,14 +550,14 @@ body {
 
               <a class="person"
                  href="Monsur_Munshi.html">
-                 Monsur Munshi
+                Monsur Munshi
               </a>
 
               <span class="heart">♥</span>
 
               <a class="person"
                  href="Shafia_Khatun.html">
-                 Shafia Khatun
+                Shafia Khatun
               </a>
 
             </div>
@@ -435,7 +568,9 @@ body {
 
           </div>
 
+
           <ul>
+
             <li>
 
               <!-- SECOND GENERATION -->
@@ -446,14 +581,14 @@ body {
 
                   <a class="person"
                      href="Md_Abdul_Khaleque.html">
-                     Md Abdul Khaleque
+                    Md Abdul Khaleque
                   </a>
 
                   <span class="heart">♥</span>
 
                   <a class="person"
                      href="Shariatunnesa_Madina.html">
-                     Shariatunnesa Madina
+                    Shariatunnesa Madina
                   </a>
 
                 </div>
@@ -463,6 +598,7 @@ body {
                 </span>
 
               </div>
+
 
               <ul>
 
@@ -476,14 +612,14 @@ body {
 
                       <a class="person"
                          href="Darul_Ahmed.html">
-                         Darul Ahmed
+                        Darul Ahmed
                       </a>
 
                       <span class="heart">♥</span>
 
                       <a class="person"
                          href="Farjana_Afrin.html">
-                         Farjana Afrin
+                        Farjana Afrin
                       </a>
 
                     </div>
@@ -498,17 +634,18 @@ body {
 
                     <a class="person single-child"
                        href="Afia_Ahmed_Adiba.html">
-                       Afia Ahmed Adiba
+                      Afia Ahmed Adiba
                     </a>
 
                     <a class="person single-child"
                        href="Nusaiba_Jannat_Alifa.html">
-                       Nusaiba Jannat Alifa
+                      Nusaiba Jannat Alifa
                     </a>
 
                   </div>
 
                 </li>
+
 
                 <!-- MASHAYEKH AHMED FAMILY -->
 
@@ -520,14 +657,14 @@ body {
 
                       <a class="person"
                          href="Mashayekh_Ahmed.html">
-                         Mashayekh Ahmed
+                        Mashayekh Ahmed
                       </a>
 
                       <span class="heart">♥</span>
 
                       <a class="person"
                          href="Lima_Akter.html">
-                         Lima Akter
+                        Lima Akter
                       </a>
 
                     </div>
@@ -542,7 +679,7 @@ body {
 
                     <a class="person single-child"
                        href="Ahmad_Muttaqeen.html">
-                       Ahmed Muttaqeen
+                      Ahmed Muttaqeen
                     </a>
 
                   </div>
@@ -552,23 +689,32 @@ body {
               </ul>
 
             </li>
+
           </ul>
 
         </li>
+
       </ul>
 
     </div>
 
   </section>
 
+
   <footer class="footer">
+
     <p>Made with <span>♥</span> for our family</p>
-    <p style="margin-top:6px">
+
+    <p>
       Preserving Our Legacy • Connecting Generations
     </p>
+
   </footer>
 
 </main>
+
+
+<!-- FIREBASE AUTHENTICATION -->
 
 <script type="module">
 
@@ -580,12 +726,16 @@ import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithRedirect,
+  signInWithPopup,
   setPersistence,
   browserLocalPersistence,
+  browserSessionPersistence,
+  inMemoryPersistence,
   signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
+
+/* FIREBASE CONFIGURATION */
 
 const firebaseConfig = {
   apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
@@ -598,7 +748,9 @@ const firebaseConfig = {
 
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const provider = new GoogleAuthProvider();
 
 provider.setCustomParameters({
@@ -606,71 +758,135 @@ provider.setCustomParameters({
 });
 
 
-// CACHE SETTINGS
+/* CACHE SETTINGS */
 
 const CACHE_KEY = "family_allowed_emails";
 const CACHE_TIME_KEY = "family_allowed_emails_time";
 
-// এক মিনিটের Fresh Cache
 const CACHE_TTL = 60 * 1000;
 
-// Offline fallback সর্বোচ্চ ২৪ ঘণ্টা
+// Offline fallback: maximum 24 hours
 const OFFLINE_LIMIT = 24 * 60 * 60 * 1000;
 
 
-// UI
+/* ELEMENTS */
 
 const body = document.body;
-const messageBox = document.getElementById("access-message");
+
+const authScreen = document.getElementById("auth-screen");
+
 const mainContent = document.getElementById("main-content");
 
-const messageTitle = document.getElementById("message-title");
-const messageText = document.getElementById("message-text");
+const loginButton = document.getElementById("login-button");
+
 const retryButton = document.getElementById("retry-button");
 
-let checking = false;
+const switchButton = document.getElementById("switch-button");
+
+const authTitle = document.getElementById("auth-title");
+
+const authDescription = document.getElementById("auth-description");
+
+const authStatus = document.getElementById("auth-status");
 
 
-function showMessage(title, message, retry = false) {
+let verificationRunning = false;
+let currentUser = null;
+let authReady = false;
+
+
+/* SCREEN MANAGEMENT */
+
+function showLoginScreen() {
+
+  body.style.display = "block";
+
+  authScreen.style.display = "flex";
 
   mainContent.style.display = "none";
 
-  messageBox.classList.add("show");
+}
 
-  messageTitle.textContent = title;
-  messageText.textContent = message;
 
-  retryButton.style.display = retry ? "inline-block" : "none";
+function showStatus(title, message, showRetry = false, showSwitch = false) {
+
+  showLoginScreen();
+
+  authTitle.textContent = title;
+
+  authDescription.textContent = message;
+
+  authStatus.style.display = "none";
+
+  loginButton.style.display = showSwitch ? "none" : "flex";
+
+  retryButton.style.display = showRetry ? "flex" : "none";
+
+  switchButton.style.display = showSwitch ? "flex" : "none";
+
+  loginButton.disabled = false;
+
+}
+
+
+function showLoading(message) {
+
+  showLoginScreen();
+
+  loginButton.style.display = "none";
+
+  retryButton.style.display = "none";
+
+  switchButton.style.display = "none";
+
+  authStatus.style.display = "block";
+
+  authStatus.innerHTML =
+    '<div class="spinner"></div>' + message;
+
 }
 
 
 function showPage() {
 
-  messageBox.classList.remove("show");
+  body.style.display = "block";
+
+  authScreen.style.display = "none";
 
   mainContent.style.display = "block";
 
-  body.style.display = "block";
 }
 
 
-// CACHE READER
+/* CACHE READER */
 
 function getCache() {
 
   try {
 
     const data = localStorage.getItem(CACHE_KEY);
-    const time = Number(localStorage.getItem(CACHE_TIME_KEY));
+
+    const time = Number(
+      localStorage.getItem(CACHE_TIME_KEY)
+    );
 
     if (!data || !time) return null;
 
+    const emails = JSON.parse(data);
+
+    if (!Array.isArray(emails)) return null;
+
     return {
-      emails: JSON.parse(data),
+      emails: emails
+        .filter(item => typeof item === "string")
+        .map(item => item.trim().toLowerCase()),
+
       time: time
     };
 
   } catch (error) {
+
+    console.warn("Cache read error:", error);
 
     return null;
 
@@ -679,49 +895,65 @@ function getCache() {
 }
 
 
-// CACHE SAVER
+/* CACHE SAVER */
 
 function saveCache(emails) {
 
-  localStorage.setItem(
-    CACHE_KEY,
-    JSON.stringify(emails)
-  );
+  try {
 
-  localStorage.setItem(
-    CACHE_TIME_KEY,
-    Date.now().toString()
-  );
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify(emails)
+    );
+
+    localStorage.setItem(
+      CACHE_TIME_KEY,
+      Date.now().toString()
+    );
+
+  } catch (error) {
+
+    console.warn("Cache save error:", error);
+
+  }
 
 }
 
 
-// FETCH FRESH EMAIL LIST
+/* FETCH AUTHORIZED EMAILS */
 
 async function fetchAllowedEmails() {
 
   const url =
     "https://raw.githubusercontent.com/madinamanjeel/" +
-    "madinamanjeel.github.io/refs/heads/main/allowed_emails.json" +
-    "?v=" + Date.now();
+    "madinamanjeel.github.io/main/allowed_emails.json" +
+    "?t=" + Date.now();
 
   const response = await fetch(url, {
+    method: "GET",
     cache: "no-store"
   });
 
   if (!response.ok) {
-    throw new Error("Email list server unavailable");
+
+    throw new Error(
+      "GitHub server returned HTTP " + response.status
+    );
+
   }
 
   const data = await response.json();
 
   if (!Array.isArray(data)) {
-    throw new Error("Invalid email list");
+
+    throw new Error("Invalid allowed_emails.json format");
+
   }
 
   const emails = data
-    .filter(email => typeof email === "string")
-    .map(email => email.trim().toLowerCase());
+    .filter(item => typeof item === "string")
+    .map(item => item.trim().toLowerCase())
+    .filter(Boolean);
 
   saveCache(emails);
 
@@ -730,78 +962,125 @@ async function fetchAllowedEmails() {
 }
 
 
-// VERIFY ACCOUNT
+/* BACKGROUND REVALIDATION */
+
+async function backgroundVerification(user) {
+
+  try {
+
+    const latestEmails = await fetchAllowedEmails();
+
+    // User may have changed accounts during the request
+    if (
+      !auth.currentUser ||
+      auth.currentUser.uid !== user.uid
+    ) {
+      return;
+    }
+
+    const email = (user.email || "").trim().toLowerCase();
+
+    if (!latestEmails.includes(email)) {
+
+      showStatus(
+        "Access Revoked",
+        "This account is no longer authorized to access the family page.",
+        false,
+        true
+      );
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Background email verification failed:",
+      error
+    );
+
+  }
+
+}
+
+
+/* ACCOUNT VERIFICATION */
 
 async function verifyAccount(user, forceRefresh = false) {
 
-  if (checking) return;
+  if (verificationRunning) return;
 
-  checking = true;
+  verificationRunning = true;
 
-  showMessage(
-    "Verifying Account",
-    "Please wait while we verify your access..."
-  );
+  currentUser = user;
 
   const email = (user.email || "").trim().toLowerCase();
+
+  if (!email) {
+
+    showStatus(
+      "Account Error",
+      "No email address was found in this Google account.",
+      false,
+      true
+    );
+
+    verificationRunning = false;
+
+    return;
+
+  }
+
+  showLoading("Verifying your Google account...");
 
   try {
 
     const cache = getCache();
 
+    const cacheAge = cache
+      ? Date.now() - cache.time
+      : Infinity;
+
     const freshCache =
-      cache &&
-      Date.now() - cache.time < CACHE_TTL;
+      cache && cacheAge >= 0 && cacheAge < CACHE_TTL;
+
 
     let allowedEmails;
 
-    // Fresh cache থাকলে দ্রুত ব্যবহার
+
+    // USE FRESH CACHE
+
     if (!forceRefresh && freshCache) {
 
       allowedEmails = cache.emails;
 
-      if (!allowedEmails.includes(email)) {
+      if (allowedEmails.includes(email)) {
 
-        // Cached list-এ না থাকলে নতুন তালিকা যাচাই
-        allowedEmails = await fetchAllowedEmails();
-
-      } else {
-
-        // অনুমোদিত হলে দ্রুত পেইজ দেখানো
         showPage();
 
-        // Background revalidation
-        fetchAllowedEmails()
-          .then(latestEmails => {
+        verificationRunning = false;
 
-            if (!latestEmails.includes(email)) {
+        // Check GitHub in the background
+        backgroundVerification(user);
 
-              showMessage(
-                "Access Revoked",
-                "Your account is no longer authorized."
-              );
-
-              signOut(auth);
-
-            }
-
-          })
-          .catch(error => {
-            console.warn("Background verification failed:", error);
-          });
-
-        checking = false;
         return;
 
       }
 
+      // If cached list denies the account,
+      // fetch the latest list before denying it.
+
+      allowedEmails = await fetchAllowedEmails();
+
     } else {
 
-      // Cache পুরোনো হলে নতুন তালিকা আনবে
+      // CACHE EXPIRED OR FORCE REFRESH
+
       allowedEmails = await fetchAllowedEmails();
 
     }
 
+
+    // CHECK RESULT
 
     if (allowedEmails.includes(email)) {
 
@@ -809,12 +1088,12 @@ async function verifyAccount(user, forceRefresh = false) {
 
     } else {
 
-      showMessage(
+      showStatus(
         "Access Denied",
-        "This Google account is not authorized to access this family page."
+        "This Google account is not authorized to access this family page.",
+        false,
+        true
       );
-
-      await signOut(auth);
 
     }
 
@@ -822,12 +1101,18 @@ async function verifyAccount(user, forceRefresh = false) {
 
     console.error("Verification error:", error);
 
-    // নেটওয়ার্ক ব্যর্থ হলে সীমিত সময়ের পুরোনো Cache
+    // OFFLINE FALLBACK
+
     const cache = getCache();
+
+    const cacheAge = cache
+      ? Date.now() - cache.time
+      : Infinity;
 
     const validOfflineCache =
       cache &&
-      Date.now() - cache.time < OFFLINE_LIMIT;
+      cacheAge >= 0 &&
+      cacheAge < OFFLINE_LIMIT;
 
     if (
       validOfflineCache &&
@@ -838,8 +1123,8 @@ async function verifyAccount(user, forceRefresh = false) {
 
     } else {
 
-      showMessage(
-        "Connection Error",
+      showStatus(
+        "Verification Failed",
         "Unable to verify your account. Please check your internet connection and try again.",
         true
       );
@@ -848,83 +1133,251 @@ async function verifyAccount(user, forceRefresh = false) {
 
   } finally {
 
-    checking = false;
+    verificationRunning = false;
 
   }
 
 }
 
 
-// RETRY BUTTON
+/* GOOGLE POPUP LOGIN */
 
-retryButton.addEventListener("click", () => {
+async function googleLogin() {
+
+  if (loginButton.disabled) return;
+
+  loginButton.disabled = true;
+
+  showLoading("Connecting to Google...");
+
+  try {
+
+    const result = await signInWithPopup(auth, provider);
+
+    if (result.user) {
+
+      await verifyAccount(result.user, true);
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Google Popup Login Error:",
+      error.code,
+      error.message
+    );
+
+    let message = "Google login failed. Please try again.";
+
+    if (error.code === "auth/popup-blocked") {
+
+      message = "The browser blocked the login window. Please allow popups and try again.";
+
+    } else if (error.code === "auth/popup-closed-by-user") {
+
+      message = "Login window was closed before authentication completed.";
+
+    } else if (error.code === "auth/cancelled-popup-request") {
+
+      message = "Another login request is already running.";
+
+    } else if (error.code === "auth/unauthorized-domain") {
+
+      message = "This website domain is not authorized in Firebase Authentication.";
+
+    } else if (error.code === "auth/network-request-failed") {
+
+      message = "Network error. Please check your internet connection.";
+
+    } else {
+
+      message += " Error: " + (error.code || error.message);
+
+    }
+
+    showStatus(
+      "Google Login Error",
+      message,
+      true
+    );
+
+  } finally {
+
+    loginButton.disabled = false;
+
+  }
+
+}
+
+
+/* LOGIN BUTTON */
+
+loginButton.addEventListener("click", googleLogin);
+
+
+/* RETRY VERIFICATION */
+
+retryButton.addEventListener("click", async () => {
 
   const user = auth.currentUser;
 
   if (user) {
-    verifyAccount(user, true);
+
+    await verifyAccount(user, true);
+
+  } else {
+
+    showStatus(
+      "Sign In Required",
+      "Please sign in with your Google account."
+    );
+
   }
 
 });
 
 
-// AUTH INITIALIZATION
+/* CHANGE GOOGLE ACCOUNT */
 
-async function initializeAuthentication() {
+switchButton.addEventListener("click", async () => {
 
   try {
 
-    await setPersistence(
-      auth,
-      browserLocalPersistence
+    showLoading("Signing out...");
+
+    await signOut(auth);
+
+    currentUser = null;
+
+    showStatus(
+      "Family Heritage",
+      "Sign in with your authorized Google account."
     );
 
-    onAuthStateChanged(auth, async (user) => {
+  } catch (error) {
 
-      if (user) {
+    console.error("Sign out error:", error);
 
-        await verifyAccount(user);
+    showStatus(
+      "Sign Out Error",
+      "Unable to change account. Please reload the page.",
+      true
+    );
 
-      } else {
+  }
 
-        showMessage(
-          "Google Sign In",
-          "Redirecting to Google authentication..."
+});
+
+
+/* INITIALIZE AUTHENTICATION */
+
+async function initializeAuthentication() {
+
+  body.style.display = "block";
+
+  showLoading("Initializing secure authentication...");
+
+  try {
+
+    // Prefer persistent login.
+    // Fall back if browser storage is restricted.
+
+    try {
+
+      await setPersistence(
+        auth,
+        browserLocalPersistence
+      );
+
+    } catch (localError) {
+
+      console.warn(
+        "Local persistence unavailable:",
+        localError
+      );
+
+      try {
+
+        await setPersistence(
+          auth,
+          browserSessionPersistence
         );
 
-        try {
+      } catch (sessionError) {
 
-          await signInWithRedirect(auth, provider);
+        console.warn(
+          "Session persistence unavailable:",
+          sessionError
+        );
 
-        } catch (error) {
+        await setPersistence(
+          auth,
+          inMemoryPersistence
+        );
 
-          console.error(error);
+      }
 
-          showMessage(
-            "Login Error",
-            "Unable to start Google sign-in. Please reload the page.",
-            true
+    }
+
+
+    onAuthStateChanged(
+      auth,
+      async (user) => {
+
+        authReady = true;
+
+        currentUser = user;
+
+        if (user) {
+
+          await verifyAccount(user);
+
+        } else {
+
+          verificationRunning = false;
+
+          showStatus(
+            "Family Heritage",
+            "Sign in with your authorized Google account to access our family tree."
           );
 
         }
 
-      }
+      },
+      (error) => {
 
-    });
+        console.error("Auth state error:", error);
+
+        showStatus(
+          "Authentication Error",
+          "Unable to check your login session. Please reload the page.",
+          true
+        );
+
+      }
+    );
+
 
   } catch (error) {
 
-    console.error("Authentication initialization failed:", error);
+    console.error(
+      "Authentication initialization error:",
+      error
+    );
 
-    showMessage(
+    showStatus(
       "Authentication Error",
-      "Unable to initialize authentication. Please reload the page.",
+      "Unable to initialize Firebase Authentication. Please check your connection and reload.",
       true
     );
 
   }
 
 }
+
+
+/* START */
 
 initializeAuthentication();
 
