@@ -4,410 +4,398 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2b">
-<meta name="description" content="Our Family Heritage - Family Tree">
+<meta name="description" content="Our Family Heritage">
 <title>Our Family Heritage</title>
-
-<!-- Firebase দ্রুত লোড হওয়ার জন্য Preconnect -->
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://family-429c7.firebaseapp.com" crossorigin>
 
 <style>
 :root {
-  --bg: #101b2b;
-  --card: #1b2c40;
-  --card2: #223950;
-  --gold: #d6b36a;
-  --text: #f1f5f9;
-  --muted: #a8b5c5;
-  --line: #657b91;
+  --bg:#101b2b;
+  --card:#1b2c40;
+  --gold:#d6b36a;
+  --text:#f1f5f9;
+  --muted:#a8b5c5;
+  --line:#657b91;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
 body {
-  /* ফিক্স ১: display: none সরিয়ে ফেলা হয়েছে যাতে পেইজ সাথে সাথে লোড হয় */
-  min-height: 100vh;
-  background:
-    radial-gradient(ellipse at top, #263e58 0%, transparent 65%),
-    var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,#263e58,transparent 65%),var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
 }
 
-button {
-  font-family: inherit;
-}
-
-/* AUTHENTICATION SCREEN */
+/* AUTH SCREEN - ALWAYS VISIBLE BY DEFAULT */
 
 #auth-screen {
-  display: flex; /* ডিফল্টভাবে দৃশ্যমান থাকবে */
-  min-height: 100vh;
-  width: 100%;
-  padding: 25px;
-  align-items: center;
-  justify-content: center;
+  display:flex;
+  min-height:100vh;
+  width:100%;
+  padding:22px;
+  align-items:center;
+  justify-content:center;
 }
 
 .auth-card {
-  width: 100%;
-  max-width: 390px;
-  padding: 35px 25px;
-  text-align: center;
-  background: var(--card);
-  border: 1px solid rgba(214,179,106,.3);
-  border-radius: 20px;
-  box-shadow: 0 15px 45px rgba(0,0,0,.25);
+  width:100%;
+  max-width:390px;
+  padding:32px 24px;
+  text-align:center;
+  background:var(--card);
+  border:1px solid rgba(214,179,106,.3);
+  border-radius:20px;
+  box-shadow:0 15px 45px rgba(0,0,0,.25);
 }
 
-.auth-logo {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 20px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(214,179,106,.13);
-  border: 1px solid rgba(214,179,106,.5);
-  font-size: 32px;
+.auth-logo,.logo {
+  width:68px;
+  height:68px;
+  margin:0 auto 18px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(214,179,106,.13);
+  border:1px solid rgba(214,179,106,.45);
+  color:var(--gold);
+  font-size:31px;
 }
 
 .auth-card h2 {
-  color: var(--gold);
-  font-size: 24px;
-  margin-bottom: 12px;
+  color:var(--gold);
+  font-size:24px;
+  margin-bottom:12px;
 }
 
 .auth-card p {
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
-  margin-bottom: 22px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+  margin-bottom:20px;
 }
 
 .auth-button {
-  display: none; /* জাভাস্ক্রিপ্ট রেডি হলে বাটন দেখাবে */
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  min-height: 48px;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  background: var(--gold);
-  color: #172334;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.auth-button:disabled {
-  opacity: .55;
-  cursor: wait;
+  width:100%;
+  min-height:48px;
+  padding:12px;
+  border:0;
+  border-radius:10px;
+  background:var(--gold);
+  color:#172334;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 .auth-button.secondary {
-  margin-top: 10px;
-  background: var(--card2);
-  color: var(--text);
-  border: 1px solid var(--line);
+  margin-top:10px;
+  background:#263b51;
+  color:var(--text);
+  border:1px solid var(--line);
+}
+
+.auth-button:disabled {
+  opacity:.55;
+  cursor:wait;
 }
 
 #auth-status {
-  display: block; /* শুরুতে লোডিং স্পিনার দেখাবে */
-  margin-top: 18px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
+  display:none;
+  margin-top:20px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
 }
 
 .spinner {
-  width: 23px;
-  height: 23px;
-  border: 3px solid rgba(214,179,106,.25);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
-  margin: 0 auto 12px;
+  width:25px;
+  height:25px;
+  margin:0 auto 12px;
+  border:3px solid rgba(214,179,106,.2);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {transform:rotate(360deg);}
 }
 
 /* MAIN PAGE */
 
-.page {
-  width: 100%;
-  max-width: 1200px;
-  margin: auto;
-  padding: 28px 15px 35px;
+#main-content {
+  display:none;
+  width:100%;
+  max-width:1200px;
+  margin:auto;
+  padding:28px 15px 35px;
 }
 
 .header {
-  text-align: center;
-  margin-bottom: 45px;
-}
-
-.logo {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 16px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(214,179,106,.13);
-  border: 1px solid rgba(214,179,106,.45);
-  font-size: 32px;
+  text-align:center;
+  margin-bottom:45px;
 }
 
 .header h1 {
-  color: var(--gold);
-  font-size: clamp(25px, 5vw, 38px);
-  letter-spacing: 1px;
-  margin-bottom: 10px;
+  color:var(--gold);
+  font-size:clamp(25px,5vw,38px);
+  letter-spacing:1px;
+  margin-bottom:10px;
 }
 
 .header p {
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 2px;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:2px;
 }
 
 .heritage-link {
-  display: inline-block;
-  margin-top: 19px;
-  padding: 10px 20px;
-  border: 1px solid rgba(214,179,106,.4);
-  border-radius: 30px;
-  color: var(--gold);
-  text-decoration: none;
-  font-size: 13px;
-  transition: .2s;
+  display:inline-block;
+  margin-top:19px;
+  padding:10px 20px;
+  border:1px solid rgba(214,179,106,.4);
+  border-radius:30px;
+  color:var(--gold);
+  text-decoration:none;
+  font-size:13px;
 }
 
-.heritage-link:hover {
-  background: rgba(214,179,106,.12);
-}
-
-/* TREE STRUCTURE */
+/* TREE */
 
 .tree-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  padding: 10px 0 35px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
+  width:100%;
+  overflow-x:auto;
+  padding:10px 0 35px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--line) transparent;
 }
 
 .tree {
-  display: flex;
-  justify-content: center;
-  min-width: max-content;
+  display:flex;
+  justify-content:center;
+  min-width:max-content;
 }
 
 .tree ul {
-  display: flex;
-  justify-content: center;
-  padding-top: 35px;
-  position: relative;
+  display:flex;
+  justify-content:center;
+  padding-top:35px;
+  position:relative;
 }
 
 .tree li {
-  list-style: none;
-  position: relative;
-  text-align: center;
-  padding: 35px 13px 0;
+  list-style:none;
+  position:relative;
+  text-align:center;
+  padding:35px 13px 0;
 }
-
-/* CONNECTING LINES */
 
 .tree li::before,
 .tree li::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 35px;
-  border-top: 1px solid var(--line);
+  content:"";
+  position:absolute;
+  top:0;
+  width:50%;
+  height:35px;
+  border-top:1px solid var(--line);
 }
 
-.tree li::before {
-  right: 50%;
-}
+.tree li::before {right:50%;}
 
 .tree li::after {
-  left: 50%;
-  border-left: 1px solid var(--line);
+  left:50%;
+  border-left:1px solid var(--line);
 }
 
 .tree li:only-child::before,
 .tree li:only-child::after {
-  display: none;
+  display:none;
 }
 
-.tree li:only-child {
-  padding-top: 0;
-}
+.tree li:only-child {padding-top:0;}
 
 .tree li:first-child::before,
 .tree li:last-child::after {
-  border: 0;
+  border:0;
 }
 
 .tree li:last-child::before {
-  border-right: 1px solid var(--line);
-  border-radius: 0 8px 0 0;
+  border-right:1px solid var(--line);
+  border-radius:0 8px 0 0;
 }
 
 .tree li:first-child::after {
-  border-radius: 8px 0 0 0;
+  border-radius:8px 0 0 0;
 }
 
 .tree ul ul::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 35px;
-  border-left: 1px solid var(--line);
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  height:35px;
+  border-left:1px solid var(--line);
 }
 
-/* PERSON CARDS */
+/* CARDS */
 
 .family-card {
-  width: 250px;
-  max-width: calc(100vw - 40px);
-  padding: 17px 13px;
-  background: linear-gradient(145deg, #223950, #172638);
-  border: 1px solid rgba(214,179,106,.3);
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0,0,0,.17);
-  transition: transform .2s, border-color .2s;
+  width:250px;
+  max-width:calc(100vw - 40px);
+  padding:17px 13px;
+  background:linear-gradient(145deg,#223950,#172638);
+  border:1px solid rgba(214,179,106,.3);
+  border-radius:15px;
+  box-shadow:0 8px 25px rgba(0,0,0,.17);
+  transition:transform .2s,border-color .2s;
 }
 
 .family-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--gold);
+  transform:translateY(-3px);
+  border-color:var(--gold);
 }
 
 .couple {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
 }
 
 .person {
-  display: inline-block;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.5;
-  text-decoration: none;
-  padding: 3px;
-  overflow-wrap: anywhere;
+  display:inline-block;
+  padding:3px;
+  color:var(--text);
+  font-size:14px;
+  font-weight:bold;
+  line-height:1.5;
+  text-decoration:none;
+  overflow-wrap:anywhere;
 }
 
-.person:hover {
-  color: var(--gold);
-}
+.person:hover {color:var(--gold);}
 
 .heart {
-  color: #e98b9e;
-  font-size: 15px;
+  color:#e98b9e;
+  font-size:15px;
 }
 
 .generation {
-  display: inline-block;
-  margin-top: 11px;
-  padding: 5px 11px;
-  border-radius: 20px;
-  background: rgba(214,179,106,.12);
-  color: var(--gold);
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  display:inline-block;
+  margin-top:11px;
+  padding:5px 11px;
+  border-radius:20px;
+  background:rgba(214,179,106,.12);
+  color:var(--gold);
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
 }
 
 .child-label {
-  display: block;
-  margin-top: 13px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 1px;
+  display:block;
+  margin-top:13px;
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:1px;
 }
 
 .single-child {
-  display: block;
-  margin-top: 8px;
-  padding: 6px 4px;
-  border-top: 1px solid rgba(255,255,255,.07);
+  display:block;
+  margin-top:8px;
+  padding:6px 4px;
+  border-top:1px solid rgba(255,255,255,.07);
 }
 
 /* FOOTER */
 
 .footer {
-  text-align: center;
-  padding: 30px 10px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.8;
+  padding:30px 10px;
+  color:var(--muted);
+  text-align:center;
+  font-size:12px;
+  line-height:1.8;
 }
 
-.footer span {
-  color: var(--gold);
-}
+.footer span {color:var(--gold);}
 
-/* MOBILE RESPONSIVE */
+/* MOBILE */
 
-@media(max-width: 650px) {
-  .page { padding: 23px 12px 25px; }
-  .header { margin-bottom: 30px; }
-  .tree-wrapper { overflow: visible; padding: 0; }
-  .tree { display: block; min-width: 0; }
-  .tree > ul { display: block; width: 100%; padding: 0; }
+@media(max-width:650px) {
+
+  #main-content {padding:23px 12px 25px;}
+
+  .header {margin-bottom:30px;}
+
+  .tree-wrapper {
+    overflow:visible;
+    padding:0;
+  }
+
+  .tree {
+    display:block;
+    min-width:0;
+  }
+
+  .tree > ul {
+    display:block;
+    width:100%;
+    padding:0;
+  }
+
   .tree ul {
-    display: block;
-    padding: 20px 0 0 20px;
-    margin-left: 8px;
-    border-left: 1px solid var(--line);
+    display:block;
+    padding:20px 0 0 20px;
+    margin-left:8px;
+    border-left:1px solid var(--line);
   }
+
   .tree li {
-    display: block;
-    text-align: left;
-    padding: 0 0 20px 15px;
+    display:block;
+    text-align:left;
+    padding:0 0 20px 15px;
   }
+
   .tree li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 24px;
-    width: 15px;
-    height: 0;
-    border-top: 1px solid var(--line);
-    display: block;
+    content:"";
+    position:absolute;
+    left:0;
+    top:24px;
+    width:15px;
+    height:0;
+    border-top:1px solid var(--line);
+    display:block;
   }
-  .tree li::after { display: none; }
-  .tree li:only-child { padding-top: 0; }
-  .tree ul ul::before { display: none; }
-  .tree li:last-child { padding-bottom: 0; }
-  .tree li:last-child::before { border: 0; }
-  .tree > ul > li { padding-left: 0; }
-  .tree > ul > li::before { display: none; }
-  .family-card { width: 100%; max-width: 100%; }
+
+  .tree li::after {display:none;}
+
+  .tree li:only-child {padding-top:0;}
+
+  .tree ul ul::before {display:none;}
+
+  .tree li:last-child {padding-bottom:0;}
+
+  .tree li:last-child::before {border:0;}
+
+  .tree > ul > li {padding-left:0;}
+
+  .tree > ul > li::before {display:none;}
+
+  .family-card {
+    width:100%;
+    max-width:100%;
+  }
 }
 
-@media(max-width: 360px) {
-  .header h1 { font-size: 24px; }
-  .family-card { padding: 14px 10px; }
-  .person { font-size: 13px; }
+@media(max-width:360px) {
+  .header h1 {font-size:24px;}
+  .family-card {padding:14px 10px;}
+  .person {font-size:13px;}
 }
 </style>
 </head>
@@ -415,128 +403,225 @@ button {
 <body>
 
 <!-- LOGIN SCREEN -->
+
 <section id="auth-screen">
+
   <div class="auth-card">
+
     <div class="auth-logo">♛</div>
+
     <h2 id="auth-title">Family Heritage</h2>
+
     <p id="auth-description">
       Sign in with your authorized Google account to access our family tree.
     </p>
 
     <button id="login-button" class="auth-button">
-      <span>G</span>
       Continue with Google
     </button>
 
-    <button id="retry-button" class="auth-button secondary">
+    <button id="retry-button"
+      class="auth-button secondary"
+      style="display:none">
       Retry Verification
     </button>
 
-    <button id="switch-button" class="auth-button secondary">
+    <button id="switch-button"
+      class="auth-button secondary"
+      style="display:none">
       Use Another Google Account
     </button>
 
-    <div id="auth-status">
-      <div class="spinner"></div>
-      Loading authentication...
-    </div>
+    <div id="auth-status"></div>
+
   </div>
+
 </section>
 
 
 <!-- FAMILY TREE -->
-<main class="page" id="main-content" style="display:none">
+
+<main id="main-content">
 
   <header class="header">
+
     <div class="logo">♛</div>
+
     <h1>Our Family Heritage</h1>
+
     <p>UNITED BY BLOOD • CONNECTED BY LOVE</p>
-    <a class="heritage-link" href="https://madinamanjeel.github.io/profiles/heritage.html">
-       Explore Our Heritage
+
+    <a class="heritage-link"
+      href="https://madinamanjeel.github.io/profiles/heritage.html">
+      Explore Our Heritage
     </a>
+
   </header>
 
+
   <section class="tree-wrapper">
+
     <div class="tree">
+
       <ul>
         <li>
-          <!-- FIRST GENERATION -->
+
           <div class="family-card">
+
             <div class="couple">
-              <a class="person" href="Monsur_Munshi.html">Monsur Munshi</a>
+
+              <a class="person" href="Monsur_Munshi.html">
+                Monsur Munshi
+              </a>
+
               <span class="heart">♥</span>
-              <a class="person" href="Shafia_Khatun.html">Shafia Khatun</a>
+
+              <a class="person" href="Shafia_Khatun.html">
+                Shafia Khatun
+              </a>
+
             </div>
+
             <span class="generation">First Generation</span>
+
           </div>
+
 
           <ul>
             <li>
-              <!-- SECOND GENERATION -->
+
               <div class="family-card">
+
                 <div class="couple">
-                  <a class="person" href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a>
+
+                  <a class="person" href="Md_Abdul_Khaleque.html">
+                    Md Abdul Khaleque
+                  </a>
+
                   <span class="heart">♥</span>
-                  <a class="person" href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
+
+                  <a class="person" href="Shariatunnesa_Madina.html">
+                    Shariatunnesa Madina
+                  </a>
+
                 </div>
+
                 <span class="generation">Second Generation</span>
+
               </div>
 
+
               <ul>
-                <!-- DARUL AHMED FAMILY -->
+
+                <!-- DARUL AHMED -->
+
                 <li>
+
                   <div class="family-card">
+
                     <div class="couple">
-                      <a class="person" href="Darul_Ahmed.html">Darul Ahmed</a>
+
+                      <a class="person" href="Darul_Ahmed.html">
+                        Darul Ahmed
+                      </a>
+
                       <span class="heart">♥</span>
-                      <a class="person" href="Farjana_Afrin.html">Farjana Afrin</a>
+
+                      <a class="person" href="Farjana_Afrin.html">
+                        Farjana Afrin
+                      </a>
+
                     </div>
+
                     <span class="generation">Third Generation</span>
+
                     <span class="child-label">THEIR CHILDREN</span>
-                    <a class="person single-child" href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a>
-                    <a class="person single-child" href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a>
+
+                    <a class="person single-child"
+                      href="Afia_Ahmed_Adiba.html">
+                      Afia Ahmed Adiba
+                    </a>
+
+                    <a class="person single-child"
+                      href="Nusaiba_Jannat_Alifa.html">
+                      Nusaiba Jannat Alifa
+                    </a>
+
                   </div>
+
                 </li>
 
-                <!-- MASHAYEKH AHMED FAMILY -->
+
+                <!-- MASHAYEKH AHMED -->
+
                 <li>
+
                   <div class="family-card">
+
                     <div class="couple">
-                      <a class="person" href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a>
+
+                      <a class="person" href="Mashayekh_Ahmed.html">
+                        Mashayekh Ahmed
+                      </a>
+
                       <span class="heart">♥</span>
-                      <a class="person" href="Lima_Akter.html">Lima Akter</a>
+
+                      <a class="person" href="Lima_Akter.html">
+                        Lima Akter
+                      </a>
+
                     </div>
+
                     <span class="generation">Third Generation</span>
+
                     <span class="child-label">THEIR CHILD</span>
-                    <a class="person single-child" href="Ahmad_Muttaqeen.html">Ahmed Muttaqeen</a>
+
+                    <a class="person single-child"
+                      href="Ahmad_Muttaqeen.html">
+                      Ahmed Muttaqeen
+                    </a>
+
                   </div>
+
                 </li>
+
               </ul>
+
             </li>
           </ul>
+
         </li>
       </ul>
+
     </div>
+
   </section>
 
+
   <footer class="footer">
+
     <p>Made with <span>♥</span> for our family</p>
+
     <p>Preserving Our Legacy • Connecting Generations</p>
+
   </footer>
 
 </main>
 
 
-<!-- FIREBASE AUTHENTICATION -->
+<!-- FIREBASE -->
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+
 import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
@@ -544,7 +629,9 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-/* FIREBASE CONFIGURATION */
+
+/* CONFIG */
+
 const firebaseConfig = {
   apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
   authDomain: "family-429c7.firebaseapp.com",
@@ -557,325 +644,570 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
 
-/* CACHE SETTINGS */
+provider.setCustomParameters({
+  prompt: "select_account"
+});
+
+
+/* SETTINGS */
+
 const CACHE_KEY = "family_allowed_emails";
 const CACHE_TIME_KEY = "family_allowed_emails_time";
-const CACHE_TTL = 5 * 60 * 1000; // 5 মিনিট ক্যাশ
+
+const CACHE_TTL = 60 * 1000;
 const OFFLINE_LIMIT = 24 * 60 * 60 * 1000;
 
+
 /* ELEMENTS */
+
 const authScreen = document.getElementById("auth-screen");
 const mainContent = document.getElementById("main-content");
+
 const loginButton = document.getElementById("login-button");
 const retryButton = document.getElementById("retry-button");
 const switchButton = document.getElementById("switch-button");
+
 const authTitle = document.getElementById("auth-title");
 const authDescription = document.getElementById("auth-description");
 const authStatus = document.getElementById("auth-status");
 
-let verificationRunning = false;
 
-/* SCREEN MANAGEMENT */
-function showLoginScreen() {
+/* STATE */
+
+let currentUser = null;
+let verificationToken = 0;
+let persistenceReady = false;
+let isLoggingIn = false;
+
+
+/* UI */
+
+function showLogin() {
+
   authScreen.style.display = "flex";
   mainContent.style.display = "none";
-}
 
-function showStatus(title, message, showRetry = false, showSwitch = false) {
-  showLoginScreen();
-  authTitle.textContent = title;
-  authDescription.textContent = message;
-  authStatus.style.display = "none";
-  loginButton.style.display = showSwitch ? "none" : " inline-flex";
-  retryButton.style.display = showRetry ? "inline-flex" : "none";
-  switchButton.style.display = showSwitch ? "inline-flex" : "none";
-  loginButton.disabled = false;
-}
-
-function showLoading(message) {
-  showLoginScreen();
-  loginButton.style.display = "none";
-  retryButton.style.display = "none";
-  switchButton.style.display = "none";
-  authStatus.style.display = "block";
-  authStatus.innerHTML = '<div class="spinner"></div>' + message;
 }
 
 function showPage() {
+
   authScreen.style.display = "none";
   mainContent.style.display = "block";
+
 }
 
-/* CACHE READER & SAVER */
+function showMessage(title, message, options = {}) {
+
+  showLogin();
+
+  authTitle.textContent = title;
+  authDescription.textContent = message;
+
+  authStatus.style.display = "none";
+
+  loginButton.style.display = options.login === false ? "none" : "block";
+  retryButton.style.display = options.retry ? "block" : "none";
+  switchButton.style.display = options.switch ? "block" : "none";
+
+  loginButton.disabled = false;
+
+}
+
+function showLoading(message) {
+
+  showLogin();
+
+  loginButton.style.display = "none";
+  retryButton.style.display = "none";
+  switchButton.style.display = "none";
+
+  authStatus.style.display = "block";
+
+  authStatus.innerHTML =
+    '<div class="spinner"></div>' + message;
+
+}
+
+
+/* CACHE */
+
 function getCache() {
+
   try {
+
     const data = localStorage.getItem(CACHE_KEY);
     const time = Number(localStorage.getItem(CACHE_TIME_KEY));
+
     if (!data || !time) return null;
+
     const emails = JSON.parse(data);
+
     if (!Array.isArray(emails)) return null;
+
     return {
-      emails: emails.filter(item => typeof item === "string").map(item => item.trim().toLowerCase()),
-      time: time
+      emails: emails
+        .filter(x => typeof x === "string")
+        .map(x => x.trim().toLowerCase()),
+
+      time
     };
+
   } catch (error) {
+
+    console.warn("Cache read:", error);
     return null;
+
   }
+
 }
+
 
 function saveCache(emails) {
+
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(emails));
-    localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify(emails)
+    );
+
+    localStorage.setItem(
+      CACHE_TIME_KEY,
+      String(Date.now())
+    );
+
   } catch (error) {
-    console.warn("Cache save error:", error);
+
+    console.warn("Cache save:", error);
+
   }
+
 }
 
-/* FETCH WITH TIMEOUT (যাতে নেট স্লো হলে সাদা বা লোডিং হয়ে আটকে না থাকে) */
-async function fetchWithTimeout(url, timeout = 8000) {
+
+/* FETCH EMAIL LIST */
+
+async function fetchAllowedEmails() {
+
+  const url =
+    "https://raw.githubusercontent.com/madinamanjeel/" +
+    "madinamanjeel.github.io/refs/heads/main/allowed_emails.json" +
+    "?v=" + Date.now();
+
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
+
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 12000);
+
   try {
+
     const response = await fetch(url, {
-      method: "GET",
       cache: "no-store",
       signal: controller.signal
     });
-    clearTimeout(timer);
-    return response;
-  } catch (err) {
-    clearTimeout(timer);
-    throw err;
-  }
-}
 
-/* FETCH AUTHORIZED EMAILS */
-async function fetchAllowedEmails() {
-  // ফিক্স ২: সরাসরি GitHub Pages এবং ব্যাকআপ হিসেবে Raw URL চেক করা হচ্ছে
-  const urls = [
-    "https://madinamanjeel.github.io/allowed_emails.json?t=" + Date.now(),
-    "https://raw.githubusercontent.com/madinamanjeel/madinamanjeel.github.io/main/allowed_emails.json?t=" + Date.now()
-  ];
-
-  let lastError = null;
-
-  for (const url of urls) {
-    try {
-      const response = await fetchWithTimeout(url, 7000);
-      if (!response.ok) continue;
-
-      const data = await response.json();
-      if (!Array.isArray(data)) continue;
-
-      const emails = data
-        .filter(item => typeof item === "string")
-        .map(item => item.trim().toLowerCase())
-        .filter(Boolean);
-
-      saveCache(emails);
-      return emails;
-    } catch (err) {
-      lastError = err;
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
     }
-  }
 
-  throw lastError || new Error("Unable to load allowed_emails.json");
-}
+    const data = await response.json();
 
-/* BACKGROUND REVALIDATION */
-async function backgroundVerification(user) {
-  try {
-    const latestEmails = await fetchAllowedEmails();
-    if (!auth.currentUser || auth.currentUser.uid !== user.uid) return;
-    const email = (user.email || "").trim().toLowerCase();
-    if (!latestEmails.includes(email)) {
-      showStatus(
-        "Access Revoked",
-        "This account is no longer authorized to access the family page.",
-        false,
-        true
-      );
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid JSON format");
     }
-  } catch (error) {
-    console.warn("Background verification skipped:", error);
+
+    const emails = data
+      .filter(x => typeof x === "string")
+      .map(x => x.trim().toLowerCase())
+      .filter(Boolean);
+
+    saveCache(emails);
+
+    return emails;
+
+  } finally {
+
+    clearTimeout(timeout);
+
   }
+
 }
 
-/* ACCOUNT VERIFICATION */
-async function verifyAccount(user, forceRefresh = false) {
-  if (verificationRunning) return;
-  verificationRunning = true;
 
-  const email = (user.email || "").trim().toLowerCase();
-  if (!email) {
-    showStatus(
-      "Account Error",
-      "No email address was found in this Google account.",
-      false,
-      true
-    );
-    verificationRunning = false;
-    return;
-  }
+/* BACKGROUND CHECK */
 
-  showLoading("Verifying your Google account...");
+async function backgroundCheck(user, token) {
 
   try {
-    const cache = getCache();
-    const cacheAge = cache ? Date.now() - cache.time : Infinity;
-    const freshCache = cache && cacheAge >= 0 && cacheAge < CACHE_TTL;
 
-    if (!forceRefresh && freshCache && cache.emails.includes(email)) {
-      showPage();
-      verificationRunning = false;
-      backgroundVerification(user);
+    const emails = await fetchAllowedEmails();
+
+    if (
+      token !== verificationToken ||
+      !auth.currentUser ||
+      auth.currentUser.uid !== user.uid
+    ) {
       return;
     }
 
-    const allowedEmails = await fetchAllowedEmails();
+    const email = (user.email || "").trim().toLowerCase();
 
-    if (allowedEmails.includes(email)) {
-      showPage();
-    } else {
-      showStatus(
-        "Access Denied",
-        "The account (" + email + ") is not authorized to access this family page.",
-        false,
-        true
+    if (!emails.includes(email)) {
+
+      showMessage(
+        "Access Revoked",
+        "Your account is no longer authorized.",
+        {switch:true}
       );
+
     }
+
   } catch (error) {
-    console.error("Verification error:", error);
-    const cache = getCache();
-    const cacheAge = cache ? Date.now() - cache.time : Infinity;
-    if (cache && cacheAge < OFFLINE_LIMIT && cache.emails.includes(email)) {
-      showPage();
-    } else {
-      showStatus(
-        "Verification Failed",
-        "Could not load authorization list. Check your internet or verify allowed_emails.json exists.",
-        true,
-        true
-      );
-    }
-  } finally {
-    verificationRunning = false;
+
+    console.warn("Background verification:", error);
+
   }
+
 }
 
-/* ফিক্স ৩: WebView এবং পপআপ ব্লকার ডিটেক্ট করে স্মার্ট লগইন */
-function isEmbeddedWebView() {
-  const ua = navigator.userAgent || "";
-  return /wv|Android.*Version\/[0-9]|FBAN|FBAV|Instagram/i.test(ua);
+
+/* SINGLE ACCOUNT VERIFICATION */
+
+async function verifyAccount(user) {
+
+  const token = ++verificationToken;
+
+  currentUser = user;
+
+  const email = (user.email || "").trim().toLowerCase();
+
+  if (!email) {
+
+    showMessage(
+      "Account Error",
+      "Google account email is unavailable.",
+      {switch:true}
+    );
+
+    return;
+
+  }
+
+  const cache = getCache();
+
+  const age = cache
+    ? Date.now() - cache.time
+    : Infinity;
+
+  const fresh =
+    cache && age >= 0 && age < CACHE_TTL;
+
+  // Fresh cache: show immediately if authorized.
+
+  if (fresh && cache.emails.includes(email)) {
+
+    showPage();
+
+    // Update list in background without blocking page.
+
+    backgroundCheck(user, token);
+
+    return;
+
+  }
+
+  showLoading("Checking your account authorization...");
+
+  try {
+
+    // Fetch current list.
+
+    const emails = await fetchAllowedEmails();
+
+    // Ignore old requests.
+
+    if (
+      token !== verificationToken ||
+      !auth.currentUser ||
+      auth.currentUser.uid !== user.uid
+    ) {
+      return;
+    }
+
+    if (emails.includes(email)) {
+
+      showPage();
+
+    } else {
+
+      showMessage(
+        "Access Denied",
+        "This Google account is not authorized to access this family page.",
+        {switch:true}
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error("Verification error:", error);
+
+    if (token !== verificationToken) return;
+
+    // Offline fallback.
+
+    const oldCache = getCache();
+
+    const oldAge = oldCache
+      ? Date.now() - oldCache.time
+      : Infinity;
+
+    const validOffline =
+      oldCache &&
+      oldAge >= 0 &&
+      oldAge < OFFLINE_LIMIT;
+
+    if (validOffline && oldCache.emails.includes(email)) {
+
+      showPage();
+
+    } else {
+
+      showMessage(
+        "Verification Failed",
+        "Could not connect to the verification server. Please check your internet and retry.",
+        {retry:true}
+      );
+
+    }
+
+  }
+
 }
 
-async function googleLogin() {
-  if (loginButton.disabled) return;
+
+/* GOOGLE LOGIN */
+
+loginButton.addEventListener("click", async () => {
+
+  if (isLoggingIn || !persistenceReady) return;
+
+  isLoggingIn = true;
+
   loginButton.disabled = true;
+
   showLoading("Connecting to Google...");
 
   try {
-    if (isEmbeddedWebView()) {
-      // Android WebView বা ইন-অ্যাপ ব্রাউজারে সাদা পেইজ এড়াতে সরাসরি Redirect ব্যবহার হবে
-      await signInWithRedirect(auth, provider);
-      return;
-    }
 
-    // পিসি বা সাধারণ ব্রাউজারে Popup ট্রাই করবে
+    // IMPORTANT:
+    // Popup only performs login.
+    // Verification happens ONLY through onAuthStateChanged.
+
     await signInWithPopup(auth, provider);
-    // নোট: এখানে আলাদা করে verifyAccount কল করার দরকার নেই, onAuthStateChanged নিজেই কল করবে
+
   } catch (error) {
-    console.error("Google Login Error:", error.code, error.message);
 
-    // যদি পপআপ ব্লক হয় তবে অটোমেটিক Redirect মোডে চলে যাবে
-    if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
-      showLoading("Redirecting to Google Sign-In...");
-      await signInWithRedirect(auth, provider);
-      return;
+    console.error(
+      "Google Login:",
+      error.code,
+      error.message
+    );
+
+    let message = "Google login failed.";
+
+    switch (error.code) {
+
+      case "auth/popup-blocked":
+        message = "Popup was blocked. Please allow popups.";
+        break;
+
+      case "auth/popup-closed-by-user":
+        message = "Login window was closed. Please try again.";
+        break;
+
+      case "auth/unauthorized-domain":
+        message = "Website domain is not authorized in Firebase.";
+        break;
+
+      case "auth/network-request-failed":
+        message = "Network connection failed.";
+        break;
+
+      case "auth/operation-not-allowed":
+        message = "Google sign-in is not enabled in Firebase.";
+        break;
+
+      default:
+        message += " " + (error.code || error.message);
+
     }
 
-    let message = "Google login failed. Please try again.";
-    if (error.code === "auth/popup-closed-by-user") {
-      message = "Login window was closed before authentication completed.";
-    } else if (error.code === "auth/unauthorized-domain") {
-      message = "This domain is not authorized in Firebase Console -> Authentication -> Settings -> Authorized domains.";
-    } else if (error.code === "auth/network-request-failed") {
-      message = "Network error. Please check your internet connection.";
-    } else {
-      message += " (" + (error.code || error.message) + ")";
-    }
+    showMessage(
+      "Login Error",
+      message,
+      {retry:true}
+    );
 
-    showStatus("Google Login Error", message, false);
   } finally {
+
+    isLoggingIn = false;
+
     loginButton.disabled = false;
-  }
-}
 
-loginButton.addEventListener("click", googleLogin);
-
-retryButton.addEventListener("click", async () => {
-  if (auth.currentUser) {
-    await verifyAccount(auth.currentUser, true);
-  } else {
-    showStatus("Sign In Required", "Please sign in with your Google account.");
   }
+
 });
+
+
+/* RETRY */
+
+retryButton.addEventListener("click", () => {
+
+  if (auth.currentUser) {
+
+    verifyAccount(auth.currentUser);
+
+  } else {
+
+    showMessage(
+      "Family Heritage",
+      "Please sign in with Google."
+    );
+
+  }
+
+});
+
+
+/* SWITCH ACCOUNT */
 
 switchButton.addEventListener("click", async () => {
+
+  verificationToken++;
+
   try {
+
     showLoading("Signing out...");
+
     await signOut(auth);
-    showStatus("Family Heritage", "Sign in with your authorized Google account.");
+
+    currentUser = null;
+
+    showMessage(
+      "Family Heritage",
+      "Please sign in with your authorized Google account."
+    );
+
   } catch (error) {
-    showStatus("Sign Out Error", "Unable to change account. Please reload the page.", true);
+
+    console.error("Sign out:", error);
+
+    showMessage(
+      "Sign Out Error",
+      error.message,
+      {retry:true}
+    );
+
   }
+
 });
 
-/* INITIALIZE AUTHENTICATION */
+
+/* AUTH INITIALIZATION */
+
 async function initializeAuthentication() {
+
+  showLoading("Initializing authentication...");
+
   try {
+
+    // Prefer local persistence.
+
     try {
+
       await setPersistence(auth, browserLocalPersistence);
-    } catch {
+
+    } catch (error) {
+
+      console.warn("Local persistence unavailable:", error);
+
       try {
+
         await setPersistence(auth, browserSessionPersistence);
-      } catch {
+
+      } catch (sessionError) {
+
+        console.warn("Session persistence unavailable:", sessionError);
+
         await setPersistence(auth, inMemoryPersistence);
+
       }
+
     }
 
-    // Redirect লগইন থেকে ফিরে আসলে তার রেজাল্ট হ্যান্ডেল করা
-    try {
-      await getRedirectResult(auth);
-    } catch (redirectErr) {
-      console.warn("Redirect error:", redirectErr);
-    }
+    persistenceReady = true;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await verifyAccount(user);
-      } else {
-        verificationRunning = false;
-        showStatus(
-          "Family Heritage",
-          "Sign in with your authorized Google account to access our family tree."
+    // SINGLE SOURCE OF AUTH STATE
+
+    onAuthStateChanged(
+      auth,
+
+      user => {
+
+        currentUser = user;
+
+        if (user) {
+
+          verifyAccount(user);
+
+        } else {
+
+          verificationToken++;
+
+          showMessage(
+            "Family Heritage",
+            "Sign in with your authorized Google account to access our family tree."
+          );
+
+        }
+
+      },
+
+      error => {
+
+        console.error("Auth listener:", error);
+
+        showMessage(
+          "Authentication Error",
+          "Unable to read authentication state: " + error.message,
+          {retry:true}
         );
+
       }
-    });
+    );
 
   } catch (error) {
-    showStatus(
-      "Authentication Error",
-      "Unable to initialize Firebase Authentication. Please check your connection and reload.",
-      true
+
+    console.error("Firebase initialization:", error);
+
+    showMessage(
+      "Initialization Error",
+      "Firebase could not initialize. " + error.message,
+      {retry:true}
     );
+
   }
+
 }
 
+
+/* START */
+
 initializeAuthentication();
+
 </script>
 
 </body>
