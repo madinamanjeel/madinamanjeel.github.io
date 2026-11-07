@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Tree (Protected)</title>
+  
+  <!-- ফাস্ট লোডিংয়ের জন্য Preconnect -->
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+
+  <style>
+    :root {
+      --bg-color: #f4f7fb;
+      --line-color: #cbd5e1;
+      --card-bg: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.12);
+      
+      /* আপনার দেওয়া কালার কোডিং */
+      --col-gen1: #964B00;
+      --col-gen2: #006400;
+      --col-gen3: #1d4ed8;
+      --col-gen4: #0f4c81;
+      --col-female: #d80073;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ভেরিফিকেশন না হওয়া পর্যন্ত বডি হাইড থাকবে */
+    body {
+      display: none;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    #content-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* Heritage Header Button */
+    .header-box {
+      margin-bottom: 2.5rem;
+    }
+
+    .heritage-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: #ffffff !important;
+      text-decoration: none;
+      padding: 0.75rem 2rem;
+      border-radius: 50px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(30, 41, 59, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .heritage-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(30, 41, 59, 0.35);
+    }
+
+    /* Tree Container (মোবাইলে স্ক্রল করার সুবিধা) */
+    .tree-scroll-container {
+      width: 100%;
+      overflow-x: auto;
+      padding: 1rem 0 2rem;
+    }
+
+    .tree {
+      display: inline-flex;
+      justify-content: center;
+      min-width: max-content;
+      margin: 0 auto;
+    }
+
+    .tree ul {
+      padding-top: 24px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .tree li {
+      text-align: center;
+      list-style-type: none;
+      position: relative;
+      padding: 24px 10px 0 10px;
+    }
+
+    /* ফ্যামিলি ট্রির কানেক্টিং লাইন (Branch Lines) */
+    .tree li::before, .tree li::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 50%;
+      border-top: 2px solid var(--line-color);
+      width: 50%;
+      height: 24px;
+    }
+
+    .tree li::after {
+      right: auto;
+      left: 50%;
+      border-left: 2px solid var(--line-color);
+    }
+
+    .tree li:only-child::after, .tree li:only-child::before {
+      display: none;
+    }
+
+    .tree li:only-child {
+      padding-top: 0;
+    }
+
+    .tree li:first-child::before, .tree li:last-child::after {
+      border: 0 none;
+    }
+
+    .tree li:last-child::before {
+      border-right: 2px solid var(--line-color);
+      border-radius: 0 8px 0 0;
+    }
+
+    .tree li:first-child::after {
+      border-radius: 8px 0 0 0;
+    }
+
+    .tree ul ul::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      border-left: 2px solid var(--line-color);
+      width: 0;
+      height: 24px;
+      transform: translateX(-50%);
+    }
+
+    /* মেম্বার কার্ড ডিজাইন */
+    .node-card {
+      background: var(--card-bg);
+      border: 1px solid #e2e8f0;
+      padding: 12px 18px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .node-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      border-color: #cbd5e1;
+    }
+
+    .node-card a {
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .node-card a:hover {
+      background: #f1f5f9;
+      text-decoration: underline;
+    }
+
+    /* দম্পতি চিহ্ন (&) */
+    .amp {
+      background: #fef2f2;
+      color: #ef4444;
+      font-weight: 700;
+      font-size: 0.8rem;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid #fecaca;
+    }
+
+    /* জেনারেশন ব্যাজ */
+    .gen-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* আপনার অরিজিনাল কালার কোডিং অক্ষুণ্ণ রাখা হয়েছে */
+    a[href="Monsur_Munshi.html"] { color: var(--col-gen1); }
+    a[href="Md_Abdul_Khaleque.html"] { color: var(--col-gen2); }
+    a[href="Darul_Ahmed.html"], 
+    a[href="Mashayekh_Ahmed.html"] { color: var(--col-gen3); }
+    a[href="Afia_Ahmed_Adiba.html"], 
+    a[href="Nusaiba_Jannat_Alifa.html"], 
+    a[href="Ahmad_Muttaqeen.html"], 
+    a[href="upcoming.html"] { color: var(--col-gen4); }
+    a[href="Shafia_Khatun.html"], 
+    a[href="Shariatunnesa_Madina.html"], 
+    a[href="Lima_Akter.html"], 
+    a[href="Farjana_Afrin.html"] { color: var(--col-female); }
+
+    /* ছোট স্ক্রিনের জন্য রেসপন্সিভ ফিক্স */
+    @media (max-width: 768px) {
+      .node-card {
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px 14px;
+      }
+      .node-card a {
+        font-size: 0.88rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="content-wrapper">
+    <div class="header-box">
+      <a class="heritage-btn" href="https://madinamanjeel.github.io/profiles/heritage.html">Our Heritage</a>
+    </div>
+
+    <div class="tree-scroll-container">
+      <div class="tree">
+        <ul>
+          <li>
+            <!-- ১ম প্রজন্ম -->
+            <div class="node-card">
+              <span class="gen-badge">1st Gen</span>
+              <a href="Monsur_Munshi.html">Monsur Munshi</a>
+              <span class="amp">&amp;</span>
+              <a href="Shafia_Khatun.html">Shafia Khatun</a>
+            </div>
+            <ul>
+              <li>
+                <!-- ২য় প্রজন্ম -->
+                <div class="node-card">
+                  <span class="gen-badge">2nd Gen</span>
+                  <a href="Md_Abdul_Khaleque.html">Md Abdul Khaleque</a>
+                  <span class="amp">&amp;</span>
+                  <a href="Shariatunnesa_Madina.html">Shariatunnesa Madina</a>
+                </div>
+                <ul>
+                  <!-- ৩য় প্রজন্ম (শাখা ১) -->
+                  <li>
+                    <div class="node-card">
+                      <span class="gen-badge">3rd Gen</span>
+                      <a href="Darul_Ahmed.html">Darul Ahmed</a>
+                      <span class="amp">&amp;</span>
+                      <a href="Farjana_Afrin.html">Farjana Afrin</a>
+                    </div>
+                    <ul>
+                      <!-- ৪র্থ প্রজন্ম -->
+                      <li>
+                        <div class="node-card">
+                          <a href="Afia_Ahmed_Adiba.html">Afia Ahmed Adiba</a>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="node-card">
+                          <a href="Nusaiba_Jannat_Alifa.html">Nusaiba Jannat Alifa</a>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                  <!-- ৩য় প্রজন্ম (শাখা ২) -->
+                  <li>
+                    <div class="node-card">
+                      <span class="gen-badge">3rd Gen</span>
+                      <a href="Mashayekh_Ahmed.html">Mashayekh Ahmed</a>
+                      <span class="amp">&amp;</span>
+                      <a href="Lima_Akter.html">Lima Akter</a>
+                    </div>
+                    <ul>
+                      <!-- ৪র্থ প্রজন্ম -->
+                      <li>
+                        <div class="node-card">
+                          <a href="Ahmad_Muttaqeen.html">Ahmed Muttaqeen</a>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
+      authDomain: "family-429c7.firebaseapp.com",
+      projectId: "family-429c7",
+      storageBucket: "family-429c7.firebasestorage.app",
+      messagingSenderId: "982876086618",
+      appId: "1:982876086618:web:0bdcfdf467c31924f2d363"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const EMAILS_URL = 'https://raw.githubusercontent.com/madinamanjeel/madinamanjeel.github.io/refs/heads/main/allowed_emails.json';
+    const CACHE_KEY = 'allowed_emails_cache';
+
+    // গিটহাব থেকে সবসময় একদম লেটেস্ট লিস্ট আনার ফাংশন (ব্রাউজার ক্যাশ বাইপাসসহ)
+    async function fetchFreshEmails() {
+      const response = await fetch(`${EMAILS_URL}?t=${Date.now()}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Network error');
+      const allowedEmails = await response.json();
+      localStorage.setItem(CACHE_KEY, JSON.stringify(allowedEmails));
+      return allowedEmails;
+    }
+
+    // স্মার্ট ইমেইল ভেরিফিকেশন: ফাস্ট লোডিং + জিরো ওয়েটিং টাইম
+    async function verifyEmailAccess(userEmail) {
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      let cachedEmails = [];
+
+      if (cachedData) {
+        try {
+          cachedEmails = JSON.parse(cachedData);
+        } catch (e) {
+          localStorage.removeItem(CACHE_KEY);
+        }
+      }
+
+      // ১. যদি ক্যাশে ইমেইলটি আগে থেকেই থাকে, সাথে সাথে পেইজ শো করবে (Instant Load)
+      if (cachedEmails.includes(userEmail)) {
+        document.body.style.display = 'block';
+        
+        // ব্যাকগ্রাউন্ডে নীরবে লেটেস্ট লিস্ট চেক করবে (যদি কোনো ইমেইল রিমুভ করা হয়ে থাকে)
+        fetchFreshEmails().then(freshEmails => {
+          if (!freshEmails.includes(userEmail)) {
+            localStorage.removeItem(CACHE_KEY);
+            alert("Your access has been revoked: " + userEmail);
+            window.location.href = "https://google.com";
+          }
+        }).catch(() => {});
+        
+        return true;
+      }
+
+      // ২. যদি ক্যাশে না থাকে (যেমন: আপনি এইমাত্র নতুন ইমেইল JSON-এ অ্যাড করেছেন)
+      // তবে ২৪ ঘণ্টার অপেক্ষা না করে সাথে সাথে লাইভ গিটহাব থেকে নতুন লিস্ট আনবে!
+      try {
+        const freshEmails = await fetchFreshEmails();
+        if (freshEmails.includes(userEmail)) {
+          document.body.style.display = 'block';
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        if (cachedEmails.length > 0) {
+          return cachedEmails.includes(userEmail);
+        }
+        throw error;
+      }
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const hasAccess = await verifyEmailAccess(user.email);
+          if (!hasAccess) {
+            alert("Access denied for: " + user.email);
+            window.location.href = "https://google.com";
+          }
+        } catch (error) {
+          alert("Verification system error.");
+        }
+      } else {
+        signInWithRedirect(auth, provider);
+      }
+    });
+  </script>
+</body>
+</html>
