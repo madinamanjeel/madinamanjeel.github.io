@@ -322,9 +322,9 @@ a{text-decoration:none;color:inherit}
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
 
-      <!-- Admin Control Bar: Custom Button Instead of Select -->
+      <!-- Admin / Family Control Bar -->
       <div class="admin-bar" id="adminControls">
-        <span><i class="fa-solid fa-user-shield"></i> Admin View:</span>
+        <span id="viewModeLabel"><i class="fa-solid fa-user-shield"></i> Admin View:</span>
         <div id="adminSelectBtn" class="admin-select-btn" onclick="openAccountSelector()">
           <span id="adminSelectText">Loading...</span> <i class="fa-solid fa-chevron-down" style="color:var(--muted)"></i>
         </div>
@@ -347,7 +347,7 @@ a{text-decoration:none;color:inherit}
         <button class="med-tab" onclick="setMedTab('all',this)">All Medicines</button>
         <button class="med-tab" onclick="setMedTab('history',this)">History</button>
       </div>
-      <button class="med-add-jump" onclick="window.jumpToAddMedicine()">
+      <button class="med-add-jump" id="topAddJumpBtn" onclick="window.jumpToAddMedicine()">
         <i class="fa-solid fa-plus"></i> Add
       </button>
     </div>
@@ -466,73 +466,76 @@ a{text-decoration:none;color:inherit}
   </div>
 
   <div class="reminder-card">
-    <h4 style="margin-bottom:6px"><i class="fa-solid fa-plus-circle"></i> <span id="formTitleText">Add New Medicine</span></h4>
-    <p id="targetAccountNote" style="font-size:11px;color:var(--primary);margin-bottom:17px;font-weight:600;"></p>
+    <div id="medFormContainer">
+      <h4 style="margin-bottom:6px"><i class="fa-solid fa-plus-circle"></i> <span id="formTitleText">Add New Medicine</span></h4>
+      <p id="targetAccountNote" style="font-size:11px;color:var(--primary);margin-bottom:17px;font-weight:600;"></p>
 
-    <div class="med-form-grid">
-      <div class="field full-field">
-        <label>Medicine Name</label>
-        <input id="newMedName" placeholder="e.g. Paracetamol, Napa..." autocomplete="off" oninput="handleCloudMedSearch(this.value)">
-        <div id="medSuggestions" class="suggestions-list"></div>
-      </div>
+      <div class="med-form-grid">
+        <div class="field full-field">
+          <label>Medicine Name</label>
+          <input id="newMedName" placeholder="e.g. Paracetamol, Napa..." autocomplete="off" oninput="handleCloudMedSearch(this.value)">
+          <div id="medSuggestions" class="suggestions-list"></div>
+        </div>
 
-      <div class="field">
-        <label>Dosage</label>
-        <input id="newMedDose" placeholder="e.g. 1 tablet">
-      </div>
+        <div class="field">
+          <label>Dosage</label>
+          <input id="newMedDose" placeholder="e.g. 1 tablet" autocomplete="off" oninput="handleDoseSearch(this.value)" onfocus="handleDoseSearch(this.value)">
+          <div id="doseSuggestions" class="suggestions-list"></div>
+        </div>
 
-      <div class="field">
-        <label>Reminder Time (Optional)</label>
-        <div class="med-time-row">
-          <input type="time" id="newMedTime">
-          <button class="action-btn" onclick="addMedTime()">+ Add</button>
+        <div class="field">
+          <label>Reminder Time (Optional)</label>
+          <div class="med-time-row">
+            <input type="time" id="newMedTime">
+            <button class="action-btn" onclick="addMedTime()">+ Add</button>
+          </div>
+        </div>
+
+        <div class="full-field">
+          <div id="selectedTimes" class="time-list"></div>
+        </div>
+
+        <div class="field">
+          <label>Dose Pattern (1+1+1 Format)</label>
+          <div style="display:flex;gap:8px;">
+            <select id="dosePattern" style="flex:1;" onchange="onPatternChange(this.value)">
+              <option value="">-- Select Pattern --</option>
+              <option value="1+1+1">1 + 1 + 1 (All times)</option>
+              <option value="1+0+1">1 + 0 + 1 (Morning & Night)</option>
+              <option value="1+0+0">1 + 0 + 0 (Morning Only)</option>
+              <option value="0+1+0">0 + 1 + 0 (Midday Only)</option>
+              <option value="0+0+1">0 + 0 + 1 (Night Only)</option>
+              <option value="1+1+0">1 + 1 + 0 (Morning & Midday)</option>
+              <option value="0+1+1">0 + 1 + 1 (Midday & Night)</option>
+            </select>
+            <select id="mealTiming" style="width:130px;">
+              <option value="After meal">After meal</option>
+              <option value="Before meal">Before meal</option>
+              <option value="With meal">With meal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Start Date</label>
+          <input type="date" id="medStart">
+        </div>
+
+        <div class="field">
+          <label>End Date (Leave blank for Continuous)</label>
+          <input type="date" id="medEnd">
+        </div>
+
+        <div class="field full-field">
+          <label>Additional Note (Optional)</label>
+          <input type="text" id="medNote" placeholder="e.g. Take with warm water, after 30 mins etc.">
         </div>
       </div>
 
-      <div class="full-field">
-        <div id="selectedTimes" class="time-list"></div>
-      </div>
-
-      <div class="field">
-        <label>Dose Pattern (1+1+1 Format)</label>
-        <div style="display:flex;gap:8px;">
-          <select id="dosePattern" style="flex:1;" onchange="onPatternChange(this.value)">
-            <option value="">-- Select Pattern --</option>
-            <option value="1+1+1">1 + 1 + 1 (All times)</option>
-            <option value="1+0+1">1 + 0 + 1 (Morning & Night)</option>
-            <option value="1+0+0">1 + 0 + 0 (Morning Only)</option>
-            <option value="0+1+0">0 + 1 + 0 (Midday Only)</option>
-            <option value="0+0+1">0 + 0 + 1 (Night Only)</option>
-            <option value="1+1+0">1 + 1 + 0 (Morning & Midday)</option>
-            <option value="0+1+1">0 + 1 + 1 (Midday & Night)</option>
-          </select>
-          <select id="mealTiming" style="width:130px;">
-            <option value="After meal">After meal</option>
-            <option value="Before meal">Before meal</option>
-            <option value="With meal">With meal</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Start Date</label>
-        <input type="date" id="medStart">
-      </div>
-
-      <div class="field">
-        <label>End Date (Leave blank for Continuous)</label>
-        <input type="date" id="medEnd">
-      </div>
-
-      <div class="field full-field">
-        <label>Additional Note (Optional)</label>
-        <input type="text" id="medNote" placeholder="e.g. Take with warm water, after 30 mins etc.">
-      </div>
+      <button class="action-btn" id="saveMedButton" onclick="saveMedicine()">
+        <i class="fa-solid fa-save"></i> Save Medicine
+      </button>
     </div>
-
-    <button class="action-btn" id="saveMedButton" onclick="saveMedicine()">
-      <i class="fa-solid fa-save"></i> Save Medicine
-    </button>
 
     <div class="notification-box" style="margin-top: 25px;">
       <div style="font-size:12px;font-weight:700;color:#087f83">
@@ -603,6 +606,30 @@ a{text-decoration:none;color:inherit}
   provider.setCustomParameters({ prompt: 'select_account' });
 
   const ADMIN_EMAIL = "madina.manjeel@gmail.com";
+
+  // ফ্যামিলি ভিউ গ্রুপ এবং পারমিশন কনফিগারেশন
+  const FAMILY_GROUP_1 = [
+    "mashayekh.ahmed.archives@gmail.com",
+    "shariatunnesa.madina@gmail.com",
+    "abdulkhalequebaf@gmail.com",
+    "lima.akter.1323@gmail.com",
+    "ahmad.muttaqeen@gmail.com"
+  ];
+
+  const FAMILY_GROUP_2 = [
+    "abdulkhalequebaf@gmail.com",
+    "shariatunnesa.madina@gmail.com",
+    "darulahmed467170@gmail.com",
+    "afia.ahmed.adiba@gmail.com",
+    "nusaiba.jannat.alifa@gmail.com"
+  ];
+
+  const DARUL_MODIFIABLE = [
+    "darulahmed467170@gmail.com",
+    "afia.ahmed.adiba@gmail.com",
+    "nusaiba.jannat.alifa@gmail.com"
+  ];
+
   let currentUser = null;
   let viewingEmail = null;
   let allMedicines = [];
@@ -614,6 +641,10 @@ a{text-decoration:none;color:inherit}
 
   let addedEmails = JSON.parse(localStorage.getItem("hc_saved_emails") || "[]");
   const ALL_PATTERN_TIMES = ["06:30", "13:00", "19:00"];
+
+  // ওষুধের নামের পাশাপাশি ডোজ মেমোরিতে রাখার ম্যাপ
+  let globalMedicineDoses = {};
+  let allKnownDoses = new Set();
 
   let globalMedicineNames = [
     "Paracetamol", "Napa", "Napa Extra", "Napa Extend", "Napa Drop", "Napa Syrup",
@@ -644,14 +675,58 @@ a{text-decoration:none;color:inherit}
     "Chlorhexidine Gluconate 0.2%"
   ];
 
+  // ফ্যামিলি ভিউ ও মডিফাই পারমিশন হেল্পার ফাংশন
+  function getFamilyViewList(email) {
+    if (!email) return [];
+    const e = email.toLowerCase().trim();
+    const list = new Set();
+    if (FAMILY_GROUP_1.includes(e)) FAMILY_GROUP_1.forEach(x => list.add(x));
+    if (FAMILY_GROUP_2.includes(e)) FAMILY_GROUP_2.forEach(x => list.add(x));
+    return Array.from(list);
+  }
+
+  function isFamilyViewUser(email) {
+    if (!email) return false;
+    const e = email.toLowerCase().trim();
+    return FAMILY_GROUP_1.includes(e) || FAMILY_GROUP_2.includes(e);
+  }
+
+  function canModifyTarget(loggedInEmail, targetEmail) {
+    if (!loggedInEmail || !targetEmail) return false;
+    const logged = loggedInEmail.toLowerCase().trim();
+    const target = targetEmail.toLowerCase().trim();
+
+    if (logged === ADMIN_EMAIL) return true;
+    if (logged === target) return true;
+    if (logged === "mashayekh.ahmed.archives@gmail.com" && FAMILY_GROUP_1.includes(target)) return true;
+    if (logged === "darulahmed467170@gmail.com" && DARUL_MODIFIABLE.includes(target)) return true;
+
+    return false;
+  }
+
+  function recordMedDoseInMemory(medName, medDose) {
+    if (!medName) return;
+    const cleanName = medName.trim();
+    if (!globalMedicineNames.some(n => n.toLowerCase() === cleanName.toLowerCase())) {
+      globalMedicineNames.push(cleanName);
+    }
+    if (medDose && medDose.trim()) {
+      const cleanDose = medDose.trim();
+      const key = cleanName.toLowerCase();
+      if (!globalMedicineDoses[key]) globalMedicineDoses[key] = [];
+      if (!globalMedicineDoses[key].some(d => d.toLowerCase() === cleanDose.toLowerCase())) {
+        globalMedicineDoses[key].push(cleanDose);
+      }
+      allKnownDoses.add(cleanDose);
+    }
+  }
+
   async function loadGlobalMedicines() {
     try {
-      const snap = await getDocs(collection(db, "medicines"));
-      snap.forEach(docSnap => {
-        const medName = docSnap.data().name;
-        if(medName && !globalMedicineNames.includes(medName)) {
-          globalMedicineNames.push(medName);
-        }
+      globalMedicineDoses = {};
+      allKnownDoses = new Set();
+      allMedicines.forEach(data => {
+        recordMedDoseInMemory(data.name, data.dose);
       });
     } catch(e) {
       console.error("Error loading medicines for suggestions:", e);
@@ -669,21 +744,69 @@ a{text-decoration:none;color:inherit}
       listEl.style.display = "none";
       return;
     }
-    listEl.innerHTML = filtered.map(name => `
-      <div class="suggestion-item" onclick="selectMedicine('${safeText(name)}')">${safeText(name)}</div>
-    `).join("");
+    listEl.innerHTML = filtered.map(name => {
+      const doses = globalMedicineDoses[name.toLowerCase()] || [];
+      const doseHint = doses.length ? `<small style="color:var(--muted);margin-left:6px;">(${safeText(doses.join(", "))})</small>` : "";
+      return `<div class="suggestion-item" onclick="selectMedicine('${safeText(name)}')">${safeText(name)}${doseHint}</div>`;
+    }).join("");
     listEl.style.display = "block";
   };
 
   window.selectMedicine = function(name) {
     document.getElementById("newMedName").value = name;
     document.getElementById("medSuggestions").style.display = "none";
+
+    // ওষুধ সিলেক্ট করার সাথে সাথে পূর্বে ব্যবহৃত ডোজ সাজেশন দেখানো বা অটো বসানো
+    const doses = globalMedicineDoses[name.toLowerCase()] || [];
+    const doseInput = document.getElementById("newMedDose");
+    if (doses.length === 1 && !doseInput.value.trim()) {
+      doseInput.value = doses[0];
+    }
+    if (doses.length > 0) {
+      handleDoseSearch(doseInput.value);
+    }
+  };
+
+  window.handleDoseSearch = function(val) {
+    const listEl = document.getElementById("doseSuggestions");
+    const medName = document.getElementById("newMedName").value.trim().toLowerCase();
+    
+    let candidateDoses = [];
+    if (medName && globalMedicineDoses[medName] && globalMedicineDoses[medName].length > 0) {
+      candidateDoses = [...globalMedicineDoses[medName]];
+    } else {
+      candidateDoses = Array.from(allKnownDoses);
+    }
+
+    const searchVal = (val || "").trim().toLowerCase();
+    const filtered = searchVal 
+      ? candidateDoses.filter(d => d.toLowerCase().includes(searchVal))
+      : candidateDoses;
+
+    if (filtered.length === 0) {
+      listEl.style.display = "none";
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(dose => `
+      <div class="suggestion-item" onclick="selectDose('${safeText(dose)}')">${safeText(dose)}</div>
+    `).join("");
+    listEl.style.display = "block";
+  };
+
+  window.selectDose = function(dose) {
+    document.getElementById("newMedDose").value = dose;
+    document.getElementById("doseSuggestions").style.display = "none";
   };
 
   document.addEventListener("click", function(e) {
     if(!e.target.closest('#newMedName') && !e.target.closest('#medSuggestions')) {
       const s = document.getElementById("medSuggestions");
       if(s) s.style.display = "none";
+    }
+    if(!e.target.closest('#newMedDose') && !e.target.closest('#doseSuggestions')) {
+      const d = document.getElementById("doseSuggestions");
+      if(d) d.style.display = "none";
     }
   });
 
@@ -745,7 +868,6 @@ a{text-decoration:none;color:inherit}
     return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[c]);
   }
 
-  // স্মার্ট লগিন সিস্টেম: অ্যাপ এবং ব্রাউজারের জন্য আলাদা মেথড
   window.doGoogleLogin = function() {
     document.getElementById('loading-text').textContent = "Opening Google Sign-In...";
     document.getElementById('login-box').style.display = 'none';
@@ -753,7 +875,6 @@ a{text-decoration:none;color:inherit}
     const isApp = typeof window.AndroidDownloader !== 'undefined';
 
     if (isApp) {
-      // অ্যাপের জন্য Redirect (সাদা পেজ সমস্যা দূর করতে)
       signInWithRedirect(auth, provider).catch(err => {
          console.error("Login Error:", err);
          showToast("Failed to initialize login");
@@ -761,7 +882,6 @@ a{text-decoration:none;color:inherit}
          document.getElementById('login-box').style.display = 'block';
       });
     } else {
-      // ক্রোম/ব্রাউজারের জন্য Popup (লুপ সমস্যা দূর করতে)
       signInWithPopup(auth, provider).then((result) => {
         // success handled by onAuthStateChanged
       }).catch(err => {
@@ -808,10 +928,11 @@ a{text-decoration:none;color:inherit}
 
     if (user) {
       currentUser = user;
-      viewingEmail = user.email.toLowerCase().trim();
+      const loggedEmail = user.email.toLowerCase().trim();
+      viewingEmail = loggedEmail;
 
       if (window.AndroidDownloader && window.AndroidDownloader.registerUserEmail) {
-        window.AndroidDownloader.registerUserEmail(user.email.toLowerCase().trim());
+        window.AndroidDownloader.registerUserEmail(loggedEmail);
         const statusEl = document.getElementById("notificationStatus");
         if (statusEl) statusEl.textContent = "App notifications active for " + user.email;
       }
@@ -829,7 +950,12 @@ a{text-decoration:none;color:inherit}
         avatarEl.textContent = (user.displayName || "U").charAt(0).toUpperCase();
       }
 
-      if (viewingEmail === ADMIN_EMAIL) {
+      const viewModeLabel = document.getElementById("viewModeLabel");
+      if (loggedEmail === ADMIN_EMAIL) {
+        viewModeLabel.innerHTML = `<i class="fa-solid fa-user-shield"></i> Admin View:`;
+        document.getElementById("adminControls").style.display = "flex";
+      } else if (isFamilyViewUser(loggedEmail)) {
+        viewModeLabel.innerHTML = `<i class="fa-solid fa-users"></i> Family View:`;
         document.getElementById("adminControls").style.display = "flex";
       } else {
         document.getElementById("adminControls").style.display = "none";
@@ -849,9 +975,22 @@ a{text-decoration:none;color:inherit}
 
   function updateTargetAccountNote() {
     const note = document.getElementById("targetAccountNote");
-    if (!viewingEmail) return;
-    if (currentUser && currentUser.email.toLowerCase() === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) {
+    const topAddBtn = document.getElementById("topAddJumpBtn");
+    const medFormContainer = document.getElementById("medFormContainer");
+
+    if (!viewingEmail || !currentUser) return;
+    const loggedEmail = currentUser.email.toLowerCase().trim();
+    const canEdit = canModifyTarget(loggedEmail, viewingEmail);
+
+    if (topAddBtn) topAddBtn.style.display = canEdit ? "inline-flex" : "none";
+    if (medFormContainer) medFormContainer.style.display = canEdit ? "block" : "none";
+
+    if (loggedEmail === ADMIN_EMAIL && viewingEmail !== ADMIN_EMAIL) {
       note.textContent = `Admin Mode: Managing medicines for ${viewingEmail}`;
+    } else if (loggedEmail !== viewingEmail) {
+      note.textContent = canEdit 
+        ? `Family Mode: Managing medicines for ${viewingEmail}` 
+        : `Family Mode (View Only): Viewing ${viewingEmail}`;
     } else {
       note.textContent = `Managing medicines for: ${viewingEmail}`;
     }
@@ -870,7 +1009,8 @@ a{text-decoration:none;color:inherit}
 
       await loadGlobalMedicines();
       
-      if (currentUser.email.toLowerCase() === ADMIN_EMAIL) {
+      const loggedEmail = currentUser.email.toLowerCase().trim();
+      if (loggedEmail === ADMIN_EMAIL || isFamilyViewUser(loggedEmail)) {
         populateAdminDropdown();
       }
       renderAll();
@@ -882,16 +1022,25 @@ a{text-decoration:none;color:inherit}
   }
 
   function populateAdminDropdown() {
-    const usersSet = new Set(allMedicines.map(m => (m.userEmail || "").toLowerCase().trim()).filter(Boolean));
-    usersSet.add(ADMIN_EMAIL);
-    if (viewingEmail) usersSet.add(viewingEmail);
-    addedEmails.forEach(e => usersSet.add(e));
-    
-    const users = Array.from(usersSet);
+    if (!currentUser) return;
+    const loggedEmail = currentUser.email.toLowerCase().trim();
+    const isAdmin = loggedEmail === ADMIN_EMAIL;
+
+    let users = [];
+    if (isAdmin) {
+      const usersSet = new Set(allMedicines.map(m => (m.userEmail || "").toLowerCase().trim()).filter(Boolean));
+      usersSet.add(ADMIN_EMAIL);
+      if (viewingEmail) usersSet.add(viewingEmail);
+      addedEmails.forEach(e => usersSet.add(e));
+      users = Array.from(usersSet);
+    } else {
+      const familyEmails = getFamilyViewList(loggedEmail);
+      users = [loggedEmail, ...familyEmails.filter(e => e !== loggedEmail)];
+    }
     
     const btnText = document.getElementById("adminSelectText");
     if (btnText) {
-      let displayName = viewingEmail === ADMIN_EMAIL ? "My Account" : viewingEmail;
+      let displayName = viewingEmail === loggedEmail ? "My Account" : viewingEmail;
       if (displayName.length > 22) displayName = displayName.substring(0, 20) + "...";
       btnText.textContent = displayName;
     }
@@ -901,17 +1050,23 @@ a{text-decoration:none;color:inherit}
 
     container.innerHTML = users.map(email => {
       const isActive = email === viewingEmail;
-      const displayLabel = email === ADMIN_EMAIL ? `My Account <br><small style="font-weight:normal;color:gray;font-size:10px">${safeText(email)}</small>` : safeText(email);
+      const canMod = canModifyTarget(loggedEmail, email);
+      const accessBadge = email === loggedEmail 
+        ? "" 
+        : (canMod ? `<span style="color:#159968;font-size:9px;margin-left:5px;">(Can Edit)</span>` : `<span style="color:#82979b;font-size:9px;margin-left:5px;">(View Only)</span>`);
+      const displayLabel = email === loggedEmail 
+        ? `My Account <br><small style="font-weight:normal;color:gray;font-size:10px">${safeText(email)}</small>` 
+        : `${safeText(email)} ${accessBadge}`;
       return `
         <div class="account-item ${isActive ? 'active' : ''}" onclick="selectCustomAccount('${safeText(email)}')">
           <i class="fa-solid ${isActive ? 'fa-circle-check' : 'fa-circle'}"></i> 
           <div style="flex:1;word-break:break-all;line-height:1.4">${displayLabel}</div>
         </div>`;
-    }).join("") + `
+    }).join("") + (isAdmin ? `
       <div class="account-item" style="color:var(--primary);font-weight:700;margin-top:8px;border-top:1px dashed #c0e0dc;border-bottom:none" onclick="selectCustomAccount('__ADD_USER__')">
         <i class="fa-solid fa-plus-circle" style="color:var(--primary)"></i> + Add / View Another Gmail...
       </div>
-    `;
+    ` : "");
   }
 
   window.openAccountSelector = function() {
@@ -926,11 +1081,14 @@ a{text-decoration:none;color:inherit}
   window.selectCustomAccount = function(val) {
     closeAccountSelector();
     if (val === "__ADD_USER__") {
+      if (!currentUser || currentUser.email.toLowerCase().trim() !== ADMIN_EMAIL) return;
       document.getElementById("customPromptOverlay").style.display = "flex";
       document.getElementById("promptEmailInput").value = "";
       document.getElementById("promptEmailInput").focus();
     } else {
       viewingEmail = val;
+      editingId = null;
+      clearMedForm();
       updateTargetAccountNote();
       populateAdminDropdown();
       renderAll();
@@ -1010,6 +1168,10 @@ a{text-decoration:none;color:inherit}
 
   window.saveMedicine = async function(){
     if(!currentUser || !viewingEmail) return;
+    if(!canModifyTarget(currentUser.email, viewingEmail)) {
+      showToast("You do not have permission to modify this account.");
+      return;
+    }
     if(editingId) return updateMedicine();
 
     const name=document.getElementById("newMedName").value.trim();
@@ -1041,12 +1203,11 @@ a{text-decoration:none;color:inherit}
       const docRef = await addDoc(collection(db, "medicines"), newMed);
       allMedicines.push({ id: docRef.id, ...newMed });
 
-      if(!globalMedicineNames.some(m => m.toLowerCase() === name.toLowerCase())) {
-        globalMedicineNames.push(name);
-      }
+      recordMedDoseInMemory(name, dose);
       
       clearMedForm();
-      if(currentUser.email.toLowerCase() === ADMIN_EMAIL) populateAdminDropdown();
+      const loggedEmail = currentUser.email.toLowerCase().trim();
+      if(loggedEmail === ADMIN_EMAIL || isFamilyViewUser(loggedEmail)) populateAdminDropdown();
       renderAll();
       document.getElementById("todaysOverviewHeading").scrollIntoView({behavior: "smooth", block: "start"});
       showToast("Medicine added successfully");
@@ -1056,6 +1217,10 @@ a{text-decoration:none;color:inherit}
   };
 
   async function updateMedicine() {
+    if(!currentUser || !canModifyTarget(currentUser.email, viewingEmail)) {
+      showToast("You do not have permission to modify this account.");
+      return;
+    }
     const name=document.getElementById("newMedName").value.trim();
     const dose=document.getElementById("newMedDose").value.trim();
     const pattern=document.getElementById("dosePattern").value;
@@ -1082,9 +1247,7 @@ a{text-decoration:none;color:inherit}
       const m = allMedicines.find(x => x.id === editingId);
       if(m) Object.assign(m, updatedData);
 
-      if(!globalMedicineNames.some(med => med.toLowerCase() === name.toLowerCase())) {
-        globalMedicineNames.push(name);
-      }
+      recordMedDoseInMemory(name, dose);
 
       editingId = null;
       document.getElementById("formTitleText").textContent = "Add New Medicine";
@@ -1191,7 +1354,11 @@ a{text-decoration:none;color:inherit}
   }
 
   window.markMedicine = async function(id,time,status){
-    if(!viewingEmail) return;
+    if(!viewingEmail || !currentUser) return;
+    if(!canModifyTarget(currentUser.email, viewingEmail)) {
+      showToast("View only mode: Cannot modify status.");
+      return;
+    }
     const date=todayDate();
     let record = getActiveHistory().find(h => h.medId === id && h.time === time && h.date === date);
     
@@ -1226,6 +1393,8 @@ a{text-decoration:none;color:inherit}
 
     if(!items.length) return '<div class="empty">No medicines scheduled for this exact time window.</div>';
 
+    const canEdit = currentUser && canModifyTarget(currentUser.email, viewingEmail);
+
     return items.map(item=>{
       const status=statusOf(item.id,item.time);
       const label=status==="taken"?"Taken":status==="skipped"?"Skipped":"Pending";
@@ -1246,6 +1415,7 @@ a{text-decoration:none;color:inherit}
           </div>
           <span style="font-size:10px;font-weight:700;color:${color}">${label}</span>
         </div>
+        ${canEdit ? `
         <div class="med-buttons">
           <button class="med-action med-taken" ${status==="taken"?"disabled":""}
             onclick="window.markMedicine('${item.id}','${item.time}','taken')">
@@ -1255,20 +1425,25 @@ a{text-decoration:none;color:inherit}
             onclick="window.markMedicine('${item.id}','${item.time}','skipped')">
             <i class="fa-solid fa-forward"></i> Skipped
           </button>
-        </div>
+        </div>` : ''}
       </div>`;
     }).join("");
   }
 
   function renderMedicineList(){
-    const myMeds = getActiveMedicines();
+    const dateStr = todayDate();
+    // ১ নম্বর শর্ত: যেসব ওষুধের End Date শেষ হয়ে গেছে সেগুলো All Medicines-এ আর দেখাবে না
+    const myMeds = getActiveMedicines().filter(m => !m.end || m.end >= dateStr);
+    const canEdit = currentUser && canModifyTarget(currentUser.email, viewingEmail);
+
     if(!myMeds.length) {
       return `
         <div class="empty-add-container">
-          <div class="empty" style="padding-bottom:10px;">No medicines found for this account.</div>
+          <div class="empty" style="padding-bottom:10px;">No active medicines found for this account.</div>
+          ${canEdit ? `
           <button class="med-action med-add-jump" style="padding: 10px 18px; font-size: 12px; margin: auto;" onclick="window.jumpToAddMedicine()">
             <i class="fa-solid fa-plus"></i> Add New Medicine
-          </button>
+          </button>` : ''}
         </div>
       `;
     }
@@ -1282,6 +1457,7 @@ a{text-decoration:none;color:inherit}
             ${m.note ? `<p style="font-size:10.5px;color:#087f83;margin-top:4px;font-weight:600;"><i class="fa-solid fa-note-sticky"></i> ${safeText(m.note)}</p>` : ''}
           </div>
         </div>
+        ${canEdit ? `
         <div class="med-buttons">
           <button class="med-action med-edit" onclick="window.editMedicine('${m.id}')">
             <i class="fa-solid fa-pen"></i> Edit
@@ -1289,12 +1465,16 @@ a{text-decoration:none;color:inherit}
           <button class="med-action med-delete" onclick="window.deleteMedicine('${m.id}')">
             <i class="fa-solid fa-trash"></i> Delete
           </button>
-        </div>
+        </div>` : ''}
       </div>
     `).join("");
   }
 
   window.jumpToAddMedicine = function(){
+    if(currentUser && !canModifyTarget(currentUser.email, viewingEmail)) {
+      showToast("View only mode: Cannot add medicine.");
+      return;
+    }
     editingId = null;
     document.getElementById("formTitleText").textContent = "Add New Medicine";
     document.getElementById("saveMedButton").innerHTML = '<i class="fa-solid fa-save"></i> Save Medicine';
@@ -1316,6 +1496,8 @@ a{text-decoration:none;color:inherit}
 
     if(!records.length) return '<div class="empty">No history available for the last 3 days.</div>';
 
+    const canEdit = currentUser && canModifyTarget(currentUser.email, viewingEmail);
+
     return records.map(h=>{
       const m = allMedicines.find(x=>x.id===h.medId);
       const isTaken = h.status === "taken";
@@ -1329,16 +1511,18 @@ a{text-decoration:none;color:inherit}
             ${isTaken?"Taken":"Skipped"}
           </span>
         </div>
+        ${canEdit ? `
         <div class="med-buttons">
           <button class="med-action ${isTaken?'med-skipped':'med-taken'}" onclick="window.markMedicine('${h.medId}','${h.time}','${isTaken?'skipped':'taken'}')">
             <i class="fa-solid fa-rotate"></i> Change to ${isTaken?'Skipped':'Taken'}
           </button>
-        </div>
+        </div>` : ''}
       </div>`;
     }).join("");
   }
 
   window.editMedicine = function(id){
+    if(currentUser && !canModifyTarget(currentUser.email, viewingEmail)) return;
     const m = allMedicines.find(x => x.id === id);
     if(!m) return;
 
@@ -1359,6 +1543,7 @@ a{text-decoration:none;color:inherit}
   };
 
   window.deleteMedicine = async function(id){
+    if(!currentUser || !canModifyTarget(currentUser.email, viewingEmail)) return;
     if(!confirm("Delete this medicine?")) return;
     try {
       await deleteDoc(doc(db, "medicines", id));
@@ -1406,7 +1591,7 @@ a{text-decoration:none;color:inherit}
       status.textContent = "App notifications are active!";
       window.AndroidDownloader.showMedicineNotification(
         "HealthCare Reminder Active",
-        "আপনার ওষধের নোটিফিকেশন সিস্টেম সচল রয়েছে।"
+        "আপনার ওষধের নোটিফিকেশন সচল রয়েছে।"
       );
       return;
     }
