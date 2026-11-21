@@ -1,635 +1,240 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>কিডস ফান জোন! 🎈</title>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --accent: #FFE66D; --dark: #2F2F2F; }
-        body { font-family: 'Baloo Da 2', 'Fredoka', sans-serif; margin: 0; padding: 0; background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); color: var(--dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        
-        #loading-message { text-align: center; padding-top: 100px; font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
-        
-        #content-wrapper { display: none; }
-
-        /* --- STICKY TOP CONTAINER STYLE --- */
-        #sticky-top-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100;
-            background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        /* --- SCROLLABLE CONTENT STYLE --- */
-        #scrollable-body {
-            /* Padding will be set by JS dynamically */
-            padding-bottom: 30px;
-        }
-
-        header { background: #FF9A9E; padding: 8px; text-align: center; border-bottom: 4px solid rgba(0,0,0,0.1); border-radius: 0 0 30% 30% / 10px; }
-        h1 { font-size: 1.8rem; margin: 0; color: white; text-shadow: 2px 2px 0px var(--primary); }
-        .container { max-width: 800px; margin: 0 auto; padding: 10px; }
-
-        .tv-frame { background: #FF6B6B; padding: 8px; border-radius: 15px; box-shadow: 0 6px 0 #C44D4D; margin-bottom: 5px; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0; }
-
-        /* Unified Card Grid */
-        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        
-        .card { 
-            background: white; border-radius: 15px; padding: 15px 5px; 
-            text-align: center; text-decoration: none; color: var(--dark); 
-            box-shadow: 0 5px 0 rgba(0,0,0,0.1); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 3px solid; cursor: pointer; font-size: 1.1rem; font-weight: bold;
-            transition: transform 0.1s; height: 100px;
-            box-sizing: border-box;
-        }
-        .card:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.1); }
-        .card-icon { font-size: 2rem; margin-bottom: 5px; display: block; }
-        
-        /* Game Containers */
-        #gameContainer, #snakeGameContainer { 
-            display: none; 
-            margin-bottom: 20px; 
-            animation: fadeIn 0.4s ease; 
-            position: fixed; /* Fixed to take full screen in game mode */
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%); 
-            z-index: 200; 
-            padding: 20px 10px; 
-            box-sizing: border-box; 
-            overflow-y: auto;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        .game-area { background: white; border: 5px solid var(--accent); border-radius: 20px; height: 380px; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; margin-top: 40px; }
-        
-        .close-btn {
-            position: absolute; top: 15px; right: 15px; 
-            width: 40px; height: 40px; 
-            background: #ff4757; color: white; 
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 1.5rem; cursor: pointer; 
-            z-index: 50; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid white;
-        }
-
-        /* Balloon Styles */
-        .score-board, .timer-board { position: absolute; top: 8px; font-weight: bold; background: rgba(255, 255, 255, 0.9); padding: 5px 15px; border-radius: 15px; z-index: 10; font-size: 1.2rem; pointer-events: none; border: 2px solid #eee; }
-        .score-board { left: 10px; } .timer-board { right: 10px; color: var(--primary); }
-        
-        .balloon { 
-            position: absolute; bottom: -95px; animation: floatUp var(--speed) linear forwards; 
-            display: flex; justify-content: center; align-items: center; 
-            cursor: pointer; user-select: none; touch-action: none; pointer-events: auto;
-            background: transparent; border: none; padding: 10px; z-index: 5;
-        }
-        @keyframes floatUp { 
-            0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            33% { transform: translateY(-250px) translateX(var(--drift)) rotate(10deg); }
-            66% { transform: translateY(-500px) translateX(calc(var(--drift) * -1)) rotate(-10deg); }
-            100% { transform: translateY(-850px) translateX(0) rotate(0deg); }
-        }
-        .point-popup { position: absolute; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: popUp 0.6s ease-out forwards; z-index: 15; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
-
-        /* Snake Styles */
-        .snake-canvas-wrapper { width: 100%; display: flex; justify-content: center; background: #fff; padding: 10px 0; }
-        canvas { background: #f9f9f9; border-radius: 5px; border: 2px solid #ddd; }
-        
-        .control-panel { 
-            background: rgba(0,0,0,0.05); border-radius: 30px; padding: 15px; margin: 5px auto; 
-            width: 220px; height: 180px; 
-            display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
-            gap: 8px; align-items: center; justify-items: center;
-        }
-        .btn-up { grid-column: 2; grid-row: 1; }
-        .btn-left { grid-column: 1; grid-row: 2; }
-        .btn-right { grid-column: 3; grid-row: 2; }
-        .btn-down { grid-column: 2; grid-row: 3; }
-
-        .d-btn { 
-            width: 60px; height: 60px; 
-            background: var(--secondary); border: none; border-radius: 50%; 
-            color: white; font-size: 1.8rem; box-shadow: 0 4px 0 #2a9d8f; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            user-select: none; -webkit-user-select: none; touch-action: none; 
-            -webkit-tap-highlight-color: transparent;
-        }
-        .d-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a9d8f; background: #2a9d8f; }
-
-        /* Pause Button */
-        .pause-btn {
-            position: absolute; top: 15px; right: 65px;
-            background: #FF9F1C; color: white;
-            border: 2px solid white; border-radius: 50%;
-            width: 40px; height: 40px;
-            display: none; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; z-index: 50;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: white; border: none; padding: 12px 25px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; box-shadow: 0 5px 0 #C44D4D; z-index: 20; }
-
-        .leaderboard { background: #fff; border-radius: 15px; padding: 10px; margin-top: 10px; border: 3px solid var(--secondary); max-width: 600px; margin-left: auto; margin-right: auto; }
-        .leaderboard h3 { margin: 0 0 8px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
-        .leaderboard-list { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
-        .leaderboard-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f9f9f9; margin-bottom: 5px; border-radius: 10px; border-left: 5px solid var(--secondary); }
-        .leaderboard-list li img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 300; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .modal-btn { border: none; padding: 12px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: white; margin-top: 15px; width: 100%; font-size: 1.1rem; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>কিডস ফান জোন</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;700;800&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#24214a;--bg:#fff8ec;--sun:#ffc43d;--coral:#ff6b57;--sky:#3ea6ff;--mint:#2fcf9b;--grape:#8b5cf6;--pink:#ff7eb6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Baloo Da 2','Fredoka',sans-serif;background:var(--bg);color:var(--ink);font-size:18px}
+button,a{font:inherit;color:inherit;border:0;cursor:pointer;text-decoration:none}
+:focus{outline:none}
+:focus-visible,.focus{outline:6px solid var(--ink);outline-offset:3px;transform:scale(1.05);z-index:5}
+.wrap{max-width:1200px;margin:0 auto;padding:0 18px}
+header{padding:18px 0 8px;display:flex;align-items:center;gap:14px}
+.logo{width:56px;height:56px;border-radius:18px;background:var(--sun);display:grid;place-items:center;font-size:32px;box-shadow:0 5px 0 #d99a00}
+h1{margin:0;font-family:'Fredoka',sans-serif;font-size:clamp(26px,5vw,44px);line-height:1}
+h1 small{display:block;font-size:.4em;font-weight:500;opacity:.65;margin-top:4px}
+nav{margin-left:auto;display:flex;gap:8px}
+nav a{background:#fff;padding:10px 18px;border-radius:99px;font-weight:700;box-shadow:0 4px 0 #e6dcc6}
+h2{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,34px);margin:34px 0 14px}
+/* video */
+.tv{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:10px}
+.screen{background:var(--ink);padding:10px;border-radius:26px;box-shadow:0 8px 0 #12102b}
+.vid{position:relative;padding-bottom:56.25%;border-radius:18px;overflow:hidden;background:#000}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.chan{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start}
+.chan button{background:#fff;border-radius:20px;padding:14px 6px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 5px 0 #e6dcc6}
+.chan b{font-size:34px}
+/* games */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.g{border-radius:28px;padding:22px 12px 16px;color:#fff;font-weight:800;font-size:22px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 8px 0 rgba(0,0,0,.22);transition:transform .12s}
+.g:active{transform:translateY(4px);box-shadow:0 4px 0 rgba(0,0,0,.22)}
+.g b{font-size:60px;line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
+.g small{font-weight:500;opacity:.9;font-size:15px}
+/* learn */
+.learn{background:#fff;border-radius:32px;padding:20px;box-shadow:0 8px 0 #e6dcc6}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{background:#f1ecfb;padding:10px 22px;border-radius:99px;font-weight:800;font-size:20px}
+.tabs button.on{background:var(--grape);color:#fff}
+.lbody{display:grid;grid-template-columns:1fr 1.2fr;gap:20px}
+.big{border-radius:28px;color:#fff;text-align:center;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px}
+.big .ch{font-family:'Fredoka','Baloo Da 2',sans-serif;font-size:clamp(90px,16vw,150px);line-height:1;font-weight:700}
+.big .em{font-size:clamp(50px,9vw,80px)}
+.big .wd{font-size:26px;font-weight:800}
+.ctl{display:flex;gap:10px;margin-top:12px}
+.ctl button{background:rgba(255,255,255,.28);padding:8px 18px;border-radius:99px;font-weight:800;color:#fff;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:10px;align-content:start}
+.grid button{aspect-ratio:1;border-radius:18px;background:#f4f0ff;font-size:28px;font-weight:800;font-family:'Fredoka','Baloo Da 2',sans-serif;box-shadow:0 4px 0 #ded6f5}
+.grid button.on{background:var(--sun);box-shadow:0 4px 0 #d99a00}
+.quiz{margin-top:20px;background:#effaf5;border-radius:26px;padding:18px;text-align:center}
+.quiz .q{font-size:24px;font-weight:800}
+.quiz .shape{font-size:clamp(40px,8vw,64px);min-height:80px;word-break:break-all}
+.opts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.opts button{min-width:88px;padding:12px 18px;border-radius:20px;background:#fff;font-size:34px;font-weight:800;font-family:'Fredoka','Baloo Da 2',sans-serif;box-shadow:0 5px 0 #bfe6d6}
+.opts .ok{background:var(--mint);color:#fff}.opts .no{background:var(--coral);color:#fff}
+.stars{font-size:22px;font-weight:800;margin-top:8px}
+footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
+/* overlay */
+#ov{position:fixed;inset:0;background:var(--ink);z-index:50;display:none;flex-direction:column}
+#ov.show{display:flex}
+#bar{display:flex;gap:10px;align-items:center;padding:8px 12px;color:#fff;font-weight:800}
+#bar button,#bar a{background:var(--coral);color:#fff;padding:8px 20px;border-radius:99px;font-weight:800}
+#bar a{background:var(--sky);margin-left:auto}
+#fr{flex:1;border:0;width:100%;background:#000}
+.hint{display:none;font-size:14px;opacity:.7;text-align:center}
+@media(max-width:760px){.tv,.lbody{grid-template-columns:1fr}nav{display:none}.chan{grid-template-columns:repeat(4,1fr)}.chan button{font-size:13px}.chan b{font-size:26px}.games{grid-template-columns:1fr 1fr;gap:12px}.g{font-size:18px}.g b{font-size:46px}}
+@media(min-width:1280px){body{font-size:20px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
+<div class="wrap">
+<header>
+  <div class="logo">🎈</div>
+  <h1>কিডস ফান জোন<small>খেলো · শেখো · দেখো</small></h1>
+  <nav><a href="#games" data-f>গেমস</a><a href="#learn" data-f>শেখো</a></nav>
+</header>
 
-    <div id="loading-message">ভেরিফাই করা হচ্ছে... একটু অপেক্ষা করো 🎈</div>
+<section class="tv">
+  <div class="screen"><div class="vid"><iframe id="vp" src="https://www.youtube.com/embed/WDVsoDUXKEE" allowfullscreen allow="autoplay; encrypted-media"></iframe></div></div>
+  <div class="chan" id="chan"></div>
+</section>
 
-    <div id="content-wrapper">
-        
-        <div id="sticky-top-container">
-            <header><h1>🎈 কিডস ফান জোন! 🎈</h1></header>
-            <div class="container" style="padding-bottom: 0;">
-                <div class="tv-frame">
-                    <div class="video-wrapper">
-                        <iframe id="videoPlayer" src="https://www.youtube.com/embed/WDVsoDUXKEE?autoplay=0&controls=1" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </div>
-        </div>
+<h2 id="games">🎮 গেম খেলো</h2>
+<section class="games" id="gl"></section>
 
-        <div id="scrollable-body" class="container">
-            
-            <div class="card-grid">
-                <div onclick="window.gameFunctions.toggleGame('balloon')" class="card" style="border-color: #2ecc71;">
-                    <div class="card-icon">🎈</div><div>বেলুন গেম</div>
-                </div>
-                <div onclick="window.gameFunctions.toggleGame('snake')" class="card" style="border-color: #2ecc71;">
-                    <div class="card-icon">🐍</div><div>সাপের গেম</div>
-                </div>
-
-                <a href="https://poki.com/en/g/ludo-multiplayer" target="_blank" class="card" style="border-color: #ff4757;">
-                    <div class="card-icon">🎲</div><div>লুডু খেলো</div>
-                </a>
-                <a href="https://kids.poki.com" target="_blank" class="card" style="border-color: #ff4757;">
-                    <div class="card-icon">🕹️</div><div>পোকি গেমস</div>
-                </a>
-
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q')" class="card" style="border-color: #3742fa;"><div class="card-icon">🐸</div><div>সিসিমপুর</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu')" class="card" style="border-color: #3742fa;"><div class="card-icon">🎶</div><div>বাংলা ছড়া</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76')" class="card" style="border-color: #3742fa;"><div class="card-icon">💁‍♀️</div><div>মিস মুন</div></div>
-                <div onclick="window.gameFunctions.playVideo('https://www.youtube.com/embed/videoseries?list=PLZs0gQed9tMQcnKBoXtgJW7mq_LNtfB9g&si=cVHynu3juTfDa0MF')" class="card" style="border-color: #3742fa;"><div class="card-icon">🐱</div><div>টম এন্ড জেরি</div></div>
-            </div>
-        </div>
-
-        <div id="gameContainer">
-            <div class="close-btn" onclick="window.gameFunctions.closeGame()">✖</div>
-            <div class="game-area" id="gameArea">
-                <div class="score-board">Score: <span id="score">0</span></div>
-                <div class="timer-board">সময়: <span id="timer">30</span>s</div>
-                <button class="start-btn" id="mainStartBtn" onclick="window.gameFunctions.startGame()">খেলতে ট্যাপ করো!</button>
-            </div>
-            <div class="leaderboard">
-                <h3>🏆 বেলুন মাস্টার (সেরা ৫) 🏆</h3>
-                <ul id="onlineLeaderboard" class="leaderboard-list"><li>লোড হচ্ছে...</li></ul>
-            </div>
-        </div>
-
-        <div id="snakeGameContainer">
-            <div class="close-btn" onclick="window.gameFunctions.closeGame()">✖</div>
-            <div class="pause-btn" id="snakePauseBtn" onclick="window.snakeFunctions.togglePause()">⏸️</div>
-            
-            <div class="game-area" style="height: auto; background: #fff; border-color: #2ecc71;">
-                <div class="score-board" style="position: relative; top: 0; left: 0; border-radius: 0; background: #f0f0f0; text-align: center; width: 100%; box-sizing: border-box;">Score: <span id="snakeScore">0</span></div>
-                <div class="snake-canvas-wrapper">
-                    <canvas id="snakeCanvas" width="300" height="300"></canvas>
-                </div>
-                <button class="start-btn" id="snakeStartBtn" onclick="window.snakeFunctions.startSnake()">সাপ খেলা শুরু!</button>
-                
-                <div class="control-panel" id="snakeControls" style="display:none;">
-                    <button class="d-btn btn-up" onpointerdown="window.snakeFunctions.handleInput(event, 'UP')">⬆️</button>
-                    <button class="d-btn btn-left" onpointerdown="window.snakeFunctions.handleInput(event, 'LEFT')">⬅️</button>
-                    <button class="d-btn btn-right" onpointerdown="window.snakeFunctions.handleInput(event, 'RIGHT')">➡️</button>
-                    <button class="d-btn btn-down" onpointerdown="window.snakeFunctions.handleInput(event, 'DOWN')">⬇️</button>
-                </div>
-            </div>
-            <div class="leaderboard" style="border-color: #2ecc71;">
-                <h3>🐍 স্ন্যাক চ্যাম্পিয়ন (সেরা ৫) 🐍</h3>
-                <ul id="snakeLeaderboard" class="leaderboard-list"><li>লোড হচ্ছে...</li></ul>
-            </div>
-        </div>
-
-        <div id="gameOverModal" class="modal">
-            <div class="modal-content">
-                <h2 id="modalTitle">সময় শেষ!</h2>
-                <p style="font-size:1.2rem;">তোমার স্কোর: <span id="finalScore" style="color:var(--secondary);">0</span></p>
-                <p id="saveMsg">সেভ হচ্ছে...</p>
-                <button onclick="window.gameFunctions.closeModal()" class="modal-btn">আবার খেলো</button>
-            </div>
-        </div>
+<h2 id="learn">📚 মজার ছলে শেখো</h2>
+<section class="learn">
+  <div class="tabs" id="tabs"></div>
+  <div class="lbody">
+    <div class="big" id="big">
+      <div class="ch" id="ch"></div><div class="em" id="em"></div><div class="wd" id="wd"></div>
+      <div class="ctl"><button data-f id="prev">⬅️</button><button data-f id="say">🔊 শোনো</button><button data-f id="next">➡️</button></div>
     </div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <div class="quiz">
+    <div class="q" id="qq">🎯 কুইজ খেলো!</div>
+    <div class="shape" id="qs"></div>
+    <div class="opts" id="qo"></div>
+    <div class="stars" id="st">⭐ 0</div>
+  </div>
+</section>
+<footer>D-pad (রিমোট) দিয়ে ⬆️⬇️⬅️➡️ চালাও, OK চেপে সিলেক্ট করো, Back চেপে ফিরে যাও</footer>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+<div id="ov">
+  <div id="bar"><button data-f id="back">⬅️ ফিরে যাও</button><span id="gt"></span><a data-f id="ext" target="_blank" rel="noopener">নতুন ট্যাবে খোলো</a></div>
+  <iframe id="fr" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+</div>
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyAXZwWx1egnLtdgExUDepoLB6b20CrGwms",
-          authDomain: "family-429c7.firebaseapp.com",
-          projectId: "family-429c7",
-          storageBucket: "family-429c7.firebasestorage.app",
-          messagingSenderId: "982876086618",
-          appId: "1:982876086618:web:97d56fd46148561cf2d363"
-        };
+<script>
+// ===== সেটিংস =====
+const BASE='https://merryverse.vercel.app/games/';
+const GAMES=[
+ ['Balloon Fire','🎈','balloon','#ff6b57','বেলুন ফাটাও'],
+ ['Snake','🐍','snake','#2fcf9b','সাপ খেলা'],
+ ['Ludu','🎲','ludu','#3ea6ff','লুডু'],
+ ['Chess','♟️','chess','#8b5cf6','দাবা'],
+ ['Cricket','🏏','cricket','#f59e0b','ক্রিকেট'],
+ ['Car Racing','🏎️','carracing','#ef4444','কার রেস'],
+ ['Space Impact','🚀','space-impact','#ec4899','মহাকাশ যুদ্ধ']
+];
+const PL='https://www.youtube.com/embed/videoseries?list=';
+const CH=[['🐸','সিসিমপুর',PL+'PLSUD7pi9T9Cqvu0H_L9F_7fTpqII-IM_Q'],['🎶','বাংলা ছড়া',PL+'PLMkbcNyMykb6PQoj5B4ZTtJdNXXml03Mu'],['💁‍♀️','মিস মুন',PL+'PLbZfGz-LppPF1tTgjYvVpUef_7tqg2F76'],['🐱','টম এন্ড জেরি',PL+'PLZs0gQed9tMQcnKBoXtgJW7mq_LNtfB9g']];
+// true করলে Google লগইন লাগবে (Firebase config নিজের দিয়ে বসাও)
+const REQUIRE_LOGIN=false;
+const FB={apiKey:"",authDomain:"",projectId:"",appId:""};
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
+// ===== শেখার ডেটা: [অক্ষর, ইমোজি, শব্দ] =====
+const E=(s)=>s.split(',').map(x=>{const[a,b,c]=x.split('|');return[a,b,c]});
+const DATA={
+ abc:{n:'ABC',lang:'en-US',c:'#3ea6ff',items:E('A|🍎|Apple,B|⚽|Ball,C|🐱|Cat,D|🐶|Dog,E|🐘|Elephant,F|🐟|Fish,G|🍇|Grapes,H|🏠|House,I|🍦|Ice cream,J|🧃|Juice,K|🪁|Kite,L|🦁|Lion,M|🌙|Moon,N|🪺|Nest,O|🍊|Orange,P|🦜|Parrot,Q|👑|Queen,R|🐰|Rabbit,S|☀️|Sun,T|🌳|Tree,U|☂️|Umbrella,V|🚐|Van,W|⌚|Watch,X|🎹|Xylophone,Y|🪀|Yo-yo,Z|🦓|Zebra')},
+ bn:{n:'অ আ ক খ',lang:'bn-BD',c:'#ff6b57',items:E('অ|🐍|অজগর,আ|🥭|আম,ই|🐭|ইঁদুর,ঈ|🦅|ঈগল,উ|🐪|উট,এ|🎸|একতারা,ঐ|🐘|ঐরাবত,ও|💊|ওষুধ,ক|🍌|কলা,খ|🐰|খরগোশ,গ|🐄|গরু,ঘ|⏰|ঘড়ি,চ|🌙|চাঁদ,ছ|☂️|ছাতা,জ|🚢|জাহাজ,ট|🍅|টমেটো,ত|⭐|তারা,ফ|🌸|ফুল,ম|🐟|মাছ,হ|🐘|হাতি')},
+ num:{n:'১ ২ ৩',lang:'bn-BD',c:'#2fcf9b',items:['এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়','দশ'].map((w,i)=>[String(i+1).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]),'🍎'.repeat(i+1),w+' ('+(i+1)+')'])}
+};
+let cur='abc',idx=0,stars=0,ans=null;
+const $=id=>document.getElementById(id);
+const say=(t,l)=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=.85;speechSynthesis.speak(u)}catch(e){}};
 
-        let currentUser = null;
+// ===== রেন্ডার =====
+$('gl').innerHTML=GAMES.map(g=>`<button class="g" data-f data-g="${g[2]}" style="background:${g[3]}"><b>${g[1]}</b>${g[0]}<small>${g[4]}</small></button>`).join('');
+$('chan').innerHTML=CH.map((c,i)=>`<button data-f data-v="${i}"><b>${c[0]}</b>${c[1]}</button>`).join('');
+$('tabs').innerHTML=Object.keys(DATA).map(k=>`<button data-f data-t="${k}">${DATA[k].n}</button>`).join('');
 
-        if (localStorage.getItem('isVerifiedUser') === 'true') {
-            document.getElementById('loading-message').style.display = 'none';
-            document.getElementById('content-wrapper').style.display = 'block';
-            adjustScrollPadding(); 
-        }
+function show(){
+  const d=DATA[cur],it=d.items[idx];
+  $('ch').textContent=it[0];$('em').textContent=it[1];$('wd').textContent=it[2];
+  $('big').style.background=d.c;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===cur));
+  $('grid').innerHTML=d.items.map((x,i)=>`<button data-f data-i="${i}" class="${i===idx?'on':''}">${x[0]}</button>`).join('');
+  quiz();
+}
+function speak(){const d=DATA[cur],it=d.items[idx];say(cur==='abc'?it[0]+' for '+it[2]:cur==='num'?it[2].split(' ')[0]:it[0]+' '+it[2],d.lang)}
+function quiz(){
+  const d=DATA[cur],n=d.items.length,a=Math.floor(Math.random()*n);ans=a;
+  const set=new Set([a]);while(set.size<Math.min(3,n))set.add(Math.floor(Math.random()*n));
+  const o=[...set].sort(()=>Math.random()-.5);
+  $('qq').textContent=cur==='num'?'কয়টি আছে? 🤔':'এই ছবির প্রথম অক্ষর কোনটি? 🤔';
+  $('qs').textContent=d.items[a][1];
+  $('qo').innerHTML=o.map(i=>`<button data-f data-o="${i}">${d.items[i][0]}</button>`).join('');
+}
+function pick(b){
+  if(+b.dataset.o===ans){b.classList.add('ok');stars++;$('st').textContent='⭐ '+stars;say(cur==='bn'||cur==='num'?'বাহ! দারুণ!':'Great job!',DATA[cur].lang);setTimeout(quiz,900)}
+  else{b.classList.add('no');say(cur==='bn'||cur==='num'?'আবার চেষ্টা করো':'Try again',DATA[cur].lang)}
+}
 
-        // --- DYNAMIC PADDING ADJUSTMENT ---
-        function adjustScrollPadding() {
-            const headerHeight = document.getElementById('sticky-top-container').offsetHeight;
-            document.getElementById('scrollable-body').style.paddingTop = (headerHeight + 20) + 'px';
-        }
-        window.addEventListener('resize', adjustScrollPadding);
+// ===== গেম ওভারলে =====
+let lastF=null;
+function openGame(id){
+  const g=GAMES.find(x=>x[2]===id),u=BASE+id+'/index.html';
+  lastF=document.activeElement;
+  $('fr').src=u;$('ext').href=u;$('gt').textContent=g[1]+' '+g[0];
+  $('ov').classList.add('show');$('back').focus();
+}
+function closeGame(){
+  $('ov').classList.remove('show');$('fr').src='about:blank';
+  if(lastF)lastF.focus();
+}
 
-        // AUTHENTICATION LOGIC
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('isVerifiedUser', 'true');
-                
-                document.getElementById('loading-message').style.display = 'none';
-                document.getElementById('content-wrapper').style.display = 'block';
-                
-                setTimeout(adjustScrollPadding, 500); // Ensure video loads/renders height
-                
-                loadLeaderboard("scores", "onlineLeaderboard");
-                loadLeaderboard("snake_scores", "snakeLeaderboard");
-            } else {
-                localStorage.removeItem('isVerifiedUser');
-                document.getElementById('loading-message').style.display = 'block';
-                document.getElementById('content-wrapper').style.display = 'none';
-                signInWithRedirect(auth, provider);
-            }
-        });
+// ===== ক্লিক হ্যান্ডলার =====
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button,a');if(!b)return;
+  if(b.dataset.g)openGame(b.dataset.g);
+  else if(b.dataset.v){$('vp').src=CH[b.dataset.v][2]+'&autoplay=1';scrollTo({top:0,behavior:'smooth'})}
+  else if(b.dataset.t){cur=b.dataset.t;idx=0;show();speak()}
+  else if(b.dataset.i){idx=+b.dataset.i;show();speak()}
+  else if(b.dataset.o)pick(b);
+  else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show();speak()}
+  else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show();speak()}
+  else if(b.id==='say')speak();
+  else if(b.id==='back')closeGame();
+});
 
-        function loadLeaderboard(col, elId) {
-            const q = query(collection(db, col), orderBy("score", "desc"), limit(5));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById(elId);
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const data = d.data();
-                    list.innerHTML += `<li><span><img src="${data.photo || ''}"> ${data.name}</span> <strong>${data.score}</strong></li>`;
-                });
-            });
-        }
+// ===== D-pad / রিমোট নেভিগেশন =====
+function items(){
+  const root=$('ov').classList.contains('show')?$('bar'):document;
+  return [...root.querySelectorAll('[data-f]')].filter(el=>el.offsetParent!==null);
+}
+function nav(k){
+  const all=items(),a=document.activeElement;
+  if(!all.includes(a)){(all[0]||{focus(){}}).focus();return}
+  const r=a.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  let best=null,bs=1e9;
+  for(const el of all){
+    if(el===a)continue;
+    const q=el.getBoundingClientRect(),x=q.left+q.width/2-cx,y=q.top+q.height/2-cy;
+    const ok=k==='ArrowRight'?x>8&&Math.abs(y)<Math.abs(x)*1.6+r.height/2:k==='ArrowLeft'?x<-8&&Math.abs(y)<Math.abs(x)*1.6+r.height/2:k==='ArrowDown'?y>8&&Math.abs(x)<Math.abs(y)*1.6+r.width/2:y<-8&&Math.abs(x)<Math.abs(y)*1.6+r.width/2;
+    if(!ok)continue;
+    const s=Math.hypot(x,y)+(k==='ArrowLeft'||k==='ArrowRight'?Math.abs(y)*2:Math.abs(x)*2);
+    if(s<bs){bs=s;best=el}
+  }
+  if(best){best.focus();best.scrollIntoView({block:'center',behavior:'smooth'})}
+}
+addEventListener('keydown',e=>{
+  if(e.key.startsWith('Arrow')){e.preventDefault();nav(e.key)}
+  else if(e.key==='Escape'||e.key==='Backspace'||e.key==='GoBack'||e.keyCode===4){
+    if($('ov').classList.contains('show')){e.preventDefault();closeGame()}
+  }
+});
+// ফোকাস না থাকলে প্রথম বাটনে ফোকাস দাও (TV)
+addEventListener('load',()=>{if(matchMedia('(hover:none)').matches===false)document.querySelector('[data-g]').focus({preventScroll:true})});
 
-        // ================= GLOBAL GAME UTILS =================
-        const gameOverSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/gameover.mp3');
-
-        window.gameFunctions = {
-            toggleGame: (type) => {
-                const targetId = type === 'balloon' ? 'gameContainer' : 'snakeGameContainer';
-                const otherId = type === 'balloon' ? 'snakeGameContainer' : 'gameContainer';
-                
-                // Hide sticky header (Video)
-                document.getElementById('sticky-top-container').style.display = 'none';
-                document.getElementById('scrollable-body').style.display = 'none';
-
-                document.getElementById(otherId).style.display = 'none';
-                window.gameFunctions.stopAllGames(); 
-
-                const el = document.getElementById(targetId);
-                el.style.display = 'block';
-                if(type === 'snake') window.snakeFunctions.initCanvas();
-            },
-            closeGame: () => {
-                document.getElementById('gameContainer').style.display = 'none';
-                document.getElementById('snakeGameContainer').style.display = 'none';
-                
-                // Show sticky header (Video) & Main Menu
-                document.getElementById('sticky-top-container').style.display = 'block';
-                document.getElementById('scrollable-body').style.display = 'block';
-                adjustScrollPadding();
-
-                window.gameFunctions.stopAllGames();
-            },
-            stopAllGames: () => {
-                // Stop Balloon
-                clearInterval(gameInterval); clearInterval(timerInterval);
-                gameRunning = false;
-                document.querySelectorAll('.balloon').forEach(b => b.remove());
-                document.getElementById('mainStartBtn').style.display = 'block';
-                
-                // Stop Snake
-                clearInterval(snakeLoop);
-                document.getElementById('snakeStartBtn').style.display = 'block';
-                document.getElementById('snakeControls').style.display = 'none';
-                document.getElementById('snakePauseBtn').style.display = 'none';
-            },
-            playVideo: (url) => { 
-                document.getElementById('videoPlayer').src = url + "&autoplay=1";
-                // Scroll to top to see video
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            },
-            startGame: () => {
-                if(gameRunning) return;
-                gameRunning = true; score = 0; timeLeft = 30; currentSpawnRate = 500; difficultyMultiplier = 1.0;
-                document.getElementById('score').innerText = 0;
-                document.getElementById('timer').innerText = 30;
-                document.getElementById('mainStartBtn').style.display = 'none';
-                startSpawning();
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    document.getElementById('timer').innerText = timeLeft;
-                    if(timeLeft % 5 === 0 && timeLeft > 0) increaseDifficulty();
-                    if(timeLeft <= 0) endGame();
-                }, 1000);
-            },
-            closeModal: () => { 
-                document.getElementById('gameOverModal').style.display = 'none';
-                // Close the game view entirely when modal closes, or reset?
-                // Let's reset the game state but keep the view open for "Play Again"
-                window.gameFunctions.stopAllGames();
-            }
-        };
-
-        // ================= BALLOON LOGIC =================
-        let score = 0, timeLeft = 30, gameRunning = false, gameInterval, timerInterval;
-        let currentSpawnRate = 500; 
-        let difficultyMultiplier = 1.0; 
-        const popSound = new Audio('https://madinamanjeel.github.io/kids/balloonburst.mp3');
-
-        function increaseDifficulty() {
-            currentSpawnRate = Math.max(180, currentSpawnRate - 70); 
-            difficultyMultiplier += 0.2;
-            clearInterval(gameInterval);
-            startSpawning();
-        }
-
-        function startSpawning() { gameInterval = setInterval(createBalloon, currentSpawnRate); }
-
-        function createBalloon() {
-            const types = [
-                {e:'🎈', p:10, fs: 75, speed: 5.2, drift: 20}, 
-                {e:'🦊', p:15, fs: 70, speed: 4.8, drift: 25}, 
-                {e:'🍎', p:20, fs: 60, speed: 4.2, drift: 30}, 
-                {e:'💎', p:50, fs: 50, speed: 3.5, drift: 30}, 
-                {e:'💣', p:-50, fs: 85, speed: 4.5, drift: 15}
-            ];
-
-            const rand = Math.random();
-            let type = rand < 0.25 ? types[4] : rand < 0.45 ? types[3] : rand < 0.65 ? types[2] : rand < 0.85 ? types[1] : types[0];
-
-            const b = document.createElement('div');
-            b.className = 'balloon'; b.innerText = type.e;
-            
-            const finalSpeed = Math.max(1.5, type.speed / difficultyMultiplier);
-            b.style.setProperty('--speed', finalSpeed + 's');
-            
-            const areaWidth = document.getElementById('gameArea').clientWidth;
-            const bWidth = 80; 
-            const maxDrift = type.drift;
-            const randomLeft = Math.random() * (areaWidth - (bWidth + maxDrift * 2)) + maxDrift;
-            
-            b.style.left = randomLeft + 'px';
-            b.style.setProperty('--drift', (Math.random() > 0.5 ? maxDrift : -maxDrift) + 'px');
-            b.style.fontSize = type.fs + 'px';
-
-            const popAction = (e) => {
-                if(!gameRunning) return;
-                e.preventDefault(); 
-                score += type.p;
-                document.getElementById('score').innerText = score;
-                popSound.cloneNode().play();
-                showPointPopup(e.clientX || (e.touches ? e.touches[0].clientX : 0), e.clientY || (e.touches ? e.touches[0].clientY : 0), type.p);
-                b.remove();
-            };
-
-            b.addEventListener('touchstart', popAction, {passive: false});
-            b.addEventListener('mousedown', popAction);
-
-            document.getElementById('gameArea').appendChild(b);
-            setTimeout(() => { if(b.parentNode) b.remove(); }, finalSpeed * 1000);
-        }
-
-        function showPointPopup(x, y, p) {
-            const popup = document.createElement('div');
-            popup.className = 'point-popup';
-            popup.innerText = (p > 0 ? "+" : "") + p;
-            popup.style.color = p > 0 ? "#28a745" : "#dc3545";
-            const rect = document.getElementById('gameArea').getBoundingClientRect();
-            popup.style.left = (x - rect.left) + 'px';
-            popup.style.top = (y - rect.top) + 'px';
-            document.getElementById('gameArea').appendChild(popup);
-            setTimeout(() => popup.remove(), 600);
-        }
-
-        async function endGame() {
-            clearInterval(gameInterval); clearInterval(timerInterval);
-            gameRunning = false;
-            gameOverSound.play();
-            saveScore(score, "scores", "সময় শেষ! 🎉");
-        }
-
-        // ================= SNAKE LOGIC (OPTIMIZED WITH QUEUE) =================
-        const canvas = document.getElementById("snakeCanvas");
-        const ctx = canvas.getContext("2d");
-        let snake = [], frog = {}, dir, snakeLoop, sScore = 0;
-        let isPaused = false;
-        let inputQueue = []; // Fast Input Buffer
-        const box = 20;
-
-        const hissSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakehissing.mp3');
-        const frogSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/frog.mp3');
-        const eatSound = new Audio('https://madinamanjeel.github.io/kids/game/sounds/snakeeating.mp3');
-        let lastFrogSoundTime = 0;
-
-        window.snakeFunctions = {
-            initCanvas: () => {
-                ctx.fillStyle = "#fff"; ctx.fillRect(0,0,300,300);
-            },
-            startSnake: () => {
-                sScore = 0; 
-                snake = [{x: 5*box, y: 5*box}]; 
-                dir = "RIGHT";
-                inputQueue = []; // Reset queue
-                isPaused = false;
-                
-                document.getElementById('snakeScore').innerText = 0;
-                document.getElementById('snakeStartBtn').style.display = 'none';
-                document.getElementById('snakeControls').style.display = 'grid'; 
-                
-                const pBtn = document.getElementById('snakePauseBtn');
-                pBtn.style.display = 'flex';
-                pBtn.innerText = '⏸️';
-
-                spawnFrog();
-                if(snakeLoop) clearInterval(snakeLoop);
-                
-                // Speed maintained at 330ms
-                snakeLoop = setInterval(drawSnake, 330); 
-            },
-            togglePause: () => {
-                isPaused = !isPaused;
-                document.getElementById('snakePauseBtn').innerText = isPaused ? "▶️" : "⏸️";
-            },
-            handleInput: (e, newDir) => {
-                if(e.cancelable) e.preventDefault(); 
-                if(isPaused) return;
-
-                // Determine the last planned direction (either from queue or current dir)
-                const lastPlannedDir = inputQueue.length > 0 ? inputQueue[inputQueue.length - 1] : dir;
-
-                // Prevent 180-degree turns on the PLANNED direction
-                if(newDir === "UP" && lastPlannedDir === "DOWN") return;
-                if(newDir === "DOWN" && lastPlannedDir === "UP") return;
-                if(newDir === "LEFT" && lastPlannedDir === "RIGHT") return;
-                if(newDir === "RIGHT" && lastPlannedDir === "LEFT") return;
-
-                // Avoid duplicate inputs filling the queue
-                if (newDir !== lastPlannedDir) {
-                    // Limiting queue size to 2 keeps controls snappy but prevents over-buffering
-                    if (inputQueue.length < 2) {
-                        inputQueue.push(newDir);
-                    }
-                }
-            }
-        };
-
-        function spawnFrog() {
-            let validPosition = false;
-            let loops = 0;
-            // Robust loop to ensure frog never spawns on snake body
-            while(!validPosition && loops < 100) {
-                let newX = Math.floor(Math.random() * 15) * box;
-                let newY = Math.floor(Math.random() * 15) * box;
-                
-                validPosition = true;
-                for(let part of snake) {
-                    if(part.x === newX && part.y === newY) {
-                        validPosition = false;
-                        break;
-                    }
-                }
-                
-                if(validPosition) {
-                    frog = { x: newX, y: newY };
-                }
-                loops++;
-            }
-        }
-
-        function drawSnake() {
-            if(isPaused) return;
-
-            // Process Input Queue
-            if (inputQueue.length > 0) {
-                dir = inputQueue.shift();
-            }
-
-            ctx.fillStyle = "#fff"; 
-            ctx.fillRect(0,0,300,300);
-            
-            // Draw Frog
-            ctx.font = "20px Arial"; ctx.fillText("🐸", frog.x, frog.y + 18);
-
-            // Draw Snake
-            for(let i=0; i<snake.length; i++){
-                ctx.fillStyle = i==0 ? "#2E7D32" : "#4CAF50"; 
-                ctx.beginPath();
-                ctx.roundRect(snake[i].x, snake[i].y, box-2, box-2, 5);
-                ctx.fill();
-            }
-
-            let headX = snake[0].x; let headY = snake[0].y;
-            
-            if(Math.random() > 0.85) {
-                 hissSound.volume = 0.3;
-                 hissSound.play().catch(e=>{});
-            }
-            
-            if(dir=="LEFT") headX -= box; if(dir=="UP") headY -= box;
-            if(dir=="RIGHT") headX += box; if(dir=="DOWN") headY += box;
-
-            if(headX < 0) headX = 280; if(headX > 280) headX = 0;
-            if(headY < 0) headY = 280; if(headY > 280) headY = 0;
-
-            let distBefore = Math.abs(snake[0].x - frog.x) + Math.abs(snake[0].y - frog.y);
-            let distAfter = Math.abs(headX - frog.x) + Math.abs(headY - frog.y);
-
-            if (distAfter < distBefore) {
-                const now = Date.now();
-                if(now - lastFrogSoundTime > 10000) {
-                    frogSound.volume = 0.5;
-                    frogSound.play().catch(e=>{});
-                    lastFrogSoundTime = now;
-                }
-            }
-
-            if(headX == frog.x && headY == frog.y) {
-                sScore += 10; 
-                document.getElementById('snakeScore').innerText = sScore;
-                eatSound.play().catch(e=>{}); 
-                spawnFrog();
-            } else {
-                snake.pop();
-            }
-
-            let newHead = {x: headX, y: headY};
-            
-            // Self Collision Check
-            if(collision(newHead, snake)) {
-                clearInterval(snakeLoop);
-                gameOverSound.play();
-                saveScore(sScore, "snake_scores", "সাপ নিজের গায়ে কামড় দিয়েছে!");
-                return;
-            }
-            snake.unshift(newHead);
-        }
-
-        function collision(head, body) {
-            for(let i=0; i<body.length; i++) if(head.x == body[i].x && head.y == body[i].y) return true;
-            return false;
-        }
-
-        async function saveScore(s, col, msg) {
-            document.getElementById('finalScore').innerText = s;
-            document.getElementById('modalTitle').innerText = msg;
-            document.getElementById('gameOverModal').style.display = 'flex';
-            if(currentUser) {
-                const ref = doc(db, col, currentUser.uid);
-                const snap = await getDoc(ref);
-                if(!snap.exists() || s > snap.data().score) {
-                    await setDoc(ref, {name: currentUser.displayName, photo: currentUser.photoURL, score: s});
-                }
-            }
-            document.getElementById('saveMsg').innerText = "স্কোর সেভ হয়েছে!";
-        }
-    </script>
+// ===== ঐচ্ছিক লগইন =====
+async function gate(){
+  if(!REQUIRE_LOGIN)return;
+  const [{initializeApp},{getAuth,GoogleAuthProvider,onAuthStateChanged,signInWithRedirect}]=await Promise.all([
+    import('https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js')]);
+  const a=getAuth(initializeApp(FB));
+  document.body.style.visibility='hidden';
+  onAuthStateChanged(a,u=>{u?document.body.style.visibility='visible':signInWithRedirect(a,new GoogleAuthProvider())});
+}
+show();gate();
+</script>
 </body>
 </html>
