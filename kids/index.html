@@ -215,20 +215,20 @@ function quiz(){
 }
 function pick(b){
   const bn=DATA[cur].parts({0:'',1:'',2:''},false)[0].l==='bn';
-  if(+b.dataset.o===ans){b.classList.add('ok');stars++;$('st').textContent='⭐ '+stars;say(bn?'বাহ! দারুণ!':'Great job!',bn?'bn':'en');setTimeout(quiz,1400)}
-  else{b.classList.add('no');say(bn?'আবার চেষ্টা করো':'Try again',bn?'bn':'en')}
+  if(+b.dataset.o===ans){b.classList.add('ok');stars++;$('st').textContent='⭐ '+stars;setTimeout(quiz,1400)}
+  else{b.classList.add('no');0}
 }
 
 // ===== ক্লিক হ্যান্ডলার =====
 document.addEventListener('click',e=>{
   const b=e.target.closest('button,a');if(!b)return;
   if(b.dataset.v){$('vp').src=CH[b.dataset.v][2]+'&autoplay=1';scrollTo({top:0,behavior:'smooth'})}
-  else if(b.dataset.t){cur=b.dataset.t;idx=0;show();speak()}
-  else if(b.dataset.i){idx=+b.dataset.i;show();speak()}
-  else if(b.dataset.m){ex=b.dataset.m==='1';show();speak()}
+  else if(b.dataset.t){cur=b.dataset.t;idx=0;show()}
+  else if(b.dataset.i){idx=+b.dataset.i;show()}
+  else if(b.dataset.m){ex=b.dataset.m==='1';show()}
   else if(b.dataset.o)pick(b);
-  else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show();speak()}
-  else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show();speak()}
+  else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show()}
+  else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show()}
   else if(b.id==='say')speak();
 });
 
