@@ -129,18 +129,18 @@ const bnN=n=>String(n).replace(/\d/g,d=>BN[d]);
 const ENW=['One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten'];
 const BNW=['এক','দুই','তিন','চার','পাঁচ','ছয়','সাত','আট','নয়','দশ'];
 const P=(t,l,g)=>({t,l,g});
-const GAP=1100;
+const GAP=450;
 const DATA={
  n1:{n:'1 2 3 4',c:'#f59e0b',items:ENW.map((w,i)=>[String(i+1),'🍎'.repeat(i+1),w]),
   parts:(it,ex)=>{const n=+it[0],o=[P(it[2],'en',GAP)];if(ex)o.push(P(it[2]+' apple'+(n>1?'s':''),'en',0));return o}},
  n2:{n:'১ ২ ৩ ৪',c:'#2fcf9b',items:BNW.map((w,i)=>[bnN(i+1),'🍎'.repeat(i+1),w]),
   parts:(it,ex)=>{const o=[P(it[2],'bn',GAP)];if(ex)o.push(P(it[2]+'টি আপেল','bn',0));return o}},
  abc:{n:'A B C D',c:'#3ea6ff',items:E('A|🍎|Apple,B|⚽|Ball,C|🐱|Cat,D|🐶|Dog,E|🐘|Elephant,F|🐟|Fish,G|🍇|Grapes,H|🏠|House,I|🍦|Ice cream,J|🧃|Juice,K|🪁|Kite,L|🦁|Lion,M|🌙|Moon,N|🪺|Nest,O|🍊|Orange,P|🦜|Parrot,Q|👑|Queen,R|🐰|Rabbit,S|☀️|Sun,T|🌳|Tree,U|☂️|Umbrella,V|🚐|Van,W|⌚|Watch,X|🎹|Xylophone,Y|🪀|Yo-yo,Z|🦓|Zebra'),
-  parts:(it,ex)=>{const o=[P(it[0],'en',ex?900:0)];if(ex){o.push(P(it[0]+' for','en',600),P(it[2],'en',0))}return o}},
+  parts:(it,ex)=>{const o=[P(it[0],'en',ex?400:0)];if(ex){o.push(P(it[0]+' for','en',250),P(it[2],'en',0))}return o}},
  sw:{n:'অ আ ই ঈ',c:'#ff6b57',items:E('অ|🐍|অজগর|অজোগর,আ|🥭|আম,ই|🐭|ইঁদুর,ঈ|🦅|ঈগল,উ|🐪|উট,ঊ|🌅|ঊষা,ঋ|🧘|ঋষি,এ|🎸|একতারা,ঐ|🐘|ঐরাবত,ও|🍠|ওল,ঔ|💊|ঔষধ'),
-  parts:(it,ex)=>{const o=[P('স্বরে '+it[0],'bn',ex?GAP:0)];if(ex)o.push(P('স্বরে '+it[0]+' তে '+(it[3]||it[2]),'bn',0));return o}},
+  parts:(it,ex)=>{const c=it[0],lb=('অআ'.includes(c)?'স্বরে ':'ইউ'.includes(c)?'হ্রস্ব ':'ঈঊ'.includes(c)?'দীর্ঘ ':'')+c;const o=[P(lb,'bn',ex?GAP:0)];if(ex)o.push(P(lb+' তে '+(it[3]||it[2]),'bn',0));return o}},
  bj:{n:'ক খ গ ঘ',c:'#8b5cf6',items:E('ক|🍌|কলা,খ|🐰|খরগোশ,গ|🐄|গরু,ঘ|⏰|ঘড়ি,ঙ|🐸|ব্যাঙ,চ|🌙|চাঁদ,ছ|☂️|ছাতা,জ|🚢|জাহাজ,ঝ|🐚|ঝিনুক,ট|🍅|টমেটো,ঠ|👄|ঠোঁট,ড|🥥|ডাব,ঢ|🥁|ঢাক,ত|⭐|তারা,থ|🍽️|থালা,দ|🚪|দরজা,ধ|🌾|ধান,ন|⛵|নৌকা,প|🐦|পাখি,ফ|🌸|ফুল,ব|📖|বই,ভ|🍚|ভাত,ম|🐟|মাছ,র|📻|রেডিও,ল|🍋|লেবু,শ|🦊|শিয়াল,ষ|🐂|ষাঁড়,স|☀️|সূর্য,হ|🐘|হাতি,ড়|🪁|ঘুড়ি,য়|🦚|ময়ূর'),
-  parts:(it,ex)=>{const o=[P('ব্যঞ্জনে '+it[0],'bn',ex?GAP:0)];if(ex)o.push(P(it[0]+' তে '+it[2],'bn',0));return o}}
+  parts:(it,ex)=>{const o=[P(it[0],'bn',ex?GAP:0)];if(ex)o.push(P(it[0]+' তে '+it[2],'bn',0));return o}}
 };
 let cur='n1',idx=0,stars=0,ans=null,ex=true;
 const $=id=>document.getElementById(id);
