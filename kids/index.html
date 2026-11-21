@@ -58,14 +58,6 @@ h2{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,34px);margin:34px 0
 .opts .ok{background:var(--mint);color:#fff}.opts .no{background:var(--coral);color:#fff}
 .stars{font-size:22px;font-weight:800;margin-top:8px}
 footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
-/* overlay */
-#ov{position:fixed;inset:0;background:var(--ink);z-index:50;display:none;flex-direction:column}
-#ov.show{display:flex}
-#bar{display:flex;gap:10px;align-items:center;padding:8px 12px;color:#fff;font-weight:800}
-#bar button,#bar a{background:var(--coral);color:#fff;padding:8px 20px;border-radius:99px;font-weight:800}
-#bar a{background:var(--sky);margin-left:auto}
-#fr{flex:1;border:0;width:100%;background:#000}
-.hint{display:none;font-size:14px;opacity:.7;text-align:center}
 @media(max-width:760px){.tv,.lbody{grid-template-columns:1fr}nav{display:none}.chan{grid-template-columns:repeat(4,1fr)}.chan button{font-size:13px}.chan b{font-size:26px}.games{grid-template-columns:1fr 1fr;gap:12px}.g{font-size:18px}.g b{font-size:46px}}
 @media(min-width:1280px){body{font-size:20px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -107,10 +99,6 @@ footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
 <footer>D-pad (রিমোট) দিয়ে ⬆️⬇️⬅️➡️ চালাও, OK চেপে সিলেক্ট করো, Back চেপে ফিরে যাও</footer>
 </div>
 
-<div id="ov">
-  <div id="bar"><button data-f id="back">⬅️ ফিরে যাও</button><span id="gt"></span><a data-f id="ext" target="_blank" rel="noopener">নতুন ট্যাবে খোলো</a></div>
-  <iframe id="fr" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
-</div>
 
 <script>
 // ===== সেটিংস =====
@@ -139,10 +127,20 @@ const DATA={
 };
 let cur='abc',idx=0,stars=0,ans=null;
 const $=id=>document.getElementById(id);
-const say=(t,l)=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=.85;speechSynthesis.speak(u)}catch(e){}};
+let au=null;
+const say=(t,l)=>{
+  try{speechSynthesis.cancel()}catch(e){}
+  const code=l.slice(0,2),fb=()=>{try{const u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=.85;speechSynthesis.speak(u)}catch(e){}};
+  try{
+    if(au)au.pause();
+    au=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl='+code+'&q='+encodeURIComponent(t));
+    au.onerror=fb;
+    au.play().catch(fb);
+  }catch(e){fb()}
+};
 
 // ===== রেন্ডার =====
-$('gl').innerHTML=GAMES.map(g=>`<button class="g" data-f data-g="${g[2]}" style="background:${g[3]}"><b>${g[1]}</b>${g[0]}<small>${g[4]}</small></button>`).join('');
+$('gl').innerHTML=GAMES.map(g=>`<a class="g" data-f href="${BASE+g[2]}/index.html" style="background:${g[3]}"><b>${g[1]}</b>${g[0]}<small>${g[4]}</small></a>`).join('');
 $('chan').innerHTML=CH.map((c,i)=>`<button data-f data-v="${i}"><b>${c[0]}</b>${c[1]}</button>`).join('');
 $('tabs').innerHTML=Object.keys(DATA).map(k=>`<button data-f data-t="${k}">${DATA[k].n}</button>`).join('');
 
@@ -168,37 +166,21 @@ function pick(b){
   else{b.classList.add('no');say(cur==='bn'||cur==='num'?'আবার চেষ্টা করো':'Try again',DATA[cur].lang)}
 }
 
-// ===== গেম ওভারলে =====
-let lastF=null;
-function openGame(id){
-  const g=GAMES.find(x=>x[2]===id),u=BASE+id+'/index.html';
-  lastF=document.activeElement;
-  $('fr').src=u;$('ext').href=u;$('gt').textContent=g[1]+' '+g[0];
-  $('ov').classList.add('show');$('back').focus();
-}
-function closeGame(){
-  $('ov').classList.remove('show');$('fr').src='about:blank';
-  if(lastF)lastF.focus();
-}
-
 // ===== ক্লিক হ্যান্ডলার =====
 document.addEventListener('click',e=>{
   const b=e.target.closest('button,a');if(!b)return;
-  if(b.dataset.g)openGame(b.dataset.g);
-  else if(b.dataset.v){$('vp').src=CH[b.dataset.v][2]+'&autoplay=1';scrollTo({top:0,behavior:'smooth'})}
+  if(b.dataset.v){$('vp').src=CH[b.dataset.v][2]+'&autoplay=1';scrollTo({top:0,behavior:'smooth'})}
   else if(b.dataset.t){cur=b.dataset.t;idx=0;show();speak()}
   else if(b.dataset.i){idx=+b.dataset.i;show();speak()}
   else if(b.dataset.o)pick(b);
   else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show();speak()}
   else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show();speak()}
   else if(b.id==='say')speak();
-  else if(b.id==='back')closeGame();
 });
 
 // ===== D-pad / রিমোট নেভিগেশন =====
 function items(){
-  const root=$('ov').classList.contains('show')?$('bar'):document;
-  return [...root.querySelectorAll('[data-f]')].filter(el=>el.offsetParent!==null);
+  return [...document.querySelectorAll('[data-f]')].filter(el=>el.offsetParent!==null);
 }
 function nav(k){
   const all=items(),a=document.activeElement;
@@ -217,12 +199,9 @@ function nav(k){
 }
 addEventListener('keydown',e=>{
   if(e.key.startsWith('Arrow')){e.preventDefault();nav(e.key)}
-  else if(e.key==='Escape'||e.key==='Backspace'||e.key==='GoBack'||e.keyCode===4){
-    if($('ov').classList.contains('show')){e.preventDefault();closeGame()}
-  }
 });
 // ফোকাস না থাকলে প্রথম বাটনে ফোকাস দাও (TV)
-addEventListener('load',()=>{if(matchMedia('(hover:none)').matches===false)document.querySelector('[data-g]').focus({preventScroll:true})});
+addEventListener('load',()=>{if(matchMedia('(hover:none)').matches===false)document.querySelector('.g').focus({preventScroll:true})});
 
 // ===== ঐচ্ছিক লগইন =====
 async function gate(){
