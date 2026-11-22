@@ -76,7 +76,7 @@ body.lock{overflow:hidden}
 .disp{margin:4px 12px 8px;border-radius:24px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;height:clamp(120px,27vh,220px);padding:6px 16px;box-shadow:0 6px 0 rgba(0,0,0,.18);flex:none}
 .disp .ch{font-family:'Fredoka','Baloo Da 2',sans-serif;font-weight:700;line-height:1;font-size:clamp(64px,19vh,160px);min-width:1.1em;text-align:center}
 .disp .mid{flex:1;min-width:0;text-align:center}
-.disp .em{font-size:clamp(28px,7vh,60px);line-height:1.1;word-break:break-all}
+.disp .em{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;line-height:1.05}
 .disp .wd{font-size:clamp(18px,4vh,28px);font-weight:800}
 .ctl{display:flex;flex-direction:column;gap:6px;align-items:stretch}
 .ctl button{background:rgba(255,255,255,.3);color:#fff;border-radius:99px;padding:4px 14px;font-weight:800;font-size:18px}
@@ -96,6 +96,8 @@ body.lock{overflow:hidden}
 .cbar .sy{background:var(--coral);color:#fff;box-shadow:0 4px 0 #c44a3a;padding:6px 28px}
 .qh{display:flex;align-items:center;justify-content:center;gap:10px}
 .qh button{background:#fff;border-radius:99px;padding:2px 12px;font-size:20px;box-shadow:0 3px 0 #bfe6d6}
+.mt{background:#fff;border-radius:50%;width:38px;height:38px;font-size:20px;display:grid;place-items:center;box-shadow:0 3px 0 #e6dcc6}
+.mt.off{background:#ffe3df;box-shadow:0 3px 0 #f2b5ad}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-weight:800;opacity:0;transition:opacity .2s;z-index:60;pointer-events:none;max-width:90%;text-align:center}
 footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
 @media(max-width:760px){.tv,.lbody{grid-template-columns:1fr}nav{display:none}.chan{grid-template-columns:repeat(4,1fr)}.chan button{font-size:13px}.chan b{font-size:26px}.games{grid-template-columns:1fr 1fr;gap:12px}.g{font-size:18px}.g b{font-size:46px}}
@@ -126,7 +128,7 @@ footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
 
 
 <div id="lp">
-  <div class="sd"><span>🔊 সাউন্ড সেটিংস</span><div class="seg" id="modes"></div></div>
+  <div class="sd"><button class="mt" data-f id="mute" aria-label="সাউন্ড অন/অফ">🔊</button><div class="seg" id="modes"></div></div>
   <div class="disp" id="disp">
     <div class="ch" id="ch"></div>
     <div class="mid"><div class="em" id="em"></div><div class="wd" id="wd"></div></div>
@@ -187,7 +189,7 @@ DATA.abc.q='Which letter does this picture start with?';DATA.abc.ql='en';
 DATA.sw.q=DATA.bj.q='এই ছবির প্রথম অক্ষর কোনটি?';DATA.sw.ql=DATA.bj.ql='bn';
 const CAP={n1:'English Numbers',n2:'বাংলা সংখ্যা',abc:'English Letters',sw:'স্বরবর্ণ',bj:'ব্যঞ্জনবর্ণ'};
 let qVis=false,qSpoken=false,lastOp=null;
-let cur='n1',idx=0,stars=0,ans=null,mode='ex',gridFor='';
+let cur='n1',idx=0,stars=0,ans=null,mode='ex',gridFor='',muted=false;
 const $=id=>document.getElementById(id);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let au=null,tk=0,tt;
@@ -237,11 +239,13 @@ const say=(t,l)=>speakSeq([P(t,l,0)]);
 $('gl').innerHTML=GAMES.map(g=>`<a class="g" data-f href="${BASE+g[2]}/index.html" style="background:${g[3]}"><b>${g[1]}</b>${g[0]}<small>${g[4]}</small></a>`).join('');
 $('lcards').innerHTML=Object.keys(DATA).map(k=>`<button class="lc" data-f data-open="${k}" style="background:${DATA[k].c}"><b>${DATA[k].n}</b><small>${CAP[k]}</small></button>`).join('');
 $('chan').innerHTML=CH.map((c,i)=>`<button data-f data-v="${i}"><b>${c[0]}</b>${c[1]}</button>`).join('');
-$('modes').innerHTML='<button data-f data-m="off">অফ</button><button data-f data-m="ex">উদাহরণসহ</button><button data-f data-m="only">শুধু অক্ষর</button>';
+$('modes').innerHTML='<button data-f data-m="ex">উদাহরণসহ</button><button data-f data-m="only">শুধু অক্ষর</button>';
 
 function show(){
   const d=DATA[cur],it=d.items[idx],ex=mode!=='only';
-  $('ch').textContent=it[0];$('em').textContent=ex?it[1]:'';$('wd').textContent=ex?it[2]:'';
+  $('ch').textContent=it[0];{const e=$('em'),num=cur==='n1'||cur==='n2',n=num?idx+1:1;
+  e.innerHTML=ex?(num?Array.from({length:n},()=>`<span>${it[1].slice(0,2)}</span>`).join(''):`<span>${it[1]}</span>`):'';
+  e.style.fontSize=Math.min(n===1?56:n<=3?44:n<=6?34:28,innerHeight*0.075)+'px'}$('wd').textContent=ex?it[2]:'';
   $('disp').style.background=d.c;
   document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
   if(gridFor!==cur){gridFor=cur;$('grid').innerHTML=d.items.map((x,i)=>`<button data-f data-i="${i}">${x[0]}</button>`).join('')}
@@ -276,13 +280,14 @@ function pick(b){
 // ===== ক্লিক হ্যান্ডলার =====
 document.addEventListener('click',e=>{
   const b=e.target.closest('button,a');if(!b)return;
-  const on=mode!=='off';
+  const on=!muted;
   if(b.dataset.v){$('vp').src=CH[b.dataset.v][2]+'&autoplay=1';scrollTo({top:0,behavior:'smooth'})}
   else if(b.dataset.open){lastOp=b;cur=b.dataset.open;idx=0;$('ls').scrollTop=0;openL()}
   else if(b.id==='closeL')closeL();
   else if(b.dataset.t){cur=b.dataset.t;idx=0;show();quiz();$('ls').scrollTop=0}
   else if(b.dataset.i){idx=+b.dataset.i;show();if(on)speak()}
   else if(b.dataset.m){mode=b.dataset.m;show()}
+  else if(b.id==='mute'){muted=!muted;b.textContent=muted?'🔇':'🔊';b.classList.toggle('off',muted);if(muted){tk++;try{speechSynthesis.cancel()}catch(e){}if(au){try{au.pause()}catch(e){}}}}
   else if(b.dataset.o)pick(b);
   else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show();if(on)speak()}
   else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show();if(on)speak()}
