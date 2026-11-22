@@ -58,6 +58,44 @@ h2{font-family:'Fredoka',sans-serif;font-size:clamp(24px,4vw,34px);margin:34px 0
 .opts button{min-width:88px;padding:12px 18px;border-radius:20px;background:#fff;font-size:34px;font-weight:800;font-family:'Fredoka','Baloo Da 2',sans-serif;box-shadow:0 5px 0 #bfe6d6}
 .opts .ok{background:var(--mint);color:#fff}.opts .no{background:var(--coral);color:#fff}
 .stars{font-size:22px;font-weight:800;margin-top:8px}
+.lbtn{width:100%;display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,#8b5cf6,#3ea6ff);color:#fff;border-radius:28px;padding:20px 24px;box-shadow:0 8px 0 rgba(0,0,0,.2);text-align:left}
+.lbtn span{font-size:54px}.lbtn div{flex:1}.lbtn b{display:block;font-size:30px;font-family:'Fredoka','Baloo Da 2',sans-serif}.lbtn small{opacity:.9;font-size:16px}.lbtn i{font-style:normal;font-size:30px}
+body.lock{overflow:hidden}
+#lp{position:fixed;inset:0;z-index:70;background:var(--bg);display:none;flex-direction:column;padding-top:env(safe-area-inset-top)}
+#lp.show{display:flex}
+.lh{display:flex;align-items:center;gap:12px;padding:8px 12px 4px}
+.lh h3{margin:0;font-size:22px;font-family:'Fredoka','Baloo Da 2',sans-serif}
+.bk{background:var(--coral);color:#fff;border-radius:99px;padding:5px 16px;font-weight:800;font-size:16px;box-shadow:0 3px 0 #c44a3a}
+.lt{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px}
+.lt button{background:#f1ecfb;border-radius:99px;padding:4px 12px;font-weight:800;font-size:16px;box-shadow:0 3px 0 #ded6f5}
+.lt button.on{background:var(--grape);color:#fff;box-shadow:0 3px 0 #6d3fd1}
+.sd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 12px 6px;font-weight:800;font-size:14px}
+.seg{display:inline-flex;background:#fff;border-radius:99px;padding:3px;box-shadow:inset 0 0 0 2px #e6dcc6}
+.seg button{background:transparent;border-radius:99px;padding:2px 12px;font-size:13px;font-weight:800}
+.seg button.on{background:var(--mint);color:#fff}
+.disp{margin:4px 12px 8px;border-radius:24px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;height:clamp(120px,27vh,220px);padding:6px 16px;box-shadow:0 6px 0 rgba(0,0,0,.18);flex:none}
+.disp .ch{font-family:'Fredoka','Baloo Da 2',sans-serif;font-weight:700;line-height:1;font-size:clamp(64px,19vh,160px);min-width:1.1em;text-align:center}
+.disp .mid{flex:1;min-width:0;text-align:center}
+.disp .em{font-size:clamp(28px,7vh,60px);line-height:1.1;word-break:break-all}
+.disp .wd{font-size:clamp(18px,4vh,28px);font-weight:800}
+.ctl{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.ctl button{background:rgba(255,255,255,.3);color:#fff;border-radius:99px;padding:4px 14px;font-weight:800;font-size:18px}
+.ctl .sy{background:#fff;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.ctl div{display:flex;gap:6px}.ctl div button{flex:1}
+.ls{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 12px calc(24px + env(safe-area-inset-bottom))}
+.lg{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:10px}
+.lg button{aspect-ratio:1;border-radius:18px;background:#f4f0ff;font-size:28px;font-weight:800;font-family:'Fredoka','Baloo Da 2',sans-serif;box-shadow:0 4px 0 #ded6f5}
+.lg button.on{background:var(--sun);box-shadow:0 4px 0 #d99a00}
+@media(max-height:480px){.lh{padding:4px 12px 0}.sd{padding-bottom:2px}}
+.lcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.lc{border-radius:26px;padding:18px 8px 14px;color:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 7px 0 rgba(0,0,0,.2);font-family:'Fredoka','Baloo Da 2',sans-serif}
+.lc b{font-size:34px;line-height:1.1}.lc small{font-family:'Baloo Da 2',sans-serif;font-weight:700;font-size:15px;opacity:.92}
+.lc:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.cbar{display:flex;justify-content:center;align-items:center;gap:12px;margin:0 12px 8px;flex:none}
+.cbar button{background:#fff;border-radius:99px;padding:6px 22px;font-weight:800;font-size:20px;box-shadow:0 4px 0 #e6dcc6}
+.cbar .sy{background:var(--coral);color:#fff;box-shadow:0 4px 0 #c44a3a;padding:6px 28px}
+.qh{display:flex;align-items:center;justify-content:center;gap:10px}
+.qh button{background:#fff;border-radius:99px;padding:2px 12px;font-size:20px;box-shadow:0 3px 0 #bfe6d6}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:99px;font-weight:800;opacity:0;transition:opacity .2s;z-index:60;pointer-events:none;max-width:90%;text-align:center}
 footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
 @media(max-width:760px){.tv,.lbody{grid-template-columns:1fr}nav{display:none}.chan{grid-template-columns:repeat(4,1fr)}.chan button{font-size:13px}.chan b{font-size:26px}.games{grid-template-columns:1fr 1fr;gap:12px}.g{font-size:18px}.g b{font-size:46px}}
@@ -81,28 +119,29 @@ footer{text-align:center;padding:30px 0 40px;opacity:.6;font-size:15px}
 <h2 id="games">🎮 গেম খেলো</h2>
 <section class="games" id="gl"></section>
 
-<h2 id="learn">📚 মজার ছলে শেখো</h2>
-<section class="learn">
-  <div class="tabs" id="tabs"></div>
-  <div class="tabs" id="modes"></div>
-  <div class="lbody">
-    <div class="big" id="big">
-      <div class="ch" id="ch"></div><div class="em" id="em"></div><div class="wd" id="wd"></div>
-      <div class="ctl"><button data-f id="prev">⬅️</button><button data-f id="say">🔊 শোনো</button><button data-f id="next">➡️</button></div>
-    </div>
-    <div class="grid" id="grid"></div>
-  </div>
-  <div class="quiz">
-    <div class="q" id="qq">🎯 কুইজ খেলো!</div>
-    <div class="shape" id="qs"></div>
-    <div class="opts" id="qo"></div>
-    <div class="stars" id="st">⭐ 0</div>
-  </div>
-</section>
+<h2 id="learn">📚 কিডস লার্নিং</h2>
+<section class="lcards" id="lcards"></section>
 <footer>D-pad (রিমোট) দিয়ে ⬆️⬇️⬅️➡️ চালাও, OK চেপে সিলেক্ট করো, Back চেপে ফিরে যাও</footer>
 </div>
 
 
+<div id="lp">
+  <div class="sd"><span>🔊 সাউন্ড সেটিংস</span><div class="seg" id="modes"></div></div>
+  <div class="disp" id="disp">
+    <div class="ch" id="ch"></div>
+    <div class="mid"><div class="em" id="em"></div><div class="wd" id="wd"></div></div>
+  </div>
+  <div class="cbar"><button data-f id="prev">⬅️</button><button class="sy" data-f id="say">🔊 শোনো</button><button data-f id="next">➡️</button></div>
+  <div class="ls" id="ls">
+    <div class="lg" id="grid"></div>
+    <div class="quiz" id="qz">
+      <div class="qh"><div class="q" id="qq"></div></div>
+      <div class="shape" id="qs"></div>
+      <div class="opts" id="qo"></div>
+      <div class="stars" id="st">⭐ 0</div>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 <script>
 // ===== সেটিংস =====
@@ -142,7 +181,13 @@ const DATA={
  bj:{n:'ক খ গ ঘ',c:'#8b5cf6',items:E('ক|🍌|কলা,খ|🐰|খরগোশ,গ|🐄|গরু,ঘ|⏰|ঘড়ি,ঙ|🐸|ব্যাঙ,চ|🌙|চাঁদ,ছ|☂️|ছাতা,জ|🚢|জাহাজ,ঝ|🐚|ঝিনুক,ট|🍅|টমেটো,ঠ|👄|ঠোঁট,ড|🥥|ডাব,ঢ|🥁|ঢাক,ত|⭐|তারা,থ|🍽️|থালা,দ|🚪|দরজা,ধ|🌾|ধান,ন|⛵|নৌকা,প|🐦|পাখি,ফ|🌸|ফুল,ব|📖|বই,ভ|🍚|ভাত,ম|🐟|মাছ,র|📻|রেডিও,ল|🍋|লেবু,শ|🦊|শিয়াল,ষ|🐂|ষাঁড়,স|☀️|সূর্য,হ|🐘|হাতি,ড়|🪁|ঘুড়ি,য়|🦚|ময়ূর'),
   parts:(it,ex)=>{const o=[P(it[0],'bn',ex?GAP:0)];if(ex)o.push(P(it[0]+' তে '+it[2],'bn',0));return o}}
 };
-let cur='n1',idx=0,stars=0,ans=null,ex=true;
+DATA.n1.q='How many apples are here?';DATA.n1.ql='en';
+DATA.n2.q='এখানে কয়টি আপেল আছে?';DATA.n2.ql='bn';
+DATA.abc.q='Which letter does this picture start with?';DATA.abc.ql='en';
+DATA.sw.q=DATA.bj.q='এই ছবির প্রথম অক্ষর কোনটি?';DATA.sw.ql=DATA.bj.ql='bn';
+const CAP={n1:'English Numbers',n2:'বাংলা সংখ্যা',abc:'English Letters',sw:'স্বরবর্ণ',bj:'ব্যঞ্জনবর্ণ'};
+let qVis=false,qSpoken=false,lastOp=null;
+let cur='n1',idx=0,stars=0,ans=null,mode='ex',gridFor='';
 const $=id=>document.getElementById(id);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let au=null,tk=0,tt;
@@ -190,27 +235,37 @@ const say=(t,l)=>speakSeq([P(t,l,0)]);
 
 // ===== রেন্ডার =====
 $('gl').innerHTML=GAMES.map(g=>`<a class="g" data-f href="${BASE+g[2]}/index.html" style="background:${g[3]}"><b>${g[1]}</b>${g[0]}<small>${g[4]}</small></a>`).join('');
+$('lcards').innerHTML=Object.keys(DATA).map(k=>`<button class="lc" data-f data-open="${k}" style="background:${DATA[k].c}"><b>${DATA[k].n}</b><small>${CAP[k]}</small></button>`).join('');
 $('chan').innerHTML=CH.map((c,i)=>`<button data-f data-v="${i}"><b>${c[0]}</b>${c[1]}</button>`).join('');
-$('tabs').innerHTML=Object.keys(DATA).map(k=>`<button data-f data-t="${k}">${DATA[k].n}</button>`).join('');
-$('modes').innerHTML='<button data-f data-m="1">🖼️ উদাহরণসহ</button><button data-f data-m="0">🔤 শুধু উচ্চারণ</button>';
+$('modes').innerHTML='<button data-f data-m="off">অফ</button><button data-f data-m="ex">উদাহরণসহ</button><button data-f data-m="only">শুধু অক্ষর</button>';
 
 function show(){
-  const d=DATA[cur],it=d.items[idx];
+  const d=DATA[cur],it=d.items[idx],ex=mode!=='only';
   $('ch').textContent=it[0];$('em').textContent=ex?it[1]:'';$('wd').textContent=ex?it[2]:'';
-  $('big').style.background=d.c;
-  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===cur));
-  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',(b.dataset.m==='1')===ex));
-  $('grid').innerHTML=d.items.map((x,i)=>`<button data-f data-i="${i}" class="${i===idx?'on':''}">${x[0]}</button>`).join('');
-  quiz();
+  $('disp').style.background=d.c;
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+  if(gridFor!==cur){gridFor=cur;$('grid').innerHTML=d.items.map((x,i)=>`<button data-f data-i="${i}">${x[0]}</button>`).join('')}
+  [...$('grid').children].forEach((b,i)=>b.classList.toggle('on',i===idx));
 }
-function speak(){const d=DATA[cur];speakSeq(d.parts(d.items[idx],ex))}
+function speak(){const d=DATA[cur];speakSeq(d.parts(d.items[idx],mode!=='only'))}
+// ===== শেখার ঘর (আলাদা ফুল স্ক্রিন) =====
+function openL(){$('lp').classList.add('show');document.body.classList.add('lock');history.pushState({lp:1},'');show();quiz();$('say').focus()}
+function hideL(){$('lp').classList.remove('show');document.body.classList.remove('lock');tk++;try{speechSynthesis.cancel()}catch(e){}if(au){try{au.pause()}catch(e){}}if(lastOp)lastOp.focus({preventScroll:true})}
+function closeL(){if(history.state&&history.state.lp)history.back();else hideL()}
+addEventListener('popstate',()=>{if($('lp').classList.contains('show'))hideL()});
+function speakQ(){const d=DATA[cur];speakSeq([P(d.q,d.ql,0)])}
+new IntersectionObserver(es=>{
+  qVis=es[0].isIntersecting;
+  if(qVis&&!qSpoken&&$('lp').classList.contains('show')){qSpoken=true;speakQ()}
+},{root:$('ls'),threshold:0.6}).observe($('qz'));
 function quiz(){
   const d=DATA[cur],n=d.items.length,a=Math.floor(Math.random()*n);ans=a;
   const set=new Set([a]);while(set.size<Math.min(3,n))set.add(Math.floor(Math.random()*n));
   const o=[...set].sort(()=>Math.random()-.5),num=cur==='n1'||cur==='n2';
-  $('qq').textContent=num?'কয়টি আছে? 🤔':'এই ছবির প্রথম অক্ষর কোনটি? 🤔';
+  $('qq').textContent=d.q;qSpoken=false;
   $('qs').textContent=d.items[a][1];
   $('qo').innerHTML=o.map(i=>`<button data-f data-o="${i}">${d.items[i][0]}</button>`).join('');
+  if(qVis&&$('lp').classList.contains('show')){qSpoken=true;speakQ()}
 }
 function pick(b){
   const bn=DATA[cur].parts({0:'',1:'',2:''},false)[0].l==='bn';
@@ -221,19 +276,22 @@ function pick(b){
 // ===== ক্লিক হ্যান্ডলার =====
 document.addEventListener('click',e=>{
   const b=e.target.closest('button,a');if(!b)return;
+  const on=mode!=='off';
   if(b.dataset.v){$('vp').src=CH[b.dataset.v][2]+'&autoplay=1';scrollTo({top:0,behavior:'smooth'})}
-  else if(b.dataset.t){cur=b.dataset.t;idx=0;show()}
-  else if(b.dataset.i){idx=+b.dataset.i;show()}
-  else if(b.dataset.m){ex=b.dataset.m==='1';show()}
+  else if(b.dataset.open){lastOp=b;cur=b.dataset.open;idx=0;$('ls').scrollTop=0;openL()}
+  else if(b.id==='closeL')closeL();
+  else if(b.dataset.t){cur=b.dataset.t;idx=0;show();quiz();$('ls').scrollTop=0}
+  else if(b.dataset.i){idx=+b.dataset.i;show();if(on)speak()}
+  else if(b.dataset.m){mode=b.dataset.m;show()}
   else if(b.dataset.o)pick(b);
-  else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show()}
-  else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show()}
+  else if(b.id==='next'){idx=(idx+1)%DATA[cur].items.length;show();if(on)speak()}
+  else if(b.id==='prev'){idx=(idx-1+DATA[cur].items.length)%DATA[cur].items.length;show();if(on)speak()}
   else if(b.id==='say')speak();
 });
 
 // ===== D-pad / রিমোট নেভিগেশন =====
 function items(){
-  return [...document.querySelectorAll('[data-f]')].filter(el=>el.offsetParent!==null);
+  return [...($('lp').classList.contains('show')?$('lp'):document).querySelectorAll('[data-f]')].filter(el=>el.offsetParent!==null);
 }
 function nav(k){
   const all=items(),a=document.activeElement;
@@ -252,6 +310,7 @@ function nav(k){
 }
 addEventListener('keydown',e=>{
   if(e.key.startsWith('Arrow')){e.preventDefault();nav(e.key)}
+  else if(['Escape','Backspace','GoBack'].includes(e.key)&&$('lp').classList.contains('show')){e.preventDefault();closeL()}
 });
 // ফোকাস না থাকলে প্রথম বাটনে ফোকাস দাও (TV)
 addEventListener('load',()=>{if(matchMedia('(hover:none)').matches===false)document.querySelector('.g').focus({preventScroll:true})});
